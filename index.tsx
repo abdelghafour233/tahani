@@ -13,6 +13,7 @@ declare global {
     handleMultipleImagesUpload: (event: Event) => void;
     addNewProduct: (event: Event) => void;
     setMainImage: (src: string) => void;
+    toggleDarkMode: () => void;
   }
 }
 
@@ -55,16 +56,6 @@ const INITIAL_PRODUCTS = [
 let products = JSON.parse(localStorage.getItem('elite_products') || JSON.stringify(INITIAL_PRODUCTS));
 let cart = JSON.parse(localStorage.getItem('elite_cart') || '[]');
 let orders = JSON.parse(localStorage.getItem('elite_orders') || '[]');
-let settings = JSON.parse(localStorage.getItem('elite_settings') || JSON.stringify({
-    domain: 'myshop.ma',
-    ns: 'ns1.example.com',
-    pixels: { fb: '', ga: '', tt: '' },
-    sheets: ''
-}));
-
-// متغيرات مؤقتة للصور المرفوعة في لوحة التحكم
-let tempMainImage = '';
-let tempAdditionalImages: string[] = [];
 
 // --- وظائف المساعدة ---
 const updateCartCount = () => {
@@ -111,6 +102,22 @@ const fileToBase64 = (file: File): Promise<string> => {
     });
 };
 
+// --- إدارة الوضع الليلي ---
+window.toggleDarkMode = () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('elite_theme', isDark ? 'dark' : 'light');
+    updateThemeIcon();
+};
+
+const updateThemeIcon = () => {
+    const icon = document.getElementById('theme-icon');
+    if (icon) {
+        const isDark = document.documentElement.classList.contains('dark');
+        icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        lucide.createIcons();
+    }
+};
+
 // --- الموجه (Router) ---
 const navigate = () => {
     const hash = window.location.hash || '#/';
@@ -124,6 +131,7 @@ const navigate = () => {
     else if (hash === '#/checkout') renderCheckout(app);
     else if (hash === '#/dashboard') renderDashboard(app);
     
+    updateThemeIcon();
     lucide.createIcons();
     window.scrollTo(0,0);
 };
@@ -144,42 +152,42 @@ function renderHome(container: HTMLElement) {
         </section>
         
         <div class="max-w-7xl mx-auto px-4 py-20">
-            <h2 class="text-4xl font-black mb-16 text-center text-gray-800 relative inline-block w-full">
+            <h2 class="text-4xl font-black mb-16 text-center text-gray-800 dark:text-gray-100 relative inline-block w-full">
                 تصفح أقسامنا
                 <span class="block w-24 h-2 bg-green-500 mx-auto mt-4 rounded-full"></span>
             </h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-24">
-                <a href="#/category/electronics" class="group bg-white p-12 rounded-[40px] text-center shadow-sm border border-gray-100 hover:shadow-2xl hover:border-blue-500 transition-all duration-500">
-                    <div class="bg-blue-50 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500"><i data-lucide="laptop" class="w-12 h-12"></i></div>
-                    <h3 class="text-3xl font-black text-gray-800 mb-2">إلكترونيات</h3>
-                    <p class="text-gray-500 font-bold">أحدث الأجهزة التقنية</p>
+                <a href="#/category/electronics" class="group bg-white dark:bg-slate-900 p-12 rounded-[40px] text-center shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-2xl hover:border-blue-500 transition-all duration-500">
+                    <div class="bg-blue-50 dark:bg-blue-900/30 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500"><i data-lucide="laptop" class="w-12 h-12"></i></div>
+                    <h3 class="text-3xl font-black text-gray-800 dark:text-gray-100 mb-2">إلكترونيات</h3>
+                    <p class="text-gray-500 dark:text-gray-400 font-bold">أحدث الأجهزة التقنية</p>
                 </a>
-                <a href="#/category/home" class="group bg-white p-12 rounded-[40px] text-center shadow-sm border border-gray-100 hover:shadow-2xl hover:border-orange-500 transition-all duration-500">
-                    <div class="bg-orange-50 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500"><i data-lucide="home" class="w-12 h-12"></i></div>
-                    <h3 class="text-3xl font-black text-gray-800 mb-2">منزلية</h3>
-                    <p class="text-gray-500 font-bold">أناقة وراحة لمنزلك</p>
+                <a href="#/category/home" class="group bg-white dark:bg-slate-900 p-12 rounded-[40px] text-center shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-2xl hover:border-orange-500 transition-all duration-500">
+                    <div class="bg-orange-50 dark:bg-orange-900/30 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500"><i data-lucide="home" class="w-12 h-12"></i></div>
+                    <h3 class="text-3xl font-black text-gray-800 dark:text-gray-100 mb-2">منزلية</h3>
+                    <p class="text-gray-500 dark:text-gray-400 font-bold">أناقة وراحة لمنزلك</p>
                 </a>
-                <a href="#/category/cars" class="group bg-white p-12 rounded-[40px] text-center shadow-sm border border-gray-100 hover:shadow-2xl hover:border-indigo-500 transition-all duration-500">
-                    <div class="bg-indigo-50 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500"><i data-lucide="car" class="w-12 h-12"></i></div>
-                    <h3 class="text-3xl font-black text-gray-800 mb-2">سيارات</h3>
-                    <p class="text-gray-500 font-bold">عروض حصرية للسيارات</p>
+                <a href="#/category/cars" class="group bg-white dark:bg-slate-900 p-12 rounded-[40px] text-center shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-2xl hover:border-indigo-500 transition-all duration-500">
+                    <div class="bg-indigo-50 dark:bg-indigo-900/30 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500"><i data-lucide="car" class="w-12 h-12"></i></div>
+                    <h3 class="text-3xl font-black text-gray-800 dark:text-gray-100 mb-2">سيارات</h3>
+                    <p class="text-gray-500 dark:text-gray-400 font-bold">عروض حصرية للسيارات</p>
                 </a>
             </div>
             
-            <h2 class="text-3xl font-black mb-10 text-gray-800">أحدث المنتجات المضافة</h2>
+            <h2 class="text-3xl font-black mb-10 text-gray-800 dark:text-gray-100">أحدث المنتجات المضافة</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 ${products.slice(-4).reverse().map((p: any) => `
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 product-card flex flex-col group">
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-slate-800 product-card flex flex-col group">
                         <div class="relative overflow-hidden aspect-square">
                             <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                             <div class="absolute top-4 right-4 bg-green-600 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">جديد</div>
                         </div>
                         <div class="p-6 flex flex-col flex-grow text-center">
-                            <h3 class="font-black text-xl mb-3 text-gray-800 line-clamp-1">${p.name}</h3>
+                            <h3 class="font-black text-xl mb-3 text-gray-800 dark:text-gray-100 line-clamp-1">${p.name}</h3>
                             <div class="mt-auto">
-                                <span class="text-green-700 text-2xl font-black block mb-4">${p.price.toLocaleString()} MAD</span>
-                                <a href="#/product/${p.id}" class="inline-block w-full bg-gray-900 text-white py-3 rounded-2xl font-black hover:bg-black transition">عرض المنتج</a>
+                                <span class="text-green-700 dark:text-green-400 text-2xl font-black block mb-4">${p.price.toLocaleString()} MAD</span>
+                                <a href="#/product/${p.id}" class="inline-block w-full bg-gray-900 dark:bg-green-600 text-white py-3 rounded-2xl font-black hover:bg-black dark:hover:bg-green-700 transition">عرض المنتج</a>
                             </div>
                         </div>
                     </div>
@@ -194,24 +202,24 @@ function renderCategory(container: HTMLElement, cat: string) {
     const catName = cat === 'electronics' ? 'الإلكترونيات' : cat === 'home' ? 'المنزل' : 'السيارات';
     container.innerHTML = `
         <div class="max-w-7xl mx-auto px-4 py-16">
-            <h2 class="text-5xl font-black mb-12 text-center text-gray-900">قسم ${catName}</h2>
+            <h2 class="text-5xl font-black mb-12 text-center text-gray-900 dark:text-gray-100">قسم ${catName}</h2>
             ${filtered.length === 0 ? `
-                <div class="text-center py-32 bg-white rounded-[40px] border shadow-sm">
-                    <i data-lucide="package-search" class="w-24 h-24 mx-auto text-gray-200 mb-6"></i>
-                    <p class="text-gray-400 text-2xl font-bold">لا توجد منتجات حالياً في هذا القسم.</p>
+                <div class="text-center py-32 bg-white dark:bg-slate-900 rounded-[40px] border dark:border-slate-800 shadow-sm">
+                    <i data-lucide="package-search" class="w-24 h-24 mx-auto text-gray-200 dark:text-slate-700 mb-6"></i>
+                    <p class="text-gray-400 dark:text-slate-500 text-2xl font-bold">لا توجد منتجات حالياً في هذا القسم.</p>
                 </div>
             ` : `
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     ${filtered.map((p: any) => `
-                        <div class="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100 product-card group">
+                        <div class="bg-white dark:bg-slate-900 rounded-[40px] overflow-hidden shadow-sm border border-gray-100 dark:border-slate-800 product-card group">
                             <div class="relative overflow-hidden aspect-square">
                                 <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                             </div>
                             <div class="p-8 text-center">
-                                <h3 class="text-2xl font-black mb-4 text-gray-800">${p.name}</h3>
-                                <p class="text-green-700 text-3xl font-black mb-6">${p.price.toLocaleString()} <span class="text-sm font-bold">درهم</span></p>
+                                <h3 class="text-2xl font-black mb-4 text-gray-800 dark:text-gray-100">${p.name}</h3>
+                                <p class="text-green-700 dark:text-green-400 text-3xl font-black mb-6">${p.price.toLocaleString()} <span class="text-sm font-bold">درهم</span></p>
                                 <div class="flex gap-3">
-                                    <a href="#/product/${p.id}" class="flex-grow bg-gray-900 text-white text-center py-4 rounded-2xl font-black hover:bg-black transition shadow-lg">التفاصيل</a>
+                                    <a href="#/product/${p.id}" class="flex-grow bg-gray-900 dark:bg-slate-800 text-white text-center py-4 rounded-2xl font-black hover:bg-black dark:hover:bg-slate-700 transition shadow-lg">التفاصيل</a>
                                     <button onclick="window.addToCart('${p.id}')" class="bg-green-600 text-white px-5 py-4 rounded-2xl hover:bg-green-700 transition shadow-lg"><i data-lucide="shopping-cart"></i></button>
                                 </div>
                             </div>
@@ -238,33 +246,33 @@ function renderProduct(container: HTMLElement, id: string) {
         <div class="max-w-7xl mx-auto px-4 py-16">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
                 <div class="space-y-6">
-                    <div class="rounded-[50px] overflow-hidden shadow-2xl border-8 border-white bg-white aspect-square">
+                    <div class="rounded-[50px] overflow-hidden shadow-2xl border-8 border-white dark:border-slate-800 bg-white dark:bg-slate-900 aspect-square">
                         <img id="main-product-img" src="${p.image}" class="w-full h-full object-cover transition-all duration-500">
                     </div>
                     ${allImages.length > 1 ? `
                         <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                             ${allImages.map(img => `
-                                <img src="${img}" onclick="window.setMainImage('${img}')" class="w-24 h-24 object-cover rounded-3xl border-4 border-white shadow-md cursor-pointer hover:scale-105 transition flex-shrink-0">
+                                <img src="${img}" onclick="window.setMainImage('${img}')" class="w-24 h-24 object-cover rounded-3xl border-4 border-white dark:border-slate-800 shadow-md cursor-pointer hover:scale-105 transition flex-shrink-0">
                             `).join('')}
                         </div>
                     ` : ''}
                 </div>
                 <div class="flex flex-col py-4">
-                    <span class="bg-green-100 text-green-700 px-6 py-2 rounded-full text-sm font-black w-fit mb-6 uppercase tracking-widest">${p.category}</span>
-                    <h1 class="text-5xl md:text-6xl font-black mb-8 text-gray-900 leading-tight">${p.name}</h1>
-                    <div class="bg-green-50 p-8 rounded-[40px] mb-10 border border-green-100 shadow-inner">
-                        <div class="text-5xl font-black text-green-700 mb-2">${p.price.toLocaleString()} MAD</div>
-                        <p class="text-green-600 font-bold flex items-center gap-2"><i data-lucide="truck" class="w-5 h-5"></i> توصيل مجاني + الدفع عند الاستلام</p>
+                    <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-6 py-2 rounded-full text-sm font-black w-fit mb-6 uppercase tracking-widest">${p.category}</span>
+                    <h1 class="text-5xl md:text-6xl font-black mb-8 text-gray-900 dark:text-gray-100 leading-tight">${p.name}</h1>
+                    <div class="bg-green-50 dark:bg-green-900/10 p-8 rounded-[40px] mb-10 border border-green-100 dark:border-green-900/30 shadow-inner">
+                        <div class="text-5xl font-black text-green-700 dark:text-green-400 mb-2">${p.price.toLocaleString()} MAD</div>
+                        <p class="text-green-600 dark:text-green-500 font-bold flex items-center gap-2"><i data-lucide="truck" class="w-5 h-5"></i> توصيل مجاني + الدفع عند الاستلام</p>
                     </div>
                     <div class="prose prose-xl mb-12">
-                        <h4 class="text-xl font-black mb-4 text-gray-800">وصف المنتج:</h4>
-                        <p class="text-gray-600 leading-relaxed whitespace-pre-wrap text-lg">${p.desc}</p>
+                        <h4 class="text-xl font-black mb-4 text-gray-800 dark:text-gray-100">وصف المنتج:</h4>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap text-lg">${p.desc}</p>
                     </div>
                     <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <button onclick="window.addToCart('${p.id}', true)" class="bg-green-600 text-white py-6 rounded-3xl text-3xl font-black shadow-2xl hover:bg-green-700 transform active:scale-95 transition flex items-center justify-center gap-3">
                             <i data-lucide="zap" class="w-8 h-8"></i> اشتري الآن
                         </button>
-                        <button onclick="window.addToCart('${p.id}')" class="bg-gray-100 text-gray-900 py-6 rounded-3xl text-2xl font-black shadow-lg hover:bg-gray-200 transform active:scale-95 transition">أضف للسلة</button>
+                        <button onclick="window.addToCart('${p.id}')" class="bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-white py-6 rounded-3xl text-2xl font-black shadow-lg hover:bg-gray-200 dark:hover:bg-slate-700 transform active:scale-95 transition">أضف للسلة</button>
                     </div>
                 </div>
             </div>
@@ -278,28 +286,28 @@ function renderCart(container: HTMLElement) {
         <div class="max-w-4xl mx-auto px-4 py-16">
             <h1 class="text-5xl font-black mb-12">سلة المشتريات</h1>
             ${cart.length === 0 ? `
-                <div class="text-center py-32 bg-white rounded-[50px] border shadow-xl">
-                    <div class="bg-gray-50 w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 text-gray-200"><i data-lucide="shopping-bag" class="w-16 h-16"></i></div>
-                    <p class="text-gray-400 text-2xl font-bold mb-10">السلة فارغة حالياً</p>
+                <div class="text-center py-32 bg-white dark:bg-slate-900 rounded-[50px] border dark:border-slate-800 shadow-xl">
+                    <div class="bg-gray-50 dark:bg-slate-800 w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 text-gray-200 dark:text-slate-700"><i data-lucide="shopping-bag" class="w-16 h-16"></i></div>
+                    <p class="text-gray-400 dark:text-slate-500 text-2xl font-bold mb-10">السلة فارغة حالياً</p>
                     <a href="#/" class="bg-green-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-xl hover:bg-green-700 transition">ابدأ التسوق الآن</a>
                 </div>
             ` : `
                 <div class="space-y-6 mb-12">
                     ${cart.map((item: any) => `
-                        <div class="flex items-center gap-8 bg-white p-8 rounded-[40px] border shadow-sm relative group">
-                            <img src="${item.image}" class="w-28 h-28 rounded-[30px] object-cover border shadow-sm">
+                        <div class="flex items-center gap-8 bg-white dark:bg-slate-900 p-8 rounded-[40px] border dark:border-slate-800 shadow-sm relative group">
+                            <img src="${item.image}" class="w-28 h-28 rounded-[30px] object-cover border dark:border-slate-800 shadow-sm">
                             <div class="flex-grow">
-                                <h3 class="font-black text-2xl mb-2 text-gray-800">${item.name}</h3>
-                                <div class="text-green-600 font-black text-xl">${item.price.toLocaleString()} MAD</div>
+                                <h3 class="font-black text-2xl mb-2 text-gray-800 dark:text-gray-100">${item.name}</h3>
+                                <div class="text-green-600 dark:text-green-400 font-black text-xl">${item.price.toLocaleString()} MAD</div>
                             </div>
-                            <div class="text-gray-900 font-black text-3xl bg-gray-100 w-16 h-16 flex items-center justify-center rounded-2xl">x${item.qty}</div>
+                            <div class="text-gray-900 dark:text-gray-100 font-black text-3xl bg-gray-100 dark:bg-slate-800 w-16 h-16 flex items-center justify-center rounded-2xl">x${item.qty}</div>
                         </div>
                     `).join('')}
                 </div>
-                <div class="bg-white p-12 rounded-[50px] border shadow-2xl text-center border-t-8 border-t-green-600">
+                <div class="bg-white dark:bg-slate-900 p-12 rounded-[50px] border dark:border-slate-800 shadow-2xl text-center border-t-8 border-t-green-600">
                     <div class="flex justify-between items-center mb-10 text-3xl font-black px-4">
-                        <span class="text-gray-500">الإجمالي:</span>
-                        <span class="text-green-700 underline decoration-green-200 decoration-8 underline-offset-8">${subtotal.toLocaleString()} MAD</span>
+                        <span class="text-gray-500 dark:text-gray-400">الإجمالي:</span>
+                        <span class="text-green-700 dark:text-green-400 underline decoration-green-200 dark:decoration-green-900 decoration-8 underline-offset-8">${subtotal.toLocaleString()} MAD</span>
                     </div>
                     <a href="#/checkout" class="block w-full bg-green-600 text-white py-6 rounded-3xl font-black text-3xl hover:bg-green-700 shadow-2xl transition transform hover:scale-[1.02]">إتمام الطلب</a>
                 </div>
@@ -312,39 +320,39 @@ function renderCheckout(container: HTMLElement) {
     const total = cart.reduce((s: any, i: any) => s + (i.price * i.qty), 0);
     container.innerHTML = `
         <div class="max-w-xl mx-auto px-4 py-16">
-            <h1 class="text-4xl font-black mb-4 text-center text-gray-900">إتمام الطلب</h1>
-            <p class="text-center text-gray-500 mb-12 font-bold italic">املأ معلوماتك لنتواصل معك وتأكيد التوصيل المجاني</p>
+            <h1 class="text-4xl font-black mb-4 text-center text-gray-900 dark:text-white">إتمام الطلب</h1>
+            <p class="text-center text-gray-500 dark:text-slate-400 mb-12 font-bold italic">املأ معلوماتك لنتواصل معك وتأكيد التوصيل المجاني</p>
             
-            <form id="checkout-form" class="space-y-8 bg-white p-12 rounded-[50px] border shadow-2xl relative overflow-hidden">
+            <form id="checkout-form" class="space-y-8 bg-white dark:bg-slate-900 p-12 rounded-[50px] border dark:border-slate-800 shadow-2xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 left-0 h-2 bg-green-600"></div>
                 
                 <div>
-                    <label class="block font-black text-gray-800 mb-3 text-lg">الاسم الكامل</label>
-                    <input type="text" id="cust-name" required placeholder="" class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all">
+                    <label class="block font-black text-gray-800 dark:text-gray-100 mb-3 text-lg">الاسم الكامل</label>
+                    <input type="text" id="cust-name" required placeholder="" class="w-full border-2 border-gray-100 dark:border-slate-800 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 dark:bg-slate-800 dark:text-white transition-all">
                 </div>
                 
                 <div>
-                    <label class="block font-black text-gray-800 mb-3 text-lg">رقم الهاتف</label>
-                    <input type="tel" id="cust-phone" required placeholder="" class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all">
+                    <label class="block font-black text-gray-800 dark:text-gray-100 mb-3 text-lg">رقم الهاتف</label>
+                    <input type="tel" id="cust-phone" required placeholder="" class="w-full border-2 border-gray-100 dark:border-slate-800 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 dark:bg-slate-800 dark:text-white transition-all">
                 </div>
                 
                 <div>
-                    <label class="block font-black text-gray-800 mb-3 text-lg">المدينة</label>
-                    <select id="cust-city" required class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all appearance-none">
+                    <label class="block font-black text-gray-800 dark:text-gray-100 mb-3 text-lg">المدينة</label>
+                    <select id="cust-city" required class="w-full border-2 border-gray-100 dark:border-slate-800 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 dark:bg-slate-800 dark:text-white transition-all appearance-none">
                         <option value="" disabled selected>اختر مدينتك</option>
                         ${MOROCCAN_CITIES.map(city => `<option value="${city}">${city}</option>`).join('')}
                     </select>
                 </div>
                 
-                <div class="bg-green-50 p-6 rounded-3xl text-green-800 text-lg font-black border border-green-100 flex items-center gap-4">
-                    <div class="bg-green-200 p-2 rounded-xl text-green-700"><i data-lucide="truck" class="w-6 h-6"></i></div>
+                <div class="bg-green-50 dark:bg-green-900/10 p-6 rounded-3xl text-green-800 dark:text-green-400 text-lg font-black border border-green-100 dark:border-green-900/30 flex items-center gap-4">
+                    <div class="bg-green-200 dark:bg-green-900/30 p-2 rounded-xl text-green-700 dark:text-green-400"><i data-lucide="truck" class="w-6 h-6"></i></div>
                     تنبيه: التوصيل مجاني لجميع هذه المدن
                 </div>
 
-                <div class="border-t-2 border-dashed pt-8 mb-4">
-                    <div class="flex justify-between items-center text-2xl font-black text-gray-900 px-2">
+                <div class="border-t-2 dark:border-slate-800 border-dashed pt-8 mb-4">
+                    <div class="flex justify-between items-center text-2xl font-black text-gray-900 dark:text-white px-2">
                         <span>المبلغ المستحق:</span>
-                        <span class="text-green-700">${total.toLocaleString()} MAD</span>
+                        <span class="text-green-700 dark:text-green-400">${total.toLocaleString()} MAD</span>
                     </div>
                 </div>
                 
@@ -353,7 +361,7 @@ function renderCheckout(container: HTMLElement) {
                 </button>
             </form>
             
-            <p class="mt-10 text-center text-gray-400 font-bold text-sm">عملية شراء آمنة 100% - الدفع عند الاستلام</p>
+            <p class="mt-10 text-center text-gray-400 dark:text-slate-600 font-bold text-sm">عملية شراء آمنة 100% - الدفع عند الاستلام</p>
         </div>
     `;
 
@@ -385,28 +393,28 @@ function renderDashboard(container: HTMLElement) {
             <h1 class="text-5xl font-black mb-12">لوحة التحكم</h1>
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
                 <div class="lg:col-span-1 space-y-3">
-                    <button id="tab-products" class="w-full text-right p-5 bg-green-600 text-white rounded-[30px] font-black shadow-lg">إدارة المنتجات</button>
-                    <button id="tab-orders" class="w-full text-right p-5 bg-white border rounded-[30px] font-black hover:bg-gray-50 transition">الطلبات الواردة (${orders.length})</button>
-                    <button id="tab-settings" class="w-full text-right p-5 bg-white border rounded-[30px] font-black hover:bg-gray-50 transition">إعدادات المتجر</button>
+                    <button class="w-full text-right p-5 bg-green-600 text-white rounded-[30px] font-black shadow-lg">إدارة المنتجات</button>
+                    <button class="w-full text-right p-5 bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-[30px] font-black hover:bg-gray-50 dark:hover:bg-slate-800 transition">الطلبات الواردة (${orders.length})</button>
+                    <button class="w-full text-right p-5 bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-[30px] font-black hover:bg-gray-50 dark:hover:bg-slate-800 transition">إعدادات المتجر</button>
                 </div>
                 
-                <div class="lg:col-span-3 space-y-10" id="dash-content">
-                    <div class="bg-white p-12 rounded-[50px] border shadow-xl border-t-8 border-t-green-600">
-                        <h2 class="text-3xl font-black mb-10 flex items-center gap-4"><i data-lucide="plus-circle" class="text-green-600 w-10 h-10"></i> إضافة منتج جديد</h2>
+                <div class="lg:col-span-3 space-y-10">
+                    <div class="bg-white dark:bg-slate-900 p-12 rounded-[50px] border dark:border-slate-800 shadow-xl border-t-8 border-t-green-600">
+                        <h2 class="text-3xl font-black mb-10 flex items-center gap-4 dark:text-white"><i data-lucide="plus-circle" class="text-green-600 w-10 h-10"></i> إضافة منتج جديد</h2>
                         <form id="add-product-form" onsubmit="window.addNewProduct(event)" class="space-y-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
-                                    <label class="block font-black mb-3 text-gray-700">اسم المنتج</label>
-                                    <input type="text" id="new-p-name" required class="w-full border-2 border-gray-100 rounded-3xl p-5 font-bold focus:border-green-500 focus:outline-none bg-gray-50">
+                                    <label class="block font-black mb-3 text-gray-700 dark:text-gray-300">اسم المنتج</label>
+                                    <input type="text" id="new-p-name" required class="w-full border-2 border-gray-100 dark:border-slate-800 rounded-3xl p-5 font-bold focus:border-green-500 focus:outline-none bg-gray-50 dark:bg-slate-800 dark:text-white">
                                 </div>
                                 <div>
-                                    <label class="block font-black mb-3 text-gray-700">السعر (MAD)</label>
-                                    <input type="number" id="new-p-price" required class="w-full border-2 border-gray-100 rounded-3xl p-5 font-bold focus:border-green-500 focus:outline-none bg-gray-50">
+                                    <label class="block font-black mb-3 text-gray-700 dark:text-gray-300">السعر (MAD)</label>
+                                    <input type="number" id="new-p-price" required class="w-full border-2 border-gray-100 dark:border-slate-800 rounded-3xl p-5 font-bold focus:border-green-500 focus:outline-none bg-gray-50 dark:bg-slate-800 dark:text-white">
                                 </div>
                             </div>
                             <div>
-                                <label class="block font-black mb-3 text-gray-700">القسم</label>
-                                <select id="new-p-cat" class="w-full border-2 border-gray-100 rounded-3xl p-5 font-bold focus:border-green-500 focus:outline-none bg-white">
+                                <label class="block font-black mb-3 text-gray-700 dark:text-gray-300">القسم</label>
+                                <select id="new-p-cat" class="w-full border-2 border-gray-100 dark:border-slate-800 rounded-3xl p-5 font-bold focus:border-green-500 focus:outline-none bg-white dark:bg-slate-800 dark:text-white">
                                     <option value="electronics">إلكترونيات</option>
                                     <option value="home">منزلية</option>
                                     <option value="cars">سيارات</option>
@@ -414,20 +422,20 @@ function renderDashboard(container: HTMLElement) {
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
-                                    <label class="block font-black mb-3 text-gray-700 text-lg">الصورة الرئيسية</label>
-                                    <label class="flex flex-col items-center justify-center w-full h-40 border-4 border-gray-100 border-dashed rounded-[40px] cursor-pointer bg-gray-50 hover:bg-green-50 transition relative overflow-hidden group">
+                                    <label class="block font-black mb-3 text-gray-700 dark:text-gray-300 text-lg">الصورة الرئيسية</label>
+                                    <label class="flex flex-col items-center justify-center w-full h-40 border-4 border-gray-100 dark:border-slate-800 border-dashed rounded-[40px] cursor-pointer bg-gray-50 dark:bg-slate-800/50 hover:bg-green-50 dark:hover:bg-slate-800 transition relative overflow-hidden group">
                                         <div id="main-preview" class="flex flex-col items-center justify-center p-4 text-center">
-                                            <i data-lucide="image" class="w-12 h-12 text-gray-300 mb-2 group-hover:text-green-400 transition"></i>
+                                            <i data-lucide="image" class="w-12 h-12 text-gray-300 dark:text-slate-700 mb-2 group-hover:text-green-400 transition"></i>
                                             <p class="text-sm text-gray-400 font-black">رفع الصورة الرئيسية</p>
                                         </div>
                                         <input type="file" id="main-image-input" class="hidden" accept="image/*" onchange="window.handleImageUpload(event, 'main-preview')">
                                     </label>
                                 </div>
                                 <div>
-                                    <label class="block font-black mb-3 text-gray-700 text-lg">صور المعرض (متعددة)</label>
-                                    <label class="flex flex-col items-center justify-center w-full h-40 border-4 border-gray-100 border-dashed rounded-[40px] cursor-pointer bg-gray-50 hover:bg-green-50 transition group overflow-hidden">
+                                    <label class="block font-black mb-3 text-gray-700 dark:text-gray-300 text-lg">صور المعرض (متعددة)</label>
+                                    <label class="flex flex-col items-center justify-center w-full h-40 border-4 border-gray-100 dark:border-slate-800 border-dashed rounded-[40px] cursor-pointer bg-gray-50 dark:bg-slate-800/50 hover:bg-green-50 dark:hover:bg-slate-800 transition group overflow-hidden">
                                         <div id="multi-preview" class="flex flex-wrap gap-2 p-4 justify-center items-center overflow-auto max-h-full">
-                                            <i data-lucide="camera" class="w-12 h-12 text-gray-300 mb-2 group-hover:text-green-400 transition"></i>
+                                            <i data-lucide="camera" class="w-12 h-12 text-gray-300 dark:text-slate-700 mb-2 group-hover:text-green-400 transition"></i>
                                             <p class="text-sm text-gray-400 font-black w-full text-center">رفع صور إضافية</p>
                                         </div>
                                         <input type="file" id="multi-image-input" multiple class="hidden" accept="image/*" onchange="window.handleMultipleImagesUpload(event)">
@@ -435,24 +443,24 @@ function renderDashboard(container: HTMLElement) {
                                 </div>
                             </div>
                             <div>
-                                <label class="block font-black mb-3 text-gray-700">وصف المنتج (مميزاته، مواصفاته)</label>
-                                <textarea id="new-p-desc" rows="6" required class="w-full border-2 border-gray-100 rounded-[40px] p-8 font-bold focus:border-green-500 focus:outline-none bg-gray-50" placeholder="اشرح المنتج هنا..."></textarea>
+                                <label class="block font-black mb-3 text-gray-700 dark:text-gray-300">وصف المنتج (مميزاته، مواصفاته)</label>
+                                <textarea id="new-p-desc" rows="6" required class="w-full border-2 border-gray-100 dark:border-slate-800 rounded-[40px] p-8 font-bold focus:border-green-500 focus:outline-none bg-gray-50 dark:bg-slate-800 dark:text-white" placeholder="اشرح المنتج هنا..."></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-black text-white py-6 rounded-3xl font-black text-2xl hover:bg-gray-800 shadow-2xl transition transform hover:scale-[1.01]">حفظ وعرض المنتج في المتجر</button>
+                            <button type="submit" class="w-full bg-black dark:bg-green-600 text-white py-6 rounded-3xl font-black text-2xl hover:bg-gray-800 dark:hover:bg-green-700 shadow-2xl transition transform hover:scale-[1.01]">حفظ وعرض المنتج في المتجر</button>
                         </form>
                     </div>
 
-                    <div class="bg-white p-12 rounded-[50px] border shadow-sm">
-                        <h2 class="text-3xl font-black mb-10">إدارة المعروضات الحالية</h2>
+                    <div class="bg-white dark:bg-slate-900 p-12 rounded-[50px] border dark:border-slate-800 shadow-sm">
+                        <h2 class="text-3xl font-black mb-10 dark:text-white">إدارة المعروضات الحالية</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             ${products.map((p: any) => `
-                                <div class="flex items-center gap-6 border-2 border-gray-50 p-6 rounded-[35px] bg-gray-50 hover:border-red-100 transition relative group">
-                                    <img src="${p.image}" class="w-20 h-20 object-cover rounded-[20px] shadow-sm border-2 border-white">
+                                <div class="flex items-center gap-6 border-2 border-gray-50 dark:border-slate-800 p-6 rounded-[35px] bg-gray-50 dark:bg-slate-800 group">
+                                    <img src="${p.image}" class="w-20 h-20 object-cover rounded-[20px] shadow-sm border-2 border-white dark:border-slate-700">
                                     <div class="flex-grow">
-                                        <div class="font-black text-xl text-gray-900 mb-1 line-clamp-1">${p.name}</div>
-                                        <div class="text-green-600 font-black">${p.price.toLocaleString()} MAD</div>
+                                        <div class="font-black text-xl text-gray-900 dark:text-white mb-1 line-clamp-1">${p.name}</div>
+                                        <div class="text-green-600 dark:text-green-400 font-black">${p.price.toLocaleString()} MAD</div>
                                     </div>
-                                    <button onclick="window.deleteProduct('${p.id}')" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white p-4 rounded-2xl transition shadow-sm"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                                    <button onclick="window.deleteProduct('${p.id}')" class="bg-red-50 dark:bg-red-900/30 text-red-500 p-4 rounded-2xl transition shadow-sm hover:bg-red-500 hover:text-white"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                                 </div>
                             `).join('')}
                         </div>
@@ -470,36 +478,31 @@ window.handleImageUpload = async (event: Event, targetId: string) => {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
         const b64 = await fileToBase64(file);
-        tempMainImage = b64;
         const preview = document.getElementById(targetId);
         if (preview) {
             preview.innerHTML = `<img src="${b64}" class="w-full h-full object-cover rounded-[30px]">`;
         }
+        // Store for final submission
+        (window as any).tempMainImage = b64;
     }
 };
 
 window.handleMultipleImagesUpload = async (event: Event) => {
     const files = (event.target as HTMLInputElement).files;
     if (files) {
-        tempAdditionalImages = [];
+        const b64Array: string[] = [];
         const preview = document.getElementById('multi-preview');
         if (preview) preview.innerHTML = '';
         
         for (let i = 0; i < files.length; i++) {
             const b64 = await fileToBase64(files[i]);
-            tempAdditionalImages.push(b64);
+            b64Array.push(b64);
             const img = document.createElement('img');
             img.src = b64;
-            img.className = 'w-12 h-12 object-cover rounded-xl border-2 border-white shadow-sm';
+            img.className = 'w-12 h-12 object-cover rounded-xl border-2 border-white dark:border-slate-700 shadow-sm';
             if (preview) preview.appendChild(img);
         }
-        
-        if (preview && files.length > 0) {
-           const info = document.createElement('p');
-           info.className = 'w-full text-center text-xs text-green-600 font-black mt-1';
-           info.innerText = `تم رفع ${files.length} صور`;
-           preview.appendChild(info);
-        }
+        (window as any).tempAdditionalImages = b64Array;
     }
 };
 
@@ -509,8 +512,9 @@ window.addNewProduct = (event: Event) => {
     const price = parseInt((document.getElementById('new-p-price') as HTMLInputElement).value);
     const cat = (document.getElementById('new-p-cat') as HTMLSelectElement).value;
     const desc = (document.getElementById('new-p-desc') as HTMLTextAreaElement).value;
+    const mainImg = (window as any).tempMainImage;
 
-    if (!tempMainImage) {
+    if (!mainImg) {
         alert('يرجى تحميل صورة رئيسية للمنتج أولاً');
         return;
     }
@@ -520,20 +524,15 @@ window.addNewProduct = (event: Event) => {
         name,
         price,
         category: cat,
-        image: tempMainImage,
-        images: tempAdditionalImages,
+        image: mainImg,
+        images: (window as any).tempAdditionalImages || [],
         desc
     };
 
     products.push(newProduct);
     saveProducts();
     alert('تمت إضافة المنتج بنجاح وهو متاح للزوار الآن!');
-    
-    // إفراغ الحقول والذاكرة المؤقتة
-    tempMainImage = '';
-    tempAdditionalImages = [];
-    (document.getElementById('add-product-form') as HTMLFormElement).reset();
-    renderDashboard(document.getElementById('app')!);
+    window.location.hash = '#/';
 };
 
 window.deleteProduct = (id: string) => {
@@ -550,4 +549,5 @@ window.onhashchange = navigate;
 document.addEventListener('DOMContentLoaded', () => {
     navigate();
     updateCartCount();
+    updateThemeIcon();
 });

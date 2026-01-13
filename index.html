@@ -35,6 +35,9 @@
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
+        .dark ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
         ::-webkit-scrollbar-thumb {
             background: #10b981;
             border-radius: 10px;
@@ -51,10 +54,18 @@
   }
 }
 </script>
+<script>
+    // Initial theme check
+    if (localStorage.getItem('elite_theme') === 'dark' || (!('elite_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+</script>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-gray-100 transition-colors duration-300">
     <!-- Navigation -->
-    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+    <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100 dark:border-slate-800 transition-colors">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex items-center gap-4">
@@ -64,17 +75,20 @@
                     </a>
                 </div>
                 <div class="hidden md:flex gap-10 font-black text-lg">
-                    <a href="#/" class="hover:text-green-600 transition-colors">الرئيسية</a>
-                    <a href="#/category/electronics" class="hover:text-green-600 transition-colors">إلكترونيات</a>
-                    <a href="#/category/home" class="hover:text-green-600 transition-colors">منزلية</a>
-                    <a href="#/category/cars" class="hover:text-green-600 transition-colors">سيارات</a>
+                    <a href="#/" class="hover:text-green-600 dark:hover:text-green-400 transition-colors">الرئيسية</a>
+                    <a href="#/category/electronics" class="hover:text-green-600 dark:hover:text-green-400 transition-colors">إلكترونيات</a>
+                    <a href="#/category/home" class="hover:text-green-600 dark:hover:text-green-400 transition-colors">منزلية</a>
+                    <a href="#/category/cars" class="hover:text-green-600 dark:hover:text-green-400 transition-colors">سيارات</a>
                 </div>
-                <div class="flex items-center gap-4">
-                    <a href="#/cart" class="relative p-3 bg-gray-50 rounded-2xl hover:bg-green-600 hover:text-white transition-all duration-300 shadow-sm group">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.toggleDarkMode()" class="p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl hover:bg-yellow-100 dark:hover:bg-slate-700 transition-all duration-300 shadow-sm text-gray-600 dark:text-gray-300">
+                        <i id="theme-icon" data-lucide="moon" class="w-6 h-6"></i>
+                    </button>
+                    <a href="#/cart" class="relative p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl hover:bg-green-600 hover:text-white dark:hover:bg-green-500 transition-all duration-300 shadow-sm group">
                         <i data-lucide="shopping-cart" class="w-7 h-7"></i>
-                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-[12px] font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-white hidden">0</span>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-[12px] font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 hidden">0</span>
                     </a>
-                    <a href="#/dashboard" class="p-3 bg-gray-50 rounded-2xl hover:bg-black hover:text-white transition-all duration-300 shadow-sm">
+                    <a href="#/dashboard" class="p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white transition-all duration-300 shadow-sm">
                         <i data-lucide="layout-dashboard" class="w-7 h-7"></i>
                     </a>
                 </div>
@@ -86,7 +100,7 @@
     <main id="app" class="min-h-screen pb-20"></main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-20 mt-auto">
+    <footer class="bg-gray-900 dark:bg-black text-white py-20 mt-auto transition-colors">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-16 text-right">
             <div>
                 <h3 class="text-3xl font-black mb-6 flex items-center gap-2"><i data-lucide="shopping-bag" class="text-green-500"></i> متجر النخبة</h3>
@@ -95,9 +109,9 @@
             <div>
                 <h3 class="text-2xl font-black mb-8 border-r-4 border-green-500 pr-4">روابط سريعة</h3>
                 <ul class="space-y-4 text-gray-400 text-lg font-bold">
-                    <li><a href="#/category/electronics" class="hover:text-white flex items-center gap-2"><i data-lucide="chevron-left" class="w-4 h-4"></i> إلكترونيات</a></li>
-                    <li><a href="#/category/home" class="hover:text-white flex items-center gap-2"><i data-lucide="chevron-left" class="w-4 h-4"></i> منتجات منزلية</a></li>
-                    <li><a href="#/category/cars" class="hover:text-white flex items-center gap-2"><i data-lucide="chevron-left" class="w-4 h-4"></i> سيارات</a></li>
+                    <li><a href="#/category/electronics" class="hover:text-white flex items-center gap-2 transition"><i data-lucide="chevron-left" class="w-4 h-4 text-green-500"></i> إلكترونيات</a></li>
+                    <li><a href="#/category/home" class="hover:text-white flex items-center gap-2 transition"><i data-lucide="chevron-left" class="w-4 h-4 text-green-500"></i> منتجات منزلية</a></li>
+                    <li><a href="#/category/cars" class="hover:text-white flex items-center gap-2 transition"><i data-lucide="chevron-left" class="w-4 h-4 text-green-500"></i> سيارات</a></li>
                 </ul>
             </div>
             <div>
@@ -105,13 +119,13 @@
                 <p class="text-gray-400 text-lg font-bold mb-4 flex items-center gap-3"><i data-lucide="phone-call" class="text-green-500"></i> خدمة الزبناء: 0612345678</p>
                 <p class="text-gray-400 text-lg font-bold flex items-center gap-3"><i data-lucide="truck" class="text-green-500"></i> توصيل سريع لجميع المدن</p>
                 <div class="mt-8 flex gap-4">
-                    <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-blue-600 transition cursor-pointer"><i data-lucide="facebook"></i></div>
-                    <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-pink-600 transition cursor-pointer"><i data-lucide="instagram"></i></div>
-                    <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-blue-400 transition cursor-pointer"><i data-lucide="twitter"></i></div>
+                    <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-blue-600 transition cursor-pointer shadow-lg"><i data-lucide="facebook"></i></div>
+                    <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-pink-600 transition cursor-pointer shadow-lg"><i data-lucide="instagram"></i></div>
+                    <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-blue-400 transition cursor-pointer shadow-lg"><i data-lucide="twitter"></i></div>
                 </div>
             </div>
         </div>
-        <div class="border-t border-gray-800 max-w-7xl mx-auto mt-16 pt-10 text-center text-gray-500 font-bold">
+        <div class="border-t border-gray-800 dark:border-slate-900 max-w-7xl mx-auto mt-16 pt-10 text-center text-gray-500 font-bold">
             <p>© 2024 متجر النخبة المغربي. جميع الحقوق محفوظة.</p>
         </div>
     </footer>
