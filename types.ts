@@ -8,6 +8,7 @@ export interface Product {
   price: number;
   category: Category;
   image: string;
+  gallery?: string[]; // حقل جديد لصور المعرض
   description: string;
 }
 
@@ -26,7 +27,7 @@ export interface PixelSettings {
   facebookPixelId: string;
   googleAnalyticsId: string;
   tiktokPixelId: string;
-  textEvent: string; // الحقل الجديد لاسم الحدث
+  textEvent: string;
 }
 
 export interface SiteSettings {
@@ -34,7 +35,7 @@ export interface SiteSettings {
   nameServer: string;
   googleSheetsUrl: string;
   pixels: PixelSettings;
-  adminPassword?: string; // كلمة سر لوحة التحكم
+  adminPassword?: string;
 }
 
 export interface CartItem extends Product {

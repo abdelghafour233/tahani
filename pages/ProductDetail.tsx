@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product } from '../types';
 import { ShoppingCart, Heart, Share2, CheckCircle2, ShieldCheck, Truck, Zap } from 'lucide-react';
@@ -12,6 +12,9 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const product = products.find(p => p.id === id);
+  
+  // حالة الصورة المختارة حالياً
+  const [selectedImage, setSelectedImage] = useState(product?.image || '');
 
   if (!product) {
     return <div className="text-center py-20 dark:text-gray-400">المنتج غير موجود</div>;
@@ -21,14 +24,31 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
     navigate(`/checkout/${product.id}`);
   };
 
+  const galleryImages = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Gallery */}
-        <div className="space-y-4">
-          <div className="rounded-[40px] overflow-hidden border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl">
-            <img src={product.image} alt={product.name} className="w-full h-auto object-cover" />
+        <div className="space-y-6">
+          <div className="rounded-[40px] overflow-hidden border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl transition-all duration-500">
+            <img src={selectedImage || product.image} alt={product.name} className="w-full h-auto object-cover aspect-square" />
           </div>
+          
+          {/* Thumbnails */}
+          {galleryImages.length > 1 && (
+            <div className="grid grid-cols-4 gap-4">
+              {galleryImages.map((img, index) => (
+                <button 
+                  key={index}
+                  onClick={() => setSelectedImage(img)}
+                  className={`rounded-2xl overflow-hidden border-2 transition-all ${selectedImage === img ? 'border-green-500 scale-105 shadow-lg' : 'border-gray-100 dark:border-slate-800 opacity-60 hover:opacity-100'}`}
+                >
+                  <img src={img} alt={`${product.name} ${index}`} className="w-full h-24 object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}

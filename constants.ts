@@ -9,6 +9,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 199,
     category: 'electronics',
     image: 'http://tmpfiles.org/dl/19659152/storimage_11ezmjoz6.png',
+    gallery: [
+      'http://tmpfiles.org/dl/19659152/storimage_11ezmjoz6.png',
+      'http://tmpfiles.org/dl/19663954/storimage_r5x6ggeon.png'
+    ],
     description: `⭐⭐⭐⭐⭐ نظارات ذكية عالية الجودة – تجربة استثنائية بكل المقاييس
 
 استمتع بأحدث ما توصلت إليه التكنولوجيا مع نظارات ذكية تجمع بين الأناقة والأداء العالي. منتج مصمم بعناية ليوفر لك الراحة، العملية، والمظهر العصري في آنٍ واحد.
@@ -32,11 +36,11 @@ export const INITIAL_SETTINGS: SiteSettings = {
   domain: 'myshop.ma',
   nameServer: 'ns1.example.com, ns2.example.com',
   googleSheetsUrl: '',
-  adminPassword: '0631368627', // كلمة السر الجديدة المطلوبة
+  adminPassword: '0631368627',
   pixels: {
     facebookPixelId: '',
     googleAnalyticsId: '',
     tiktokPixelId: '',
-    textEvent: 'Purchase' // الحدث الافتراضي
+    textEvent: 'Purchase'
   }
 };
