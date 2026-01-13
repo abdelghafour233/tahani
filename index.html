@@ -1,32 +1,95 @@
 
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر النخبة - تسوق بأمان</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-      body {
-        font-family: 'Cairo', sans-serif;
-      }
+        body { font-family: 'Cairo', sans-serif; }
+        .product-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        .loader { border-top-color: #10b981; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
     "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-900">
-    <div id="root"></div>
-  </body>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-4">
+                    <a href="#/" class="text-2xl font-black text-green-600 flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                        <span>متجر النخبة</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex gap-8 font-bold">
+                    <a href="#/" class="hover:text-green-600 transition">الرئيسية</a>
+                    <a href="#/category/electronics" class="hover:text-green-600 transition">إلكترونيات</a>
+                    <a href="#/category/home" class="hover:text-green-600 transition">منزلية</a>
+                    <a href="#/category/cars" class="hover:text-green-600 transition">سيارات</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="#/cart" class="relative p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full hidden">0</span>
+                    </a>
+                    <a href="#/dashboard" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                        <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="app" class="min-h-screen pb-20"></main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-right">
+            <div>
+                <h3 class="text-xl font-bold mb-4">متجر النخبة</h3>
+                <p class="text-gray-400">وجهتكم الأولى للتسوق في المغرب. جودة عالية وأفضل الأسعار.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold mb-4">روابط سريعة</h3>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="#/category/electronics" class="hover:text-white">إلكترونيات</a></li>
+                    <li><a href="#/category/home" class="hover:text-white">منتجات منزلية</a></li>
+                    <li><a href="#/category/cars" class="hover:text-white">سيارات</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold mb-4">الدعم الفني</h3>
+                <p class="text-gray-400">نحن هنا لمساعدتكم 24/7.</p>
+                <p class="mt-2 font-bold text-green-400">0612345678</p>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+            <p>© 2024 متجر النخبة. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="./index.tsx" type="module"></script>
+</body>
 </html>
