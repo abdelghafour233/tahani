@@ -27,8 +27,7 @@ const MOROCCAN_CITIES = [
 // --- إدارة البيانات (تخزين محلي) ---
 const INITIAL_PRODUCTS = [
     { id: 'e1', name: 'هاتف ذكي ألترا 2024', category: 'electronics', price: 4500, image: 'https://picsum.photos/seed/phone/600/400', images: [], desc: 'أحدث هاتف ذكي بمواصفات عالمية وكاميرا احترافية.' },
-    { id: 'h1', name: 'ماكينة تحضير القهوة', category: 'home', price: 1200, image: 'https://picsum.photos/seed/coffee/600/400', images: [], desc: 'استمتع بأفضل كوب قهوة في منزلك كل صباح.' },
-    { id: 'c1', name: 'سيارة سيدان اقتصادية', category: 'cars', price: 185000, image: 'https://picsum.photos/seed/car1/600/400', images: [], desc: 'سيارة عائلية مثالية باستهلاك وقود منخفض جداً.' }
+    { id: 'h1', name: 'ماكينة تحضير القهوة', category: 'home', price: 1200, image: 'https://picsum.photos/seed/coffee/600/400', images: [], desc: 'استمتع بأفضل كوب قهوة في منزلك كل صباح.' }
 ];
 
 let products = JSON.parse(localStorage.getItem('elite_products') || JSON.stringify(INITIAL_PRODUCTS));
@@ -299,12 +298,12 @@ function renderCheckout(container: HTMLElement) {
                 
                 <div>
                     <label class="block font-black text-gray-800 mb-3 text-lg">الاسم الكامل</label>
-                    <input type="text" id="cust-name" required placeholder="مثال: أحمد العلمي" class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all">
+                    <input type="text" id="cust-name" required placeholder="" class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all">
                 </div>
                 
                 <div>
                     <label class="block font-black text-gray-800 mb-3 text-lg">رقم الهاتف</label>
-                    <input type="tel" id="cust-phone" required placeholder="06XXXXXXXX" class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all">
+                    <input type="tel" id="cust-phone" required placeholder="" class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all">
                 </div>
                 
                 <div>
@@ -521,14 +520,6 @@ window.deleteProduct = (id: string) => {
         saveProducts();
         renderDashboard(document.getElementById('app')!);
     }
-};
-
-window.saveSettings = () => {
-    settings.pixels.fb = (document.getElementById('fb-px') as HTMLInputElement).value;
-    settings.pixels.ga = (document.getElementById('ga-px') as HTMLInputElement).value;
-    settings.pixels.tt = (document.getElementById('tt-px') as HTMLInputElement).value;
-    localStorage.setItem('elite_settings', JSON.stringify(settings));
-    alert('تم حفظ إعدادات التتبع بنجاح!');
 };
 
 // --- التهيئة عند التحميل ---
