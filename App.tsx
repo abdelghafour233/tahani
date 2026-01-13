@@ -206,7 +206,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h3 className="text-xl font-black mb-6 border-r-4 border-green-500 pr-4">تواصل معنا</h3>
-              <p className="text-gray-400 font-bold mb-2">اتصل بنا: 0612345678</p>
+              <p className="text-gray-400 font-bold mb-2">اتصل بنا: 0649075664</p>
               <p className="text-green-400 font-bold italic">توصيل مجاني لجميع المدن المغربية</p>
             </div>
           </div>
