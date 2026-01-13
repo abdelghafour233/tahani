@@ -104,7 +104,7 @@ const App: React.FC = () => {
                 </button>
                 <Link to="/" className="text-2xl font-black text-green-600 flex items-center gap-2">
                   <ShoppingBag className="w-8 h-8" />
-                  <span className="hidden sm:inline">متجر النخبة</span>
+                  <span className="hidden sm:inline">berrima.store</span>
                 </Link>
               </div>
 
@@ -193,7 +193,7 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-right">
             <div>
               <h3 className="text-2xl font-black mb-6 flex items-center justify-center md:justify-start gap-2">
-                <ShoppingBag className="text-green-500" /> متجر النخبة
+                <ShoppingBag className="text-green-500" /> berrima.store
               </h3>
               <p className="text-gray-400 text-lg">وجهتكم الموثوقة للتسوق في المغرب. نوفر لكم أجود المنتجات مع خدمة الدفع عند الاستلام.</p>
             </div>
@@ -211,7 +211,7 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="border-t border-gray-800 dark:border-slate-900 mt-12 pt-8 text-center text-gray-500 font-bold">
-            <p>© 2024 متجر النخبة المغربي. جميع الحقوق محفوظة.</p>
+            <p>© 2024 berrima.store. جميع الحقوق محفوظة.</p>
           </div>
         </footer>
       </div>
