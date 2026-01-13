@@ -26,6 +26,7 @@ export interface PixelSettings {
   facebookPixelId: string;
   googleAnalyticsId: string;
   tiktokPixelId: string;
+  textEvent: string; // الحقل الجديد لاسم الحدث
 }
 
 export interface SiteSettings {
@@ -33,6 +34,7 @@ export interface SiteSettings {
   nameServer: string;
   googleSheetsUrl: string;
   pixels: PixelSettings;
+  adminPassword?: string; // كلمة سر لوحة التحكم
 }
 
 export interface CartItem extends Product {

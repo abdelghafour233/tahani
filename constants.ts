@@ -32,9 +32,11 @@ export const INITIAL_SETTINGS: SiteSettings = {
   domain: 'myshop.ma',
   nameServer: 'ns1.example.com, ns2.example.com',
   googleSheetsUrl: '',
+  adminPassword: 'admin', // كلمة السر الافتراضية
   pixels: {
     facebookPixelId: '',
     googleAnalyticsId: '',
-    tiktokPixelId: ''
+    tiktokPixelId: '',
+    textEvent: 'Purchase' // الحدث الافتراضي
   }
 };

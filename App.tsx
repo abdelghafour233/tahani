@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Menu, X, Moon, Sun } from 'lucide-react';
+import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { LayoutDashboard, ShoppingBag, Menu, X, Moon, Sun, Lock, Eye, EyeOff, Key } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, INITIAL_SETTINGS } from './constants';
 
@@ -23,6 +23,12 @@ const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return document.documentElement.classList.contains('dark');
   });
+  
+  // شؤون الدخول للوحة التحكم
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   useEffect(() => {
     const savedOrders = localStorage.getItem('site_orders');
@@ -57,6 +63,16 @@ const App: React.FC = () => {
     setOrders(updatedOrders);
     localStorage.setItem('site_orders', JSON.stringify(updatedOrders));
     return newOrder.id;
+  };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput === (settings.adminPassword || 'admin')) {
+      setIsAuthenticated(true);
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+    }
   };
 
   return (
@@ -115,14 +131,53 @@ const App: React.FC = () => {
             <Route 
               path="/dashboard/*" 
               element={
-                <DashboardPage 
-                  orders={orders} 
-                  settings={settings} 
-                  setSettings={setSettings} 
-                  products={products}
-                  setProducts={setProducts}
-                  setOrders={setOrders}
-                />
+                isAuthenticated ? (
+                  <DashboardPage 
+                    orders={orders} 
+                    settings={settings} 
+                    setSettings={setSettings} 
+                    products={products}
+                    setProducts={setProducts}
+                    setOrders={setOrders}
+                  />
+                ) : (
+                  <div className="min-h-[60vh] flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-md">
+                      <div className="flex justify-center mb-6">
+                        <div className="bg-green-100 dark:bg-green-900/30 p-4 rounded-full text-green-600">
+                          <Lock size={40} />
+                        </div>
+                      </div>
+                      <h2 className="text-2xl font-black text-center mb-8">تسجيل الدخول للإدارة</h2>
+                      <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="relative">
+                          <label className="block text-sm font-bold mb-2 text-gray-400">كلمة المرور</label>
+                          <div className="relative">
+                            <input 
+                              type={showPassword ? "text" : "password"}
+                              className={`w-full bg-gray-50 dark:bg-slate-800 border-2 rounded-2xl px-5 py-4 pl-12 focus:outline-none transition ${loginError ? 'border-red-400' : 'border-transparent focus:border-green-500'}`}
+                              placeholder="أدخل كلمة السر"
+                              value={passwordInput}
+                              onChange={(e) => setPasswordInput(e.target.value)}
+                            />
+                            <button 
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-600 transition"
+                            >
+                              {showPassword ? <EyeOff size={24} /> : <Eye size={24} />}
+                            </button>
+                            <Key className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" size={24} />
+                          </div>
+                          {loginError && <p className="text-red-500 text-sm mt-2 font-bold">كلمة السر غير صحيحة!</p>}
+                        </div>
+                        <button className="w-full bg-green-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-green-700 transition shadow-xl shadow-green-100 dark:shadow-none">
+                          دخول للوحة التحكم
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                )
               } 
             />
           </Routes>
