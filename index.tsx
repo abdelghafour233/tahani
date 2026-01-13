@@ -15,6 +15,14 @@ declare global {
   }
 }
 
+// --- قائمة المدن المغربية ---
+const MOROCCAN_CITIES = [
+    "الدار البيضاء", "الرباط", "مراكش", "طنجة", "فاس", "أكادير", "مكناس", "وجدة", 
+    "القنيطرة", "تطوان", "تمارة", "آسفي", "العيون", "المحمدية", "بني ملال", 
+    "الجديدة", "تازة", "الناظور", "سطات", "القصر الكبير", "العرائش", "الخميسات", 
+    "تزنيت", "برشيد", "وادي زم", "الفقيه بن صالح", "تاوريرت", "بركان", "سيدي سليمان"
+];
+
 // --- إدارة البيانات (تخزين محلي) ---
 const INITIAL_PRODUCTS = [
     { id: 'e1', name: 'هاتف ذكي ألترا 2024', category: 'electronics', price: 4500, image: 'https://picsum.photos/seed/phone/600/400', images: [], desc: 'أحدث هاتف ذكي بمواصفات عالمية وكاميرا احترافية.' },
@@ -270,8 +278,8 @@ function renderCheckout(container: HTMLElement) {
     const total = cart.reduce((s: any, i: any) => s + (i.price * i.qty), 0);
     container.innerHTML = `
         <div class="max-w-xl mx-auto px-4 py-16">
-            <h1 class="text-4xl font-black mb-4 text-center">إتمام الطلب</h1>
-            <p class="text-center text-gray-500 mb-12 font-bold italic">املأ معلوماتك لنتواصل معك وتأكيد الطلب</p>
+            <h1 class="text-4xl font-black mb-4 text-center text-gray-900">إتمام الطلب</h1>
+            <p class="text-center text-gray-500 mb-12 font-bold italic">املأ معلوماتك لنتواصل معك وتأكيد التوصيل المجاني</p>
             
             <form id="checkout-form" class="space-y-8 bg-white p-12 rounded-[50px] border shadow-2xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 left-0 h-2 bg-green-600"></div>
@@ -288,17 +296,20 @@ function renderCheckout(container: HTMLElement) {
                 
                 <div>
                     <label class="block font-black text-gray-800 mb-3 text-lg">المدينة</label>
-                    <input type="text" id="cust-city" required placeholder="مثال: الدار البيضاء" class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all">
+                    <select id="cust-city" required class="w-full border-2 border-gray-100 rounded-3xl p-5 text-xl font-bold focus:border-green-500 focus:outline-none bg-gray-50 transition-all appearance-none">
+                        <option value="" disabled selected>اختر مدينتك</option>
+                        ${MOROCCAN_CITIES.map(city => `<option value="${city}">${city}</option>`).join('')}
+                    </select>
                 </div>
                 
-                <div class="bg-orange-50 p-6 rounded-3xl text-orange-800 text-lg font-black border border-orange-100 flex items-center gap-4">
-                    <div class="bg-orange-200 p-2 rounded-xl"><i data-lucide="info" class="w-6 h-6"></i></div>
-                    تنبيه: الدفع عند الاستلام والتوصيل مجاني
+                <div class="bg-green-50 p-6 rounded-3xl text-green-800 text-lg font-black border border-green-100 flex items-center gap-4">
+                    <div class="bg-green-200 p-2 rounded-xl text-green-700"><i data-lucide="truck" class="w-6 h-6"></i></div>
+                    تنبيه: التوصيل مجاني لجميع هذه المدن
                 </div>
 
                 <div class="border-t-2 border-dashed pt-8 mb-4">
                     <div class="flex justify-between items-center text-2xl font-black text-gray-900 px-2">
-                        <span>المبلغ الإجمالي:</span>
+                        <span>المبلغ المستحق:</span>
                         <span class="text-green-700">${total.toLocaleString()} MAD</span>
                     </div>
                 </div>
@@ -308,7 +319,7 @@ function renderCheckout(container: HTMLElement) {
                 </button>
             </form>
             
-            <p class="mt-10 text-center text-gray-400 font-bold text-sm">عملية شراء آمنة 100% - متجر النخبة المغربي</p>
+            <p class="mt-10 text-center text-gray-400 font-bold text-sm">عملية شراء آمنة 100% - الدفع عند الاستلام</p>
         </div>
     `;
 
@@ -319,7 +330,7 @@ function renderCheckout(container: HTMLElement) {
             const order = {
                 id: 'ORD-' + Date.now(),
                 name: (document.getElementById('cust-name') as HTMLInputElement).value,
-                city: (document.getElementById('cust-city') as HTMLInputElement).value,
+                city: (document.getElementById('cust-city') as HTMLSelectElement).value,
                 phone: (document.getElementById('cust-phone') as HTMLInputElement).value,
                 total: total,
                 date: new Date().toLocaleDateString('ar-MA')
