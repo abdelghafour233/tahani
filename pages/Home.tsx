@@ -1,4 +1,5 @@
 
+// Add missing React import
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
@@ -12,9 +13,16 @@ const Home: React.FC<HomeProps> = ({ products }) => {
   return (
     <div className="space-y-10 md:space-y-16 pb-16">
       {/* Hero Section */}
-      <section className="relative h-[400px] md:h-[550px] bg-green-700 text-white flex items-center overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=1200" alt="Hero background" className="w-full h-full object-cover" />
+      <section className="relative h-[400px] md:h-[550px] bg-gradient-to-r from-green-700 via-green-600 to-emerald-800 text-white flex items-center overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M0 0 L100 0 L100 100 L0 100 Z" fill="url(#grid)" />
+            <defs>
+              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+          </svg>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
           <h1 className="text-3xl md:text-7xl font-black mb-4 md:mb-6 drop-shadow-2xl leading-tight">أفضل العروض في المغرب</h1>
@@ -79,8 +87,8 @@ const Home: React.FC<HomeProps> = ({ products }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {products.map(product => (
             <Link key={product.id} to={`/product/${product.id}`} className="group bg-white dark:bg-slate-900 rounded-[25px] md:rounded-[35px] overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <div className="relative aspect-square">
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
+              <div className="relative aspect-square bg-gray-50 dark:bg-slate-800 flex items-center justify-center p-4">
+                <img src={product.image} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition duration-700" />
                 <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-0.5 rounded-full text-xs font-black shadow-lg">
                   جديد
                 </div>

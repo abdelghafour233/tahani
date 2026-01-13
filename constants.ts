@@ -11,8 +11,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://tmpfiles.org/dl/19667456/storimage_9pbbtke24.png',
     gallery: [
       'https://tmpfiles.org/dl/19667456/storimage_9pbbtke24.png',
-      'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=1000',
-      'https://images.unsplash.com/photo-1556656793-062ff987b50d?auto=format&fit=crop&q=80&w=1000'
+      'https://tmpfiles.org/dl/19667793/storimage_jxqtuiwxg.png'
     ],
     rating: 5,
     reviewsCount: 184,
