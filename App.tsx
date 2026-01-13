@@ -11,6 +11,7 @@ import CategoryPage from './pages/Category';
 import ProductDetailPage from './pages/ProductDetail';
 import CheckoutPage from './pages/Checkout';
 import DashboardPage from './pages/Dashboard';
+import PrivacyPolicyPage from './pages/PrivacyPolicy';
 
 const App: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -150,6 +151,7 @@ const App: React.FC = () => {
             <Route path="/category/:type" element={<CategoryPage products={products} />} />
             <Route path="/product/:id" element={<ProductDetailPage products={products} />} />
             <Route path="/checkout/:productId" element={<CheckoutPage products={products} placeOrder={placeOrder} />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route 
               path="/dashboard/*" 
               element={
@@ -217,6 +219,7 @@ const App: React.FC = () => {
               <h3 className="text-xl font-black mb-6 border-r-4 border-green-500 pr-4">روابط سريعة</h3>
               <ul className="space-y-3 text-gray-400 font-bold">
                 <li><Link to="/category/electronics" className="hover:text-green-400 transition">إلكترونيات</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-green-400 transition">سياسة الخصوصية</Link></li>
                 <li><Link to="/" className="hover:text-green-400 transition">الرئيسية</Link></li>
               </ul>
             </div>
