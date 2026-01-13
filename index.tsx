@@ -32,7 +32,7 @@ const INITIAL_PRODUCTS = [
         category: 'electronics', 
         price: 199, 
         image: 'http://tmpfiles.org/dl/19659152/storimage_11ezmjoz6.png', 
-        images: [], 
+        images: ['http://tmpfiles.org/dl/19660839/storimage_qhyftoj5v.png'], 
         desc: `⭐⭐⭐⭐⭐ نظارات ذكية عالية الجودة – تجربة استثنائية بكل المقاييس
 
 استمتع بأحدث ما توصلت إليه التكنولوجيا مع نظارات ذكية تجمع بين الأناقة والأداء العالي. منتج مصمم بعناية ليوفر لك الراحة، العملية، والمظهر العصري في آنٍ واحد.
