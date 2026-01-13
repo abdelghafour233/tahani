@@ -8,10 +8,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     nameEn: 'Smart Bluetooth Glasses Pro',
     price: 199,
     category: 'electronics',
-    image: 'https://tmpfiles.org/dl/19667456/storimage_9pbbtke24.png',
+    image: 'http://tmpfiles.org/dl/19688171/storimage_yxevx0pry.png',
     gallery: [
-      'https://tmpfiles.org/dl/19667456/storimage_9pbbtke24.png',
-      'https://tmpfiles.org/dl/19667793/storimage_jxqtuiwxg.png'
+      'http://tmpfiles.org/dl/19688171/storimage_yxevx0pry.png',
+      'https://tmpfiles.org/dl/19667456/storimage_9pbbtke24.png'
     ],
     rating: 5,
     reviewsCount: 184,
@@ -29,6 +29,16 @@ export const INITIAL_PRODUCTS: Product[] = [
 📦 العرض الحالي: توصيل مجاني لجميع مدن المغرب + الدفع عند الاستلام.`
   }
 ];
+
+export const STORE_WHATSAPP_NUMBER = "212649075664";
+
+export const MOROCCAN_CITIES = [
+  "الدار البيضاء", "الرباط", "مراكش", "فاس", "طنجة", "أغادير", "مكناس", "وجدة", 
+  "القنيطرة", "تطوان", "تمارة", "آسفي", "العيون", "المحمدية", "بني ملال", "الجديدة", 
+  "تازة", "الناظور", "سطات", "القصر الكبير", "العرائش", "الخميسات", "تيزنيت", 
+  "برشيد", "وادي زم", "الفقيه بن صالح", "إفران", "الداخلة", "قلعة السراغنة", 
+  "تارودانت", "بركان", "سيدي قاسم", "خريبكة"
+].sort();
 
 export const INITIAL_SETTINGS: SiteSettings = {
   domain: 'berrima.store',

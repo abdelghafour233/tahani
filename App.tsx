@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { LayoutDashboard, ShoppingBag, Menu, X, Moon, Sun, Lock, Eye, EyeOff, Key, MessageCircle } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
-import { INITIAL_PRODUCTS, INITIAL_SETTINGS } from './constants';
+import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER } from './constants';
 
 // Pages
 import HomePage from './pages/Home';
@@ -92,14 +92,12 @@ const App: React.FC = () => {
     }
   };
 
-  const WHATSAPP_NUMBER = "212649075664";
-
   return (
     <Router>
       <div className="min-h-screen flex flex-col font-cairo bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
         {/* WhatsApp Floating Button - Mobile Adjusted */}
         <a 
-          href={`https://wa.me/${WHATSAPP_NUMBER}?text=السلام عليكم، أريد الاستفسار عن منتج في متجركم`}
+          href={`https://wa.me/${STORE_WHATSAPP_NUMBER}?text=السلام عليكم، أريد الاستفسار عن منتج في متجركم`}
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-6 left-6 z-[100] bg-green-500 text-white p-3.5 md:p-4 rounded-full shadow-2xl hover:bg-green-600 transition-all transform hover:scale-110 animate-bounce flex items-center justify-center active:scale-90"
@@ -158,7 +156,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<HomePage products={products} />} />
             <Route path="/category/:type" element={<CategoryPage products={products} />} />
-            <Route path="/product/:id" element={<ProductDetailPage products={products} />} />
+            <Route path="/product/:id" element={<ProductDetailPage products={products} placeOrder={placeOrder} />} />
             <Route path="/checkout/:productId" element={<CheckoutPage products={products} placeOrder={placeOrder} />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/dashboard/*" element={
@@ -210,7 +208,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h3 className="text-lg md:text-xl font-black mb-4 border-r-0 md:border-r-4 border-green-500 pr-0 md:pr-4">تواصل معنا</h3>
-              <p className="text-gray-400 font-bold mb-2 text-sm md:text-base">واتساب: 0649075664</p>
+              <p className="text-gray-400 font-bold mb-2 text-sm md:text-base">واتساب: {STORE_WHATSAPP_NUMBER}</p>
               <p className="text-green-400 font-bold italic text-sm md:text-base">توصيل مجاني لجميع المدن المغربية</p>
             </div>
           </div>

@@ -1,36 +1,107 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product } from '../types';
-import { ShoppingCart, Heart, Share2, CheckCircle2, ShieldCheck, Truck, Zap, Star } from 'lucide-react';
+import { MOROCCAN_CITIES, STORE_WHATSAPP_NUMBER } from '../constants';
+import { 
+  Heart, 
+  Share2, 
+  CheckCircle2, 
+  ShieldCheck, 
+  Truck, 
+  Zap, 
+  Star, 
+  User, 
+  MapPin, 
+  Phone, 
+  MessageSquare, 
+  Minus, 
+  Plus,
+  ArrowDown
+} from 'lucide-react';
 
 interface ProductDetailPageProps {
   products: Product[];
+  placeOrder: (product: Product, quantity: number, data: { name: string, city: string, phone: string }) => string;
 }
 
-const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
+const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOrder }) => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const product = products.find(p => p.id === id);
+  const formRef = useRef<HTMLDivElement>(null);
   
   const [selectedImage, setSelectedImage] = useState(product?.image || '');
+  const [formData, setFormData] = useState({ name: '', city: '', phone: '' });
+  const [quantity, setQuantity] = useState(1);
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   if (!product) {
     return <div className="text-center py-20 dark:text-gray-400">المنتج غير موجود</div>;
   }
 
-  const handleBuyNow = () => {
-    navigate(`/checkout/${product.id}`);
+  const scrollToForm = () => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const total = product.price * quantity;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.city || !formData.phone) {
+      alert("يرجى ملء جميع الخانات المطلوبة");
+      return;
+    }
+    
+    setIsOrdering(true);
+    
+    // Construct WhatsApp Message
+    const message = `*طلب جديد من berrima.store*%0A%0A` +
+      `*المنتج:* ${product.name}%0A` +
+      `*الكمية:* ${quantity}%0A` +
+      `*السعر الإجمالي:* ${total} درهم%0A%0A` +
+      `*معلومات الزبون:*%0A` +
+      `*الاسم:* ${formData.name}%0A` +
+      `*المدينة:* ${formData.city}%0A` +
+      `*الهاتف:* ${formData.phone}%0A%0A` +
+      `يرجى تأكيد الطلب في أقرب وقت.`;
+    
+    const whatsappUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
+
+    setTimeout(() => {
+      placeOrder(product, quantity, formData);
+      setIsSuccess(true);
+      setIsOrdering(false);
+      window.open(whatsappUrl, '_blank');
+      window.scrollTo(0, 0);
+    }, 1200);
   };
 
   const galleryImages = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
 
+  if (isSuccess) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-20 text-center animate-in fade-in duration-700">
+        <div className="mb-10 flex justify-center">
+          <div className="bg-green-100 dark:bg-green-900/30 p-8 rounded-full text-green-600 dark:text-green-400 animate-bounce">
+            <CheckCircle2 size={80} />
+          </div>
+        </div>
+        <h1 className="text-4xl font-black mb-4">تم إرسال طلبك!</h1>
+        <p className="text-gray-500 text-xl mb-10">لقد تم توجيهك للواتساب لتأكيد طلبك. سيقوم فريقنا بالتواصل معك قريباً.</p>
+        <button onClick={() => window.location.href = '/'} className="bg-green-600 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-green-700 transition-all shadow-xl">
+          العودة للمتجر
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mb-16">
         {/* Gallery */}
         <div className="space-y-4 md:space-y-6">
-          <div className="rounded-[30px] md:rounded-[40px] overflow-hidden border-2 border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 shadow-xl transition-all duration-500 flex items-center justify-center p-4">
+          <div className="rounded-[30px] md:rounded-[40px] overflow-hidden border-2 border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 shadow-xl flex items-center justify-center p-4">
             <img 
               src={selectedImage || product.image} 
               alt={product.name} 
@@ -40,7 +111,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
           
           {/* Thumbnails */}
           {galleryImages.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar scroll-smooth justify-center md:justify-start">
+            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar justify-center md:justify-start">
               {galleryImages.map((img, index) => (
                 <button 
                   key={index}
@@ -59,7 +130,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-3 py-1 rounded-full text-xs md:text-sm font-bold mb-2 inline-block">
-                {product.category === 'electronics' ? 'إلكترونيات ذكية' : product.category === 'home' ? 'منتجات منزلية' : product.category === 'cars' ? 'إكسسوارات سيارات' : 'إكسسوارات'}
+                جديد - متوفر حالياً
               </span>
               <h1 className="text-2xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2 leading-tight">{product.name}</h1>
               <div className="flex items-center gap-2 md:gap-4 mb-2">
@@ -72,10 +143,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
               </div>
             </div>
             <div className="flex gap-2">
-              <button className="p-2 md:p-3 bg-gray-100 dark:bg-slate-800 rounded-full hover:text-pink-600 transition active:scale-90 shadow-sm">
+              <button className="p-2 md:p-3 bg-gray-100 dark:bg-slate-800 rounded-full hover:text-pink-600 transition shadow-sm">
                 <Heart size={20} />
               </button>
-              <button className="p-2 md:p-3 bg-gray-100 dark:bg-slate-800 rounded-full hover:text-blue-600 transition active:scale-90 shadow-sm">
+              <button className="p-2 md:p-3 bg-gray-100 dark:bg-slate-800 rounded-full hover:text-blue-600 transition shadow-sm">
                 <Share2 size={20} />
               </button>
             </div>
@@ -90,29 +161,145 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
             {product.description}
           </p>
 
-          {/* Trust Badges */}
-          <div className="grid grid-cols-3 gap-2 md:gap-4 mb-8 md:mb-10">
-            <div className="flex flex-col items-center p-3 md:p-4 bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-700 text-center shadow-sm">
-              <Truck className="text-blue-600 mb-1 md:mb-2 w-6 h-6 md:w-8 md:h-8" />
-              <span className="text-[10px] md:text-sm font-bold text-gray-900 dark:text-gray-200">توصيل سريع</span>
-            </div>
-            <div className="flex flex-col items-center p-3 md:p-4 bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-700 text-center shadow-sm">
-              <ShieldCheck className="text-green-600 mb-1 md:mb-2 w-6 h-6 md:w-8 md:h-8" />
-              <span className="text-[10px] md:text-sm font-bold text-gray-900 dark:text-gray-200">ضمان الجودة</span>
-            </div>
-            <div className="flex flex-col items-center p-3 md:p-4 bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl border border-gray-100 dark:border-slate-700 text-center shadow-sm">
-              <CheckCircle2 className="text-orange-600 mb-1 md:mb-2 w-6 h-6 md:w-8 md:h-8" />
-              <span className="text-[10px] md:text-sm font-bold text-gray-900 dark:text-gray-200">أصلي 100%</span>
-            </div>
-          </div>
-
           <button 
-            onClick={handleBuyNow}
-            className="w-full h-16 md:h-20 rounded-2xl md:rounded-3xl bg-green-600 text-white text-xl md:text-2xl font-black shadow-xl hover:bg-green-700 transform active:scale-95 transition flex items-center justify-center gap-3 md:gap-4 animate-pulse-slow"
+            onClick={scrollToForm}
+            className="w-full h-16 md:h-20 rounded-2xl md:rounded-3xl bg-green-600 text-white text-xl md:text-2xl font-black shadow-xl hover:bg-green-700 transform active:scale-95 transition flex items-center justify-center gap-3 md:gap-4 group"
           >
-            <Zap size={24} className="md:w-8 md:h-8" />
-            تأكيد الطلب - الدفع عند الاستلام
+            <Zap size={24} className="md:w-8 md:h-8 group-hover:animate-bounce" />
+            أطلب الآن - الدفع عند الاستلام
+            <ArrowDown size={24} className="mr-auto hidden md:block" />
           </button>
+        </div>
+      </div>
+
+      {/* Trust Badges */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div className="flex items-center gap-4 p-6 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm">
+          <Truck className="text-blue-500 w-10 h-10" />
+          <div>
+            <h4 className="font-bold">توصيل سريع ومجاني</h4>
+            <p className="text-xs text-gray-500">لجميع المدن المغربية</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 p-6 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm">
+          <ShieldCheck className="text-green-500 w-10 h-10" />
+          <div>
+            <h4 className="font-bold">الدفع عند الاستلام</h4>
+            <p className="text-xs text-gray-500">تأكد من طلبك قبل الدفع</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 p-6 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm">
+          <CheckCircle2 className="text-orange-500 w-10 h-10" />
+          <div>
+            <h4 className="font-bold">ضمان حقيقي</h4>
+            <p className="text-xs text-gray-500">خدمة ما بعد البيع متوفرة</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Integrated Order Form Section */}
+      <div ref={formRef} className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-[35px] md:rounded-[50px] border-4 border-green-600/20 shadow-2xl overflow-hidden scroll-mt-24">
+        <div className="bg-green-600 text-white p-8 text-center">
+          <h2 className="text-2xl md:text-4xl font-black mb-2">املأ المعلومات لإتمام طلبك</h2>
+          <p className="text-green-100 font-bold">توصيل مجاني لجميع المدن - الدفع عند الاستلام</p>
+        </div>
+        
+        <div className="p-8 md:p-12">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className="space-y-6">
+              {/* Name */}
+              <div className="space-y-2">
+                <label className="text-lg font-bold flex items-center gap-2">
+                  <User size={20} className="text-green-600" /> الاسم
+                </label>
+                <input 
+                  required
+                  type="text" 
+                  className="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800 focus:border-green-500 focus:outline-none transition text-lg"
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+
+              {/* City */}
+              <div className="space-y-2">
+                <label className="text-lg font-bold flex items-center gap-2">
+                  <MapPin size={20} className="text-green-600" /> المدينة
+                </label>
+                <select 
+                  required
+                  className="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800 focus:border-green-500 focus:outline-none transition text-lg appearance-none"
+                  value={formData.city}
+                  onChange={e => setFormData({...formData, city: e.target.value})}
+                >
+                  <option value="">-- اختر مدينتك --</option>
+                  {MOROCCAN_CITIES.map(city => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-2">
+                <label className="text-lg font-bold flex items-center gap-2">
+                  <Phone size={20} className="text-green-600" /> رقم الهاتف
+                </label>
+                <input 
+                  required
+                  type="tel" 
+                  style={{ direction: 'ltr', textAlign: 'right' }}
+                  className="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800 focus:border-green-500 focus:outline-none transition text-lg ltr"
+                  value={formData.phone}
+                  onChange={e => setFormData({...formData, phone: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-slate-800/50 p-6 rounded-3xl border border-gray-100 dark:border-slate-800 space-y-6">
+              <div className="flex justify-between items-center pb-4 border-b dark:border-slate-700">
+                <span className="font-bold text-gray-500">الكمية:</span>
+                <div className="flex items-center bg-white dark:bg-slate-900 rounded-xl overflow-hidden border dark:border-slate-800">
+                  <button type="button" onClick={() => setQuantity(q => Math.max(1, q - 1))} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition"><Minus size={18} /></button>
+                  <span className="px-4 font-black text-lg min-w-[40px] text-center">{quantity}</span>
+                  <button type="button" onClick={() => setQuantity(q => q + 1)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition"><Plus size={18} /></button>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between font-bold">
+                  <span>سعر المنتج:</span>
+                  <span>{product.price} درهم</span>
+                </div>
+                <div className="flex justify-between font-bold text-green-600">
+                  <span>التوصيل:</span>
+                  <span>مجاني</span>
+                </div>
+                <div className="flex justify-between text-2xl font-black pt-4 border-t dark:border-slate-700 text-green-700 dark:text-green-400">
+                  <span>الإجمالي:</span>
+                  <span>{total.toLocaleString()} درهم</span>
+                </div>
+              </div>
+
+              <button 
+                disabled={isOrdering}
+                type="submit"
+                className="w-full bg-green-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-green-700 transition shadow-xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+              >
+                {isOrdering ? (
+                  <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <MessageSquare size={24} />
+                    تأكيد الطلب عبر واتساب
+                  </>
+                )}
+              </button>
+              
+              <div className="flex items-center justify-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest">
+                <ShieldCheck size={14} /> الدفع عند الاستلام متاح
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

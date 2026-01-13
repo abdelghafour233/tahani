@@ -106,7 +106,7 @@ const Home: React.FC<HomeProps> = ({ products }) => {
 
                 <div className="mt-auto">
                   <span className="text-2xl md:text-3xl font-black text-green-700 dark:text-green-400 block mb-4 md:mb-6">{product.price.toLocaleString()} درهم</span>
-                  <button className="w-full bg-gray-900 dark:bg-slate-800 text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-black hover:bg-black transition active:scale-95">عرض المنتج</button>
+                  <button className="w-full bg-gray-900 dark:bg-slate-800 text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-black hover:bg-black transition active:scale-95">اشتري الآن</button>
                 </div>
               </div>
             </Link>

@@ -72,7 +72,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ products }) => {
                     <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">درهم مغربي</span>
                   </div>
                   <button className="bg-green-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-100">
-                    عرض التفاصيل
+                    اشتري الآن
                   </button>
                 </div>
               </div>
