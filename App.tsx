@@ -67,7 +67,8 @@ const App: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === (settings.adminPassword || 'admin')) {
+    // التحقق من كلمة المرور بناءً على الإعدادات الحالية
+    if (passwordInput === (settings.adminPassword || '0631368627')) {
       setIsAuthenticated(true);
       setLoginError(false);
     } else {

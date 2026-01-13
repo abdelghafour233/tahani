@@ -32,7 +32,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
   domain: 'myshop.ma',
   nameServer: 'ns1.example.com, ns2.example.com',
   googleSheetsUrl: '',
-  adminPassword: 'admin', // كلمة السر الافتراضية
+  adminPassword: '0631368627', // كلمة السر الجديدة المطلوبة
   pixels: {
     facebookPixelId: '',
     googleAnalyticsId: '',
