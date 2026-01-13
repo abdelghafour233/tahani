@@ -17,14 +17,30 @@ const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [settings, setSettings] = useState<SiteSettings>(() => {
     const saved = localStorage.getItem('site_settings');
-    return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // دمج الإعدادات المخزنة مع الافتراضية لضمان وجود الحقول الجديدة مثل pixels و adminPassword
+        return {
+          ...INITIAL_SETTINGS,
+          ...parsed,
+          pixels: {
+            ...INITIAL_SETTINGS.pixels,
+            ...(parsed.pixels || {})
+          }
+        };
+      } catch (e) {
+        return INITIAL_SETTINGS;
+      }
+    }
+    return INITIAL_SETTINGS;
   });
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return document.documentElement.classList.contains('dark');
   });
   
-  // شؤون الدخول للوحة التحكم
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -67,8 +83,8 @@ const App: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // التحقق من كلمة المرور بناءً على الإعدادات الحالية
-    if (passwordInput === (settings.adminPassword || '0631368627')) {
+    const correctPassword = settings.adminPassword || INITIAL_SETTINGS.adminPassword;
+    if (passwordInput === correctPassword) {
       setIsAuthenticated(true);
       setLoginError(false);
     } else {
@@ -79,7 +95,6 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="min-h-screen flex flex-col font-cairo bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-        {/* Navigation */}
         <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-100 dark:border-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-20 items-center">
@@ -102,25 +117,15 @@ const App: React.FC = () => {
                 <button 
                   onClick={toggleDarkMode}
                   className="p-3 bg-gray-100 dark:bg-slate-800 rounded-2xl hover:bg-yellow-100 dark:hover:bg-slate-700 transition-all shadow-sm"
-                  aria-label="تبديل الوضع الليلي"
                 >
                   {isDarkMode ? <Sun className="text-yellow-500 w-6 h-6" /> : <Moon className="text-slate-600 w-6 h-6" />}
                 </button>
-                
                 <Link to="/dashboard" className="p-3 bg-gray-100 dark:bg-slate-800 rounded-2xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white transition-all shadow-sm">
                   <LayoutDashboard className="w-6 h-6" />
                 </Link>
               </div>
             </div>
           </div>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden bg-white dark:bg-slate-900 border-t dark:border-slate-800 p-4 space-y-4 shadow-lg animate-in slide-in-from-top">
-              <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-bold">الرئيسية</Link>
-              <Link to="/category/electronics" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg font-bold">إلكترونيات</Link>
-            </div>
-          )}
         </nav>
 
         <main className="flex-grow">
@@ -164,7 +169,7 @@ const App: React.FC = () => {
                             <button 
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-600 transition"
+                              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                             >
                               {showPassword ? <EyeOff size={24} /> : <Eye size={24} />}
                             </button>
@@ -172,7 +177,7 @@ const App: React.FC = () => {
                           </div>
                           {loginError && <p className="text-red-500 text-sm mt-2 font-bold">كلمة السر غير صحيحة!</p>}
                         </div>
-                        <button className="w-full bg-green-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-green-700 transition shadow-xl shadow-green-100 dark:shadow-none">
+                        <button className="w-full bg-green-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-green-700 transition">
                           دخول للوحة التحكم
                         </button>
                       </form>
