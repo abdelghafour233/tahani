@@ -12,6 +12,7 @@ declare global {
     handleImageUpload: (event: Event, targetId: string) => void;
     handleMultipleImagesUpload: (event: Event) => void;
     addNewProduct: (event: Event) => void;
+    setMainImage: (src: string) => void;
   }
 }
 
@@ -27,7 +28,7 @@ const MOROCCAN_CITIES = [
 const INITIAL_PRODUCTS = [
     { id: 'e1', name: 'هاتف ذكي ألترا 2024', category: 'electronics', price: 4500, image: 'https://picsum.photos/seed/phone/600/400', images: [], desc: 'أحدث هاتف ذكي بمواصفات عالمية وكاميرا احترافية.' },
     { id: 'h1', name: 'ماكينة تحضير القهوة', category: 'home', price: 1200, image: 'https://picsum.photos/seed/coffee/600/400', images: [], desc: 'استمتع بأفضل كوب قهوة في منزلك كل صباح.' },
-    { id: 'c1', name: 'سيارة سيدان اقتصادية', category: 'cars', price: 185000, image: 'https://picsum.photos/seed/car1/600/400', images: [], desc: 'سيارة عائلية مثالية باستهلاك منخفض.' }
+    { id: 'c1', name: 'سيارة سيدان اقتصادية', category: 'cars', price: 185000, image: 'https://picsum.photos/seed/car1/600/400', images: [], desc: 'سيارة عائلية مثالية باستهلاك وقود منخفض جداً.' }
 ];
 
 let products = JSON.parse(localStorage.getItem('elite_products') || JSON.stringify(INITIAL_PRODUCTS));
@@ -40,7 +41,7 @@ let settings = JSON.parse(localStorage.getItem('elite_settings') || JSON.stringi
     sheets: ''
 }));
 
-// متغيرات مؤقتة للصور المرفوعة
+// متغيرات مؤقتة للصور المرفوعة في لوحة التحكم
 let tempMainImage = '';
 let tempAdditionalImages: string[] = [];
 
@@ -149,15 +150,15 @@ function renderHome(container: HTMLElement) {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 ${products.slice(-4).reverse().map((p: any) => `
                     <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 product-card flex flex-col group">
-                        <div class="relative overflow-hidden">
-                            <img src="${p.image}" class="w-full h-56 object-cover group-hover:scale-110 transition duration-700">
+                        <div class="relative overflow-hidden aspect-square">
+                            <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                             <div class="absolute top-4 right-4 bg-green-600 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">جديد</div>
                         </div>
-                        <div class="p-6 flex flex-col flex-grow">
+                        <div class="p-6 flex flex-col flex-grow text-center">
                             <h3 class="font-black text-xl mb-3 text-gray-800 line-clamp-1">${p.name}</h3>
-                            <div class="flex items-center justify-between mt-auto">
-                                <span class="text-green-700 text-2xl font-black">${p.price.toLocaleString()} MAD</span>
-                                <a href="#/product/${p.id}" class="bg-gray-100 p-3 rounded-2xl hover:bg-green-600 hover:text-white transition"><i data-lucide="arrow-left" class="w-6 h-6"></i></a>
+                            <div class="mt-auto">
+                                <span class="text-green-700 text-2xl font-black block mb-4">${p.price.toLocaleString()} MAD</span>
+                                <a href="#/product/${p.id}" class="inline-block w-full bg-gray-900 text-white py-3 rounded-2xl font-black hover:bg-black transition">عرض المنتج</a>
                             </div>
                         </div>
                     </div>
@@ -185,7 +186,7 @@ function renderCategory(container: HTMLElement, cat: string) {
                             <div class="relative overflow-hidden aspect-square">
                                 <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                             </div>
-                            <div class="p-8">
+                            <div class="p-8 text-center">
                                 <h3 class="text-2xl font-black mb-4 text-gray-800">${p.name}</h3>
                                 <p class="text-green-700 text-3xl font-black mb-6">${p.price.toLocaleString()} <span class="text-sm font-bold">درهم</span></p>
                                 <div class="flex gap-3">
@@ -201,19 +202,31 @@ function renderCategory(container: HTMLElement, cat: string) {
     `;
 }
 
+window.setMainImage = (src: string) => {
+    const mainImg = document.getElementById('main-product-img') as HTMLImageElement;
+    if (mainImg) mainImg.src = src;
+};
+
 function renderProduct(container: HTMLElement, id: string) {
     const p = products.find((prod: any) => prod.id === id);
     if (!p) return;
+    
+    const allImages = [p.image, ...(p.images || [])];
+
     container.innerHTML = `
         <div class="max-w-7xl mx-auto px-4 py-16">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
                 <div class="space-y-6">
-                    <div class="rounded-[50px] overflow-hidden shadow-2xl border-8 border-white bg-white">
-                        <img src="${p.image}" class="w-full h-auto object-cover">
+                    <div class="rounded-[50px] overflow-hidden shadow-2xl border-8 border-white bg-white aspect-square">
+                        <img id="main-product-img" src="${p.image}" class="w-full h-full object-cover transition-all duration-500">
                     </div>
-                    <div class="grid grid-cols-4 gap-4">
-                        ${(p.images || []).map((img: string) => `<img src="${img}" class="w-full h-24 object-cover rounded-3xl border-2 border-white shadow-md cursor-pointer hover:scale-105 transition">`).join('')}
-                    </div>
+                    ${allImages.length > 1 ? `
+                        <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                            ${allImages.map(img => `
+                                <img src="${img}" onclick="window.setMainImage('${img}')" class="w-24 h-24 object-cover rounded-3xl border-4 border-white shadow-md cursor-pointer hover:scale-105 transition flex-shrink-0">
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </div>
                 <div class="flex flex-col py-4">
                     <span class="bg-green-100 text-green-700 px-6 py-2 rounded-full text-sm font-black w-fit mb-6 uppercase tracking-widest">${p.category}</span>
@@ -224,7 +237,7 @@ function renderProduct(container: HTMLElement, id: string) {
                     </div>
                     <div class="prose prose-xl mb-12">
                         <h4 class="text-xl font-black mb-4 text-gray-800">وصف المنتج:</h4>
-                        <p class="text-gray-600 leading-relaxed whitespace-pre-wrap">${p.desc}</p>
+                        <p class="text-gray-600 leading-relaxed whitespace-pre-wrap text-lg">${p.desc}</p>
                     </div>
                     <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <button onclick="window.addToCart('${p.id}', true)" class="bg-green-600 text-white py-6 rounded-3xl text-3xl font-black shadow-2xl hover:bg-green-700 transform active:scale-95 transition flex items-center justify-center gap-3">
@@ -351,15 +364,15 @@ function renderDashboard(container: HTMLElement) {
             <h1 class="text-5xl font-black mb-12">لوحة التحكم</h1>
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
                 <div class="lg:col-span-1 space-y-3">
-                    <button class="w-full text-right p-5 bg-green-600 text-white rounded-[30px] font-black shadow-lg">إدارة المنتجات</button>
-                    <button class="w-full text-right p-5 bg-white border rounded-[30px] font-black hover:bg-gray-50 transition">الطلبات الواردة (${orders.length})</button>
-                    <button class="w-full text-right p-5 bg-white border rounded-[30px] font-black hover:bg-gray-50 transition">إعدادات المتجر</button>
+                    <button id="tab-products" class="w-full text-right p-5 bg-green-600 text-white rounded-[30px] font-black shadow-lg">إدارة المنتجات</button>
+                    <button id="tab-orders" class="w-full text-right p-5 bg-white border rounded-[30px] font-black hover:bg-gray-50 transition">الطلبات الواردة (${orders.length})</button>
+                    <button id="tab-settings" class="w-full text-right p-5 bg-white border rounded-[30px] font-black hover:bg-gray-50 transition">إعدادات المتجر</button>
                 </div>
                 
                 <div class="lg:col-span-3 space-y-10" id="dash-content">
                     <div class="bg-white p-12 rounded-[50px] border shadow-xl border-t-8 border-t-green-600">
                         <h2 class="text-3xl font-black mb-10 flex items-center gap-4"><i data-lucide="plus-circle" class="text-green-600 w-10 h-10"></i> إضافة منتج جديد</h2>
-                        <form onsubmit="window.addNewProduct(event)" class="space-y-8">
+                        <form id="add-product-form" onsubmit="window.addNewProduct(event)" class="space-y-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
                                     <label class="block font-black mb-3 text-gray-700">اسم المنتج</label>
@@ -382,21 +395,21 @@ function renderDashboard(container: HTMLElement) {
                                 <div>
                                     <label class="block font-black mb-3 text-gray-700 text-lg">الصورة الرئيسية</label>
                                     <label class="flex flex-col items-center justify-center w-full h-40 border-4 border-gray-100 border-dashed rounded-[40px] cursor-pointer bg-gray-50 hover:bg-green-50 transition relative overflow-hidden group">
-                                        <div id="main-preview" class="flex flex-col items-center justify-center">
+                                        <div id="main-preview" class="flex flex-col items-center justify-center p-4 text-center">
                                             <i data-lucide="image" class="w-12 h-12 text-gray-300 mb-2 group-hover:text-green-400 transition"></i>
-                                            <p class="text-sm text-gray-400 font-black">تحميل الصورة الرئيسية</p>
+                                            <p class="text-sm text-gray-400 font-black">رفع الصورة الرئيسية</p>
                                         </div>
-                                        <input type="file" class="hidden" accept="image/*" onchange="window.handleImageUpload(event, 'main-preview')">
+                                        <input type="file" id="main-image-input" class="hidden" accept="image/*" onchange="window.handleImageUpload(event, 'main-preview')">
                                     </label>
                                 </div>
                                 <div>
-                                    <label class="block font-black mb-3 text-gray-700 text-lg">صور إضافية (اختياري)</label>
-                                    <label class="flex flex-col items-center justify-center w-full h-40 border-4 border-gray-100 border-dashed rounded-[40px] cursor-pointer bg-gray-50 hover:bg-green-50 transition group">
-                                        <div id="multi-preview" class="flex flex-wrap gap-2 p-4 justify-center overflow-auto max-h-full">
+                                    <label class="block font-black mb-3 text-gray-700 text-lg">صور المعرض (متعددة)</label>
+                                    <label class="flex flex-col items-center justify-center w-full h-40 border-4 border-gray-100 border-dashed rounded-[40px] cursor-pointer bg-gray-50 hover:bg-green-50 transition group overflow-hidden">
+                                        <div id="multi-preview" class="flex flex-wrap gap-2 p-4 justify-center items-center overflow-auto max-h-full">
                                             <i data-lucide="camera" class="w-12 h-12 text-gray-300 mb-2 group-hover:text-green-400 transition"></i>
-                                            <p class="text-sm text-gray-400 font-black w-full text-center">رفع صور المعرض</p>
+                                            <p class="text-sm text-gray-400 font-black w-full text-center">رفع صور إضافية</p>
                                         </div>
-                                        <input type="file" multiple class="hidden" accept="image/*" onchange="window.handleMultipleImagesUpload(event)">
+                                        <input type="file" id="multi-image-input" multiple class="hidden" accept="image/*" onchange="window.handleMultipleImagesUpload(event)">
                                     </label>
                                 </div>
                             </div>
@@ -415,7 +428,7 @@ function renderDashboard(container: HTMLElement) {
                                 <div class="flex items-center gap-6 border-2 border-gray-50 p-6 rounded-[35px] bg-gray-50 hover:border-red-100 transition relative group">
                                     <img src="${p.image}" class="w-20 h-20 object-cover rounded-[20px] shadow-sm border-2 border-white">
                                     <div class="flex-grow">
-                                        <div class="font-black text-xl text-gray-900 mb-1">${p.name}</div>
+                                        <div class="font-black text-xl text-gray-900 mb-1 line-clamp-1">${p.name}</div>
                                         <div class="text-green-600 font-black">${p.price.toLocaleString()} MAD</div>
                                     </div>
                                     <button onclick="window.deleteProduct('${p.id}')" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white p-4 rounded-2xl transition shadow-sm"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
@@ -435,10 +448,11 @@ function renderDashboard(container: HTMLElement) {
 window.handleImageUpload = async (event: Event, targetId: string) => {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-        tempMainImage = await fileToBase64(file);
+        const b64 = await fileToBase64(file);
+        tempMainImage = b64;
         const preview = document.getElementById(targetId);
         if (preview) {
-            preview.innerHTML = `<img src="${tempMainImage}" class="w-full h-full object-cover rounded-[30px]">`;
+            preview.innerHTML = `<img src="${b64}" class="w-full h-full object-cover rounded-[30px]">`;
         }
     }
 };
@@ -457,6 +471,13 @@ window.handleMultipleImagesUpload = async (event: Event) => {
             img.src = b64;
             img.className = 'w-12 h-12 object-cover rounded-xl border-2 border-white shadow-sm';
             if (preview) preview.appendChild(img);
+        }
+        
+        if (preview && files.length > 0) {
+           const info = document.createElement('p');
+           info.className = 'w-full text-center text-xs text-green-600 font-black mt-1';
+           info.innerText = `تم رفع ${files.length} صور`;
+           preview.appendChild(info);
         }
     }
 };
@@ -487,8 +508,10 @@ window.addNewProduct = (event: Event) => {
     saveProducts();
     alert('تمت إضافة المنتج بنجاح وهو متاح للزوار الآن!');
     
+    // إفراغ الحقول والذاكرة المؤقتة
     tempMainImage = '';
     tempAdditionalImages = [];
+    (document.getElementById('add-product-form') as HTMLFormElement).reset();
     renderDashboard(document.getElementById('app')!);
 };
 
