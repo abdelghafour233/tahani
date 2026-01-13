@@ -128,6 +128,8 @@ const App: React.FC = () => {
               <div className="hidden md:flex space-x-reverse space-x-8 text-lg font-black">
                 <Link to="/" className="hover:text-green-600 dark:text-gray-200 dark:hover:text-green-400 transition">الرئيسية</Link>
                 <Link to="/category/electronics" className="hover:text-green-600 dark:text-gray-200 dark:hover:text-green-400 transition">إلكترونيات</Link>
+                <Link to="/category/cars" className="hover:text-green-600 dark:text-gray-200 dark:hover:text-green-400 transition text-sm lg:text-lg">اكسسوارات السيارات</Link>
+                <Link to="/category/watches" className="hover:text-green-600 dark:text-gray-200 dark:hover:text-green-400 transition">ساعات</Link>
               </div>
 
               <div className="flex items-center gap-2">
@@ -143,6 +145,17 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
+          
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden bg-white dark:bg-slate-900 border-b dark:border-slate-800 p-4 space-y-4 flex flex-col font-bold">
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="hover:text-green-600 transition">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={() => setIsMenuOpen(false)} className="hover:text-green-600 transition">إلكترونيات</Link>
+              <Link to="/category/accessories" onClick={() => setIsMenuOpen(false)} className="hover:text-green-600 transition">نظارات</Link>
+              <Link to="/category/cars" onClick={() => setIsMenuOpen(false)} className="hover:text-green-600 transition">اكسسوارات السيارات</Link>
+              <Link to="/category/watches" onClick={() => setIsMenuOpen(false)} className="hover:text-green-600 transition">ساعات</Link>
+            </div>
+          )}
         </nav>
 
         <main className="flex-grow">
@@ -217,8 +230,11 @@ const App: React.FC = () => {
             </div>
             <div>
               <h3 className="text-xl font-black mb-6 border-r-4 border-green-500 pr-4">روابط سريعة</h3>
-              <ul className="space-y-3 text-gray-400 font-bold">
+              <ul className="grid grid-cols-2 gap-3 text-gray-400 font-bold">
                 <li><Link to="/category/electronics" className="hover:text-green-400 transition">إلكترونيات</Link></li>
+                <li><Link to="/category/accessories" className="hover:text-green-400 transition">نظارات</Link></li>
+                <li><Link to="/category/cars" className="hover:text-green-400 transition">اكسسوارات السيارات</Link></li>
+                <li><Link to="/category/watches" className="hover:text-green-400 transition">ساعات</Link></li>
                 <li><Link to="/privacy-policy" className="hover:text-green-400 transition">سياسة الخصوصية</Link></li>
                 <li><Link to="/" className="hover:text-green-400 transition">الرئيسية</Link></li>
               </ul>

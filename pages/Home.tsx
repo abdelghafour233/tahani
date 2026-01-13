@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { Laptop, Home as HomeIcon, Star, ChevronLeft } from 'lucide-react';
+import { Laptop, Car, Watch, Glasses, Star, ChevronLeft } from 'lucide-react';
 
 interface HomeProps {
   products: Product[];
@@ -30,21 +30,37 @@ const Home: React.FC<HomeProps> = ({ products }) => {
       {/* Categories */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl font-black mb-12 text-center text-gray-800 dark:text-gray-100">تصفح أقسامنا</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Link to="/category/electronics" className="group bg-white dark:bg-slate-900 p-10 rounded-[40px] flex flex-col items-center hover:shadow-2xl transition transform hover:-translate-y-2 border border-gray-100 dark:border-slate-800">
-            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-6 rounded-3xl mb-6 group-hover:scale-110 transition">
-              <Laptop size={56} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {/* Electronics */}
+          <Link to="/category/electronics" className="group bg-white dark:bg-slate-900 p-8 rounded-[40px] flex flex-col items-center hover:shadow-2xl transition transform hover:-translate-y-2 border border-gray-100 dark:border-slate-800 text-center">
+            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-5 rounded-3xl mb-5 group-hover:scale-110 transition">
+              <Laptop size={48} />
             </div>
-            <h3 className="text-3xl font-black">إلكترونيات</h3>
-            <p className="text-gray-500 dark:text-gray-400 mt-3 font-bold">أحدث الأجهزة التقنية الذكية</p>
+            <h3 className="text-xl font-black">إلكترونيات</h3>
           </Link>
           
-          <Link to="/category/home" className="group bg-white dark:bg-slate-900 p-10 rounded-[40px] flex flex-col items-center hover:shadow-2xl transition transform hover:-translate-y-2 border border-gray-100 dark:border-slate-800 opacity-50">
-            <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 p-6 rounded-3xl mb-6 group-hover:scale-110 transition">
-              <HomeIcon size={56} />
+          {/* Glasses/Accessories */}
+          <Link to="/category/accessories" className="group bg-white dark:bg-slate-900 p-8 rounded-[40px] flex flex-col items-center hover:shadow-2xl transition transform hover:-translate-y-2 border border-gray-100 dark:border-slate-800 text-center">
+            <div className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-5 rounded-3xl mb-5 group-hover:scale-110 transition">
+              <Glasses size={48} />
             </div>
-            <h3 className="text-3xl font-black">منزلية</h3>
-            <p className="text-gray-500 dark:text-gray-400 mt-3 font-bold">قريباً في متجرنا</p>
+            <h3 className="text-xl font-black">نظارات</h3>
+          </Link>
+
+          {/* Car Accessories */}
+          <Link to="/category/cars" className="group bg-white dark:bg-slate-900 p-8 rounded-[40px] flex flex-col items-center hover:shadow-2xl transition transform hover:-translate-y-2 border border-gray-100 dark:border-slate-800 text-center">
+            <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 p-5 rounded-3xl mb-5 group-hover:scale-110 transition">
+              <Car size={48} />
+            </div>
+            <h3 className="text-xl font-black">اكسسوارات السيارات</h3>
+          </Link>
+
+          {/* Watches */}
+          <Link to="/category/watches" className="group bg-white dark:bg-slate-900 p-8 rounded-[40px] flex flex-col items-center hover:shadow-2xl transition transform hover:-translate-y-2 border border-gray-100 dark:border-slate-800 text-center">
+            <div className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 p-5 rounded-3xl mb-5 group-hover:scale-110 transition">
+              <Watch size={48} />
+            </div>
+            <h3 className="text-xl font-black">ساعات</h3>
           </Link>
         </div>
       </section>

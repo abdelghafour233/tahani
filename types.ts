@@ -1,5 +1,5 @@
 
-export type Category = 'electronics' | 'home' | 'cars';
+export type Category = 'electronics' | 'home' | 'cars' | 'watches' | 'accessories';
 
 export interface Product {
   id: string;
