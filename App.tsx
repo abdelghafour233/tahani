@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, Menu, X, Moon, Sun, Lock, Eye, EyeOff, Key } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Menu, X, Moon, Sun, Lock, Eye, EyeOff, Key, MessageCircle } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, INITIAL_SETTINGS } from './constants';
 
@@ -20,7 +20,6 @@ const App: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // دمج الإعدادات المخزنة مع الافتراضية لضمان وجود الحقول الجديدة مثل pixels و adminPassword
         return {
           ...INITIAL_SETTINGS,
           ...parsed,
@@ -92,9 +91,26 @@ const App: React.FC = () => {
     }
   };
 
+  const WHATSAPP_NUMBER = "212649075664"; // الرقم المحول لصيغة دولية بدون أصفار زائدة
+
   return (
     <Router>
       <div className="min-h-screen flex flex-col font-cairo bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+        {/* WhatsApp Floating Button */}
+        <a 
+          href={`https://wa.me/${WHATSAPP_NUMBER}?text=السلام عليكم، أريد الاستفسار عن منتج في متجركم`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-8 left-8 z-[100] bg-green-500 text-white p-4 rounded-full shadow-2xl hover:bg-green-600 transition-all transform hover:scale-110 animate-bounce flex items-center justify-center"
+          title="تواصل معنا عبر واتساب"
+        >
+          <MessageCircle size={32} fill="white" />
+          <span className="absolute -top-2 -right-2 flex h-5 w-5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-5 w-5 bg-green-600 border-2 border-white"></span>
+          </span>
+        </a>
+
         <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-100 dark:border-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-20 items-center">
