@@ -10,8 +10,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     category: 'electronics',
     image: 'http://tmpfiles.org/dl/19659152/storimage_11ezmjoz6.png',
     gallery: [
-      'http://tmpfiles.org/dl/19659152/storimage_11ezmjoz6.png',
-      'http://tmpfiles.org/dl/19663954/storimage_r5x6ggeon.png'
+      'http://tmpfiles.org/dl/19659152/storimage_11ezmjoz6.png'
     ],
     description: `⭐⭐⭐⭐⭐ نظارات ذكية عالية الجودة – تجربة استثنائية بكل المقاييس
 
