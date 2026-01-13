@@ -1,20 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { ShoppingCart, LayoutDashboard, ShoppingBag, Menu, X, Moon, Sun } from 'lucide-react';
-import { Product, CartItem, Order, SiteSettings } from './types';
+import { LayoutDashboard, ShoppingBag, Menu, X, Moon, Sun } from 'lucide-react';
+import { Product, Order, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, INITIAL_SETTINGS } from './constants';
 
 // Pages
 import HomePage from './pages/Home';
 import CategoryPage from './pages/Category';
 import ProductDetailPage from './pages/ProductDetail';
-import CartPage from './pages/Cart';
 import CheckoutPage from './pages/Checkout';
 import DashboardPage from './pages/Dashboard';
 
 const App: React.FC = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [settings, setSettings] = useState<SiteSettings>(() => {
@@ -43,40 +41,14 @@ const App: React.FC = () => {
     }
   };
 
-  const addToCart = (product: Product) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(item => item.id !== id));
-  };
-
-  const updateCartQuantity = (id: string, delta: number) => {
-    setCart(prev => prev.map(item => {
-      if (item.id === id) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
-      }
-      return item;
-    }));
-  };
-
-  const clearCart = () => setCart([]);
-
-  const placeOrder = (customerData: { name: string, city: string, phone: string }) => {
+  const placeOrder = (product: Product, quantity: number, customerData: { name: string, city: string, phone: string }) => {
     const newOrder: Order = {
       id: `ORD-${Date.now()}`,
       customerName: customerData.name,
       city: customerData.city,
       phone: customerData.phone,
-      items: cart.map(item => ({ productId: item.id, quantity: item.quantity, name: item.name, price: item.price })),
-      total: cart.reduce((acc, item) => acc + (item.price * item.quantity), 0),
+      items: [{ productId: product.id, quantity: quantity, name: product.name, price: product.price }],
+      total: product.price * quantity,
       date: new Date().toLocaleDateString('ar-MA'),
       status: 'pending'
     };
@@ -84,7 +56,6 @@ const App: React.FC = () => {
     const updatedOrders = [newOrder, ...orders];
     setOrders(updatedOrders);
     localStorage.setItem('site_orders', JSON.stringify(updatedOrders));
-    clearCart();
     return newOrder.id;
   };
 
@@ -119,14 +90,6 @@ const App: React.FC = () => {
                   {isDarkMode ? <Sun className="text-yellow-500 w-6 h-6" /> : <Moon className="text-slate-600 w-6 h-6" />}
                 </button>
                 
-                <Link to="/cart" className="relative p-3 bg-gray-100 dark:bg-slate-800 rounded-2xl hover:bg-green-600 hover:text-white dark:hover:bg-green-500 transition-all shadow-sm">
-                  <ShoppingCart className="w-6 h-6" />
-                  {cart.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-800">
-                      {cart.reduce((a, b) => a + b.quantity, 0)}
-                    </span>
-                  )}
-                </Link>
                 <Link to="/dashboard" className="p-3 bg-gray-100 dark:bg-slate-800 rounded-2xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white transition-all shadow-sm">
                   <LayoutDashboard className="w-6 h-6" />
                 </Link>
@@ -147,9 +110,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<HomePage products={products} />} />
             <Route path="/category/:type" element={<CategoryPage products={products} />} />
-            <Route path="/product/:id" element={<ProductDetailPage products={products} addToCart={addToCart} />} />
-            <Route path="/cart" element={<CartPage cart={cart} removeFromCart={removeFromCart} updateQuantity={updateCartQuantity} />} />
-            <Route path="/checkout" element={<CheckoutPage cart={cart} placeOrder={placeOrder} />} />
+            <Route path="/product/:id" element={<ProductDetailPage products={products} />} />
+            <Route path="/checkout/:productId" element={<CheckoutPage products={products} placeOrder={placeOrder} />} />
             <Route 
               path="/dashboard/*" 
               element={

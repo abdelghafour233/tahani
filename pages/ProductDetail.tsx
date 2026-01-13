@@ -1,28 +1,24 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product } from '../types';
-import { ShoppingCart, Heart, Share2, CheckCircle2, ShieldCheck, Truck } from 'lucide-react';
+import { ShoppingCart, Heart, Share2, CheckCircle2, ShieldCheck, Truck, Zap } from 'lucide-react';
 
 interface ProductDetailPageProps {
   products: Product[];
-  addToCart: (product: Product) => void;
 }
 
-const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, addToCart }) => {
+const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const product = products.find(p => p.id === id);
-  const [isAdded, setIsAdded] = useState(false);
 
   if (!product) {
     return <div className="text-center py-20 dark:text-gray-400">المنتج غير موجود</div>;
   }
 
-  const handleAddToCart = () => {
-    addToCart(product);
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+  const handleBuyNow = () => {
+    navigate(`/checkout/${product.id}`);
   };
 
   return (
@@ -82,32 +78,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, addToCa
             </div>
           </div>
 
-          <div className="flex gap-4 mt-auto">
-            <button 
-              onClick={handleAddToCart}
-              className={`flex-grow h-16 rounded-2xl font-black text-xl flex items-center justify-center gap-3 transition-all duration-300 transform active:scale-95 shadow-xl ${
-                isAdded ? 'bg-blue-600 text-white' : 'bg-green-600 text-white hover:bg-green-700 shadow-green-200 dark:shadow-none'
-              }`}
-            >
-              {isAdded ? (
-                <>تمت الإضافة بنجاح !</>
-              ) : (
-                <>
-                  <ShoppingCart size={28} />
-                  أضف إلى السلة
-                </>
-              )}
-            </button>
-            <button 
-              onClick={() => {
-                addToCart(product);
-                navigate('/checkout');
-              }}
-              className="px-8 h-16 rounded-2xl bg-gray-900 dark:bg-slate-700 text-white font-bold hover:bg-black dark:hover:bg-slate-600 transition shadow-xl"
-            >
-              شراء الآن
-            </button>
-          </div>
+          <button 
+            onClick={handleBuyNow}
+            className="w-full h-20 rounded-3xl bg-green-600 text-white text-3xl font-black shadow-2xl hover:bg-green-700 transform active:scale-95 transition flex items-center justify-center gap-4 animate-pulse"
+          >
+            <Zap size={32} />
+            اشتري الآن - الدفع عند الاستلام
+          </button>
         </div>
       </div>
     </div>
