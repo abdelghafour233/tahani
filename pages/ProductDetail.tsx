@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product } from '../types';
-import { ShoppingCart, Heart, Share2, CheckCircle2, ShieldCheck, Truck, Zap } from 'lucide-react';
+import { ShoppingCart, Heart, Share2, CheckCircle2, ShieldCheck, Truck, Zap, Star } from 'lucide-react';
 
 interface ProductDetailPageProps {
   products: Product[];
@@ -59,6 +59,14 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
                 {product.category === 'electronics' ? 'إلكترونيات' : product.category === 'home' ? 'منتجات منزلية' : 'سيارات'}
               </span>
               <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">{product.name}</h1>
+              <div className="flex items-center gap-4 mb-2">
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={20} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                  ))}
+                </div>
+                <span className="text-gray-500 dark:text-gray-400 font-bold">({product.reviewsCount || 0} تقييم موثق)</span>
+              </div>
               <p className="text-gray-400 dark:text-gray-500 text-lg">{product.nameEn}</p>
             </div>
             <div className="flex gap-2">

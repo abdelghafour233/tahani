@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { Laptop, Home as HomeIcon, Car, ChevronLeft } from 'lucide-react';
+import { Laptop, Home as HomeIcon, Star, ChevronLeft } from 'lucide-react';
 
 interface HomeProps {
   products: Product[];
@@ -70,7 +70,16 @@ const Home: React.FC<HomeProps> = ({ products }) => {
                 </div>
               </div>
               <div className="p-6 flex-grow flex flex-col text-center">
-                <h3 className="font-black text-2xl mb-3 text-gray-800 dark:text-gray-100 group-hover:text-green-600 transition line-clamp-1">{product.name}</h3>
+                <h3 className="font-black text-2xl mb-1 text-gray-800 dark:text-gray-100 group-hover:text-green-600 transition line-clamp-1">{product.name}</h3>
+                
+                {/* Stars Rating */}
+                <div className="flex justify-center gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={16} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                  ))}
+                  <span className="text-xs text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
+                </div>
+
                 <div className="mt-auto">
                   <span className="text-3xl font-black text-green-700 dark:text-green-400 block mb-6">{product.price.toLocaleString()} درهم</span>
                   <button className="w-full bg-gray-900 dark:bg-slate-800 text-white py-4 rounded-2xl font-black hover:bg-black transition">عرض المنتج</button>

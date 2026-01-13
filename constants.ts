@@ -13,6 +13,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       'http://tmpfiles.org/dl/19659152/storimage_11ezmjoz6.png',
       'http://tmpfiles.org/dl/19664445/storimage_ta7gsx023.png'
     ],
+    rating: 5,
+    reviewsCount: 147,
     description: `⭐⭐⭐⭐⭐ نظارات ذكية عالية الجودة – تجربة استثنائية بكل المقاييس
 
 استمتع بأحدث ما توصلت إليه التكنولوجيا مع نظارات ذكية تجمع بين الأناقة والأداء العالي. منتج مصمم بعناية ليوفر لك الراحة، العملية، والمظهر العصري في آنٍ واحد.

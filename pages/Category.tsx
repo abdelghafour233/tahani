@@ -2,6 +2,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Product, Category } from '../types';
+import { Star } from 'lucide-react';
 
 interface CategoryPageProps {
   products: Product[];
@@ -53,7 +54,15 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ products }) => {
                 <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
               </div>
               <div className="p-5">
-                <h3 className="font-bold text-xl mb-2 group-hover:text-green-600 transition">{product.name}</h3>
+                <h3 className="font-bold text-xl mb-1 group-hover:text-green-600 transition">{product.name}</h3>
+                
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                  ))}
+                  <span className="text-[10px] text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
+                </div>
+
                 <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product.description}</p>
                 <div className="flex justify-between items-end">
                   <div>

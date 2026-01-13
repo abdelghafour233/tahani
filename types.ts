@@ -8,8 +8,10 @@ export interface Product {
   price: number;
   category: Category;
   image: string;
-  gallery?: string[]; // حقل جديد لصور المعرض
+  gallery?: string[];
   description: string;
+  rating?: number; // التقييم من 5
+  reviewsCount?: number; // عدد المراجعات
 }
 
 export interface Order {
