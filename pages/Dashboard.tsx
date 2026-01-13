@@ -4,7 +4,6 @@ import { Order, SiteSettings, Product, Category } from '../types';
 import { 
   BarChart3, 
   Package, 
-  Settings, 
   Globe, 
   Database, 
   Activity, 
@@ -12,14 +11,13 @@ import {
   ShoppingBag, 
   Trash2, 
   Edit2, 
-  Plus, 
   ExternalLink,
   Save,
-  CheckCircle2,
   Clock,
-  XCircle,
   Hash,
-  MessageSquare
+  MessageSquare,
+  Lock,
+  ShieldCheck
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -32,10 +30,10 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setSettings, products, setProducts }) => {
-  const [activeTab, setActiveTab] = useState<'stats' | 'orders' | 'products' | 'pixels' | 'settings'>('stats');
+  // تم حذف التبويب 'settings' ودمجه في 'pixels' الذي أصبح يسمى 'technical'
+  const [activeTab, setActiveTab] = useState<'stats' | 'orders' | 'products' | 'technical'>('stats');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // حساب الإحصائيات بأمان
   const totalRevenue = orders ? orders.reduce((acc, order) => acc + (order.total || 0), 0) : 0;
   const pendingOrders = orders ? orders.filter(o => o.status === 'pending').length : 0;
 
@@ -86,8 +84,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
             <SidebarItem id="stats" label="الإحصائيات" icon={BarChart3} />
             <SidebarItem id="orders" label="إدارة الطلبات" icon={ShoppingBag} />
             <SidebarItem id="products" label="المنتجات" icon={Package} />
-            <SidebarItem id="pixels" label="التتبع (Pixels)" icon={Activity} />
-            <SidebarItem id="settings" label="إعدادات الموقع" icon={Settings} />
+            <SidebarItem id="technical" label="الإعدادات والبيكسل" icon={Activity} />
           </nav>
         </div>
 
@@ -123,40 +120,6 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                     <p className="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase mb-1">طلبات قيد الانتظار</p>
                     <p className="text-3xl font-black text-gray-900 dark:text-white">{pendingOrders}</p>
                   </div>
-                </div>
-              </div>
-              
-              <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <h3 className="text-xl font-bold mb-6">آخر الطلبات</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-right">
-                    <thead>
-                      <tr className="text-gray-400 dark:text-gray-500 text-sm border-b dark:border-slate-800">
-                        <th className="pb-4 font-bold">العميل</th>
-                        <th className="pb-4 font-bold">المدينة</th>
-                        <th className="pb-4 font-bold">المبلغ</th>
-                        <th className="pb-4 font-bold">الحالة</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y dark:divide-slate-800">
-                      {orders?.slice(0, 5).map(order => (
-                        <tr key={order.id} className="text-sm">
-                          <td className="py-4 font-bold">{order.customerName}</td>
-                          <td className="py-4">{order.city}</td>
-                          <td className="py-4">{order.total.toLocaleString()} درهم</td>
-                          <td className="py-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              order.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                              order.status === 'pending' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
-                              'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                            }`}>
-                              {order.status === 'completed' ? 'تم التوصيل' : order.status === 'pending' ? 'قيد المراجعة' : 'ملغي'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>
@@ -225,40 +188,39 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
             </div>
           )}
 
-          {activeTab === 'pixels' && (
+          {activeTab === 'technical' && (
             <div className="space-y-8 animate-in fade-in">
               <div className="flex items-center gap-4 mb-4">
                 <div className="bg-blue-600 p-3 rounded-2xl text-white"><Activity size={32} /></div>
                 <div>
-                  <h2 className="text-3xl font-black">أكواد التتبع</h2>
-                  <p className="text-gray-400 font-bold">Pixel & Analytics</p>
+                  <h2 className="text-3xl font-black">الإعدادات التقنية</h2>
+                  <p className="text-gray-400 font-bold">إدارة البيكسل، الأمان، والربط</p>
                 </div>
               </div>
 
-              <form onSubmit={handleSettingsSave} className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-8">
-                <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-800/30">
-                  <h3 className="text-lg font-black text-blue-900 dark:text-blue-400 flex items-center gap-2 mb-6">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="FB" className="w-6" /> Facebook Pixel Settings
+              <form onSubmit={handleSettingsSave} className="space-y-8">
+                {/* 1. Facebook & Pixel Section */}
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+                  <h3 className="text-lg font-black flex items-center gap-2 text-blue-600">
+                    <Hash size={24} /> إعدادات التتبع (Pixels)
                   </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><Hash size={18} className="text-blue-500" /> Facebook Pixel ID</label>
+                      <label className="text-sm font-bold text-gray-500">Facebook Pixel ID</label>
                       <input 
                         type="text" 
-                        placeholder="أدخل كود البيكسل"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-blue-500 focus:outline-none transition"
+                        placeholder="أدخل كود الفيس بوك"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-blue-500 focus:outline-none"
                         value={settings?.pixels?.facebookPixelId || ''}
                         onChange={e => setSettings({...settings, pixels: {...(settings?.pixels || {}), facebookPixelId: e.target.value}} as any)}
                       />
                     </div>
-
                     <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><MessageSquare size={18} className="text-purple-500" /> TEXT EVENT</label>
+                      <label className="text-sm font-bold text-gray-500">TEXT EVENT</label>
                       <input 
                         type="text" 
-                        placeholder="مثل: Purchase"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-purple-500 focus:outline-none transition"
+                        placeholder="Purchase"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-purple-500 focus:outline-none"
                         value={settings?.pixels?.textEvent || ''}
                         onChange={e => setSettings({...settings, pixels: {...(settings?.pixels || {}), textEvent: e.target.value}} as any)}
                       />
@@ -266,76 +228,54 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Google Analytics ID</label>
-                    <input 
-                      type="text" 
-                      placeholder="G-XXXXXXXXXX"
-                      className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-green-500 focus:outline-none transition"
-                      value={settings?.pixels?.googleAnalyticsId || ''}
-                      onChange={e => setSettings({...settings, pixels: {...(settings?.pixels || {}), googleAnalyticsId: e.target.value}} as any)}
-                    />
+                {/* 2. Security & Domain Section */}
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+                  <h3 className="text-lg font-black flex items-center gap-2 text-red-600">
+                    <Lock size={24} /> الأمان والدومين
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500">كلمة سر اللوحة</label>
+                      <input 
+                        type="text" 
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-red-500 focus:outline-none font-mono"
+                        value={settings?.adminPassword || ''}
+                        onChange={e => setSettings({...settings, adminPassword: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500">رابط الدومين</label>
+                      <input 
+                        type="text" 
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-green-500 focus:outline-none"
+                        value={settings?.domain || ''}
+                        onChange={e => setSettings({...settings, domain: e.target.value})}
+                      />
+                    </div>
                   </div>
+                </div>
+
+                {/* 3. Integrations Section */}
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+                  <h3 className="text-lg font-black flex items-center gap-2 text-green-600">
+                    <ExternalLink size={24} /> الربط البرمجي
+                  </h3>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">TikTok Pixel ID</label>
+                    <label className="text-sm font-bold text-gray-500">رابط Google Sheets (Webhook)</label>
                     <input 
-                      type="text" 
-                      placeholder="Enter TikTok ID..."
-                      className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-pink-500 focus:outline-none transition"
-                      value={settings?.pixels?.tiktokPixelId || ''}
-                      onChange={e => setSettings({...settings, pixels: {...(settings?.pixels || {}), tiktokPixelId: e.target.value}} as any)}
+                      type="url" 
+                      placeholder="https://script.google.com/macros/s/..."
+                      className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-green-500 focus:outline-none"
+                      value={settings?.googleSheetsUrl || ''}
+                      onChange={e => setSettings({...settings, googleSheetsUrl: e.target.value})}
                     />
                   </div>
                 </div>
 
-                <button type="submit" className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition">
-                  <Save size={24} /> حفظ إعدادات التتبع
+                <button type="submit" className="w-full bg-black dark:bg-white dark:text-black text-white py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:opacity-90 transition shadow-2xl">
+                  <Save size={24} /> حفظ كافة الإعدادات التقنية
                 </button>
-              </form>
-            </div>
-          )}
-
-          {activeTab === 'settings' && (
-            <div className="space-y-8 animate-in fade-in">
-              <h2 className="text-3xl font-bold mb-8">إعدادات الموقع المتقدمة</h2>
-              <form onSubmit={handleSettingsSave} className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><Globe size={18} className="text-blue-500" /> رابط الدومين</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-green-500 focus:outline-none transition"
-                      value={settings?.domain || ''}
-                      onChange={e => setSettings({...settings, domain: e.target.value})}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><Lock size={18} className="text-red-500" /> كلمة سر اللوحة</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-red-500 focus:outline-none transition font-mono"
-                      value={settings?.adminPassword || ''}
-                      onChange={e => setSettings({...settings, adminPassword: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2 p-6 bg-green-50 dark:bg-green-900/10 rounded-3xl border border-green-100 dark:border-green-800/30">
-                  <label className="text-sm font-bold text-green-800 dark:text-green-400 flex items-center gap-2"><ExternalLink size={18} /> ربط Google Sheets</label>
-                  <input 
-                    type="url" 
-                    placeholder="https://script.google.com/macros/s/..."
-                    className="w-full px-5 py-4 rounded-2xl border-2 border-green-200 dark:border-slate-800 focus:border-green-500 focus:outline-none bg-white dark:bg-slate-800"
-                    value={settings?.googleSheetsUrl || ''}
-                    onChange={e => setSettings({...settings, googleSheetsUrl: e.target.value})}
-                  />
-                </div>
-
-                <button type="submit" className="w-full bg-black dark:bg-white dark:text-black text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-2 hover:opacity-90 transition">
-                  <Save size={24} /> تحديث الإعدادات الفنية
-                </button>
-                {saveSuccess && <p className="text-green-600 text-center font-bold">تم حفظ الإعدادات بنجاح!</p>}
+                {saveSuccess && <div className="text-center font-bold text-green-600 animate-bounce">تم الحفظ بنجاح!</div>}
               </form>
             </div>
           )}
