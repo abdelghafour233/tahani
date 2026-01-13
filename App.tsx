@@ -1,0 +1,192 @@
+
+import React, { useState, useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { ShoppingCart, LayoutDashboard, Home as HomeIcon, Package, Car, Laptop, ShoppingBag, Menu, X, ArrowLeft, ArrowRight, Save, Trash2, Plus } from 'lucide-react';
+import { Product, CartItem, Order, SiteSettings, Category } from './types';
+import { INITIAL_PRODUCTS, INITIAL_SETTINGS } from './constants';
+
+// Pages
+import HomePage from './pages/Home';
+import CategoryPage from './pages/Category';
+import ProductDetailPage from './pages/ProductDetail';
+import CartPage from './pages/Cart';
+import CheckoutPage from './pages/Checkout';
+import DashboardPage from './pages/Dashboard';
+
+const App: React.FC = () => {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [settings, setSettings] = useState<SiteSettings>(() => {
+    const saved = localStorage.getItem('site_settings');
+    return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
+  });
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const savedOrders = localStorage.getItem('site_orders');
+    if (savedOrders) setOrders(JSON.parse(savedOrders));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('site_settings', JSON.stringify(settings));
+  }, [settings]);
+
+  const addToCart = (product: Product) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateCartQuantity = (id: string, delta: number) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        const newQty = Math.max(1, item.quantity + delta);
+        return { ...item, quantity: newQty };
+      }
+      return item;
+    }));
+  };
+
+  const clearCart = () => setCart([]);
+
+  const placeOrder = (customerData: { name: string, city: string, phone: string }) => {
+    const newOrder: Order = {
+      id: `ORD-${Date.now()}`,
+      customerName: customerData.name,
+      city: customerData.city,
+      phone: customerData.phone,
+      items: cart.map(item => ({ productId: item.id, quantity: item.quantity, name: item.name, price: item.price })),
+      total: cart.reduce((acc, item) => acc + (item.price * item.quantity), 0),
+      date: new Date().toLocaleDateString('ar-MA'),
+      status: 'pending'
+    };
+    
+    const updatedOrders = [newOrder, ...orders];
+    setOrders(updatedOrders);
+    localStorage.setItem('site_orders', JSON.stringify(updatedOrders));
+    
+    // Simulate Analytics
+    console.log(`Tracking Purchase for Pixel: ${settings.pixels.facebookPixelId}`);
+    
+    // Simulate Google Sheets Sync
+    if (settings.googleSheetsUrl) {
+      console.log(`Sending order to Google Sheets: ${settings.googleSheetsUrl}`);
+    }
+    
+    clearCart();
+    return newOrder.id;
+  };
+
+  return (
+    <Router>
+      <div className="min-h-screen flex flex-col font-cairo">
+        {/* Navigation */}
+        <nav className="bg-white shadow-md sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16 items-center">
+              <div className="flex items-center gap-4">
+                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2">
+                  {isMenuOpen ? <X /> : <Menu />}
+                </button>
+                <Link to="/" className="text-2xl font-bold text-green-600 flex items-center gap-2">
+                  <ShoppingBag className="w-8 h-8" />
+                  <span>متجر النخبة</span>
+                </Link>
+              </div>
+
+              <div className="hidden md:flex space-x-reverse space-x-8 text-lg font-medium">
+                <Link to="/" className="hover:text-green-600 transition">الرئيسية</Link>
+                <Link to="/category/electronics" className="hover:text-green-600 transition">إلكترونيات</Link>
+                <Link to="/category/home" className="hover:text-green-600 transition">منزلية</Link>
+                <Link to="/category/cars" className="hover:text-green-600 transition">سيارات</Link>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <Link to="/cart" className="relative p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                  <ShoppingCart className="w-6 h-6" />
+                  {cart.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      {cart.reduce((a, b) => a + b.quantity, 0)}
+                    </span>
+                  )}
+                </Link>
+                <Link to="/dashboard" className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                  <LayoutDashboard className="w-6 h-6" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden bg-white border-t p-4 space-y-4 shadow-lg animate-in slide-in-from-top">
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg">إلكترونيات</Link>
+              <Link to="/category/home" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg">منزلية</Link>
+              <Link to="/category/cars" onClick={() => setIsMenuOpen(false)} className="block py-2 text-lg">سيارات</Link>
+            </div>
+          )}
+        </nav>
+
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage products={products} />} />
+            <Route path="/category/:type" element={<CategoryPage products={products} />} />
+            <Route path="/product/:id" element={<ProductDetailPage products={products} addToCart={addToCart} />} />
+            <Route path="/cart" element={<CartPage cart={cart} removeFromCart={removeFromCart} updateQuantity={updateCartQuantity} />} />
+            <Route path="/checkout" element={<CheckoutPage cart={cart} placeOrder={placeOrder} />} />
+            <Route 
+              path="/dashboard/*" 
+              element={
+                <DashboardPage 
+                  orders={orders} 
+                  settings={settings} 
+                  setSettings={setSettings} 
+                  products={products}
+                  setProducts={setProducts}
+                  setOrders={setOrders}
+                />
+              } 
+            />
+          </Routes>
+        </main>
+
+        <footer className="bg-gray-900 text-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
+            <div>
+              <h3 className="text-xl font-bold mb-4">متجر النخبة</h3>
+              <p className="text-gray-400">وجهتكم الأولى للتسوق في المغرب. جودة عالية وأفضل الأسعار.</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-4">روابط سريعة</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link to="/category/electronics" className="hover:text-white">إلكترونيات</Link></li>
+                <li><Link to="/category/home" className="hover:text-white">منتجات منزلية</Link></li>
+                <li><Link to="/category/cars" className="hover:text-white">سيارات</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-4">الدعم الفني</h3>
+              <p className="text-gray-400">نحن هنا لمساعدتكم على مدار الساعة.</p>
+              <p className="mt-2 font-bold text-green-400">اتصل بنا: 0612345678</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+            <p>© 2024 متجر النخبة. جميع الحقوق محفوظة.</p>
+          </div>
+        </footer>
+      </div>
+    </Router>
+  );
+};
+
+export default App;
