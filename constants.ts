@@ -6,7 +6,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     id: 'sg1',
     name: 'نظارات ذكية Bluetooth 5.3',
     nameEn: 'Smart Bluetooth Glasses Pro',
-    price: 349,
+    price: 199,
     category: 'electronics',
     image: 'https://tmpfiles.org/dl/19667456/storimage_9pbbtke24.png',
     gallery: [
