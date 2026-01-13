@@ -49,9 +49,7 @@ const INITIAL_PRODUCTS = [
 💎 اختيار مثالي للعمل، القيادة، الرياضة، والاستخدام اليومي
 
 📩 اطلبه الآن واستمتع بتجربة ذكية مختلفة تمامًا!`
-    },
-    { id: 'e1', name: 'هاتف ذكي ألترا 2024', category: 'electronics', price: 4500, image: 'https://picsum.photos/seed/phone/600/400', images: [], desc: 'أحدث هاتف ذكي بمواصفات عالمية وكاميرا احترافية.' },
-    { id: 'h1', name: 'ماكينة تحضير القهوة', category: 'home', price: 1200, image: 'https://picsum.photos/seed/coffee/600/400', images: [], desc: 'استمتع بأفضل كوب قهوة في منزلك كل صباح.' }
+    }
 ];
 
 let products = JSON.parse(localStorage.getItem('elite_products') || JSON.stringify(INITIAL_PRODUCTS));
