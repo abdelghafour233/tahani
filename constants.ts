@@ -8,9 +8,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     nameEn: 'Smart Bluetooth Glasses Pro',
     price: 199,
     category: 'electronics',
-    image: 'http://tmpfiles.org/dl/19688171/storimage_yxevx0pry.png',
+    image: 'http://tmpfiles.org/dl/19791177/storimage_b7wq7qqkg.png',
     gallery: [
-      'http://tmpfiles.org/dl/19688171/storimage_yxevx0pry.png',
+      'http://tmpfiles.org/dl/19791177/storimage_b7wq7qqkg.png',
       'https://tmpfiles.org/dl/19667456/storimage_9pbbtke24.png'
     ],
     rating: 5,
