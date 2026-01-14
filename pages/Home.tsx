@@ -3,13 +3,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { Laptop, Car, Watch, Glasses, Star, ChevronLeft } from 'lucide-react';
+import { Laptop, Car, Watch, Glasses, Star, ChevronLeft, Facebook, Twitter, MessageCircle, Link as LinkIcon, Share2 } from 'lucide-react';
 
 interface HomeProps {
   products: Product[];
 }
 
 const Home: React.FC<HomeProps> = ({ products }) => {
+  const handleShare = (e: React.MouseEvent, platform: string, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const url = `${window.location.origin}/#/product/${product.id}`;
+    const text = `اكتشف هذا المنتج الرائع في berrima.store: ${product.name}`;
+    
+    switch (platform) {
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(url);
+        alert('تم نسخ رابط المنتج بنجاح!');
+        break;
+    }
+  };
+
   return (
     <div className="space-y-10 md:space-y-16 pb-16">
       {/* Hero Section */}
@@ -39,31 +63,24 @@ const Home: React.FC<HomeProps> = ({ products }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl md:text-4xl font-black mb-8 md:12 text-center text-gray-800 dark:text-gray-100">تصفح أقسامنا</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {/* Electronics */}
           <Link to="/category/electronics" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
             <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
               <Laptop className="w-8 h-8 md:w-12 md:h-12" />
             </div>
             <h3 className="text-base md:text-xl font-black">إلكترونيات</h3>
           </Link>
-          
-          {/* Glasses/Accessories */}
           <Link to="/category/accessories" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
             <div className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
               <Glasses className="w-8 h-8 md:w-12 md:h-12" />
             </div>
             <h3 className="text-base md:text-xl font-black">نظارات</h3>
           </Link>
-
-          {/* Car Accessories */}
           <Link to="/category/cars" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
             <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
               <Car className="w-8 h-8 md:w-12 md:h-12" />
             </div>
             <h3 className="text-base md:text-xl font-black">إكسسوارات السيارات</h3>
           </Link>
-
-          {/* Watches */}
           <Link to="/category/watches" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
             <div className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
               <Watch className="w-8 h-8 md:w-12 md:h-12" />
@@ -86,30 +103,40 @@ const Home: React.FC<HomeProps> = ({ products }) => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {products.map(product => (
-            <Link key={product.id} to={`/product/${product.id}`} className="group bg-white dark:bg-slate-900 rounded-[25px] md:rounded-[35px] overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <div className="relative aspect-square bg-gray-50 dark:bg-slate-800 flex items-center justify-center p-4">
-                <img src={product.image} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition duration-700" />
-                <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-0.5 rounded-full text-xs font-black shadow-lg">
-                  جديد
+            <div key={product.id} className="group bg-white dark:bg-slate-900 rounded-[25px] md:rounded-[35px] overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-500 flex flex-col">
+              <Link to={`/product/${product.id}`} className="block flex-grow">
+                <div className="relative aspect-square bg-gray-50 dark:bg-slate-800 flex items-center justify-center p-4">
+                  <img src={product.image} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition duration-700" />
+                  <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-0.5 rounded-full text-xs font-black shadow-lg">
+                    جديد
+                  </div>
                 </div>
-              </div>
-              <div className="p-5 md:p-6 flex-grow flex flex-col text-center">
-                <h3 className="font-black text-xl md:text-2xl mb-1 text-gray-800 dark:text-gray-100 group-hover:text-green-600 transition line-clamp-1">{product.name}</h3>
-                
-                {/* Stars Rating */}
-                <div className="flex justify-center gap-0.5 md:gap-1 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                  ))}
-                  <span className="text-[10px] md:text-xs text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
-                </div>
-
-                <div className="mt-auto">
+                <div className="p-5 md:p-6 text-center">
+                  <h3 className="font-black text-xl md:text-2xl mb-1 text-gray-800 dark:text-gray-100 group-hover:text-green-600 transition line-clamp-1">{product.name}</h3>
+                  <div className="flex justify-center gap-0.5 md:gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    ))}
+                    <span className="text-[10px] md:text-xs text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
+                  </div>
                   <span className="text-2xl md:text-3xl font-black text-green-700 dark:text-green-400 block mb-4 md:mb-6">{product.price.toLocaleString()} درهم</span>
                   <button className="w-full bg-gray-900 dark:bg-slate-800 text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-black hover:bg-black transition active:scale-95">اشتري الآن</button>
                 </div>
+              </Link>
+              
+              {/* Social Share Bar */}
+              <div className="px-5 pb-5 pt-0 mt-auto border-t dark:border-slate-800">
+                <div className="flex items-center justify-between pt-4">
+                  <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1"><Share2 size={12} /> مشاركة:</span>
+                  <div className="flex gap-2">
+                    <button onClick={(e) => handleShare(e, 'whatsapp', product)} className="p-2 bg-green-50 dark:bg-green-900/10 text-green-600 rounded-full hover:bg-green-100 transition"><MessageCircle size={16} /></button>
+                    <button onClick={(e) => handleShare(e, 'facebook', product)} className="p-2 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-full hover:bg-blue-100 transition"><Facebook size={16} /></button>
+                    <button onClick={(e) => handleShare(e, 'twitter', product)} className="p-2 bg-sky-50 dark:bg-sky-900/10 text-sky-500 rounded-full hover:bg-sky-100 transition"><Twitter size={16} /></button>
+                    <button onClick={(e) => handleShare(e, 'copy', product)} className="p-2 bg-gray-50 dark:bg-slate-800 text-gray-500 rounded-full hover:bg-gray-100 transition"><LinkIcon size={16} /></button>
+                  </div>
+                </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </section>

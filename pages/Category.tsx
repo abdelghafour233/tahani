@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Product, Category } from '../types';
-import { Star } from 'lucide-react';
+import { Star, Facebook, Twitter, MessageCircle, Link as LinkIcon, Share2 } from 'lucide-react';
 
 interface CategoryPageProps {
   products: Product[];
@@ -21,6 +21,30 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ products }) => {
       case 'watches': return 'ساعات';
       case 'accessories': return 'نظارات واكسسوارات';
       default: return 'المنتجات';
+    }
+  };
+
+  const handleShare = (e: React.MouseEvent, platform: string, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const url = `${window.location.origin}/#/product/${product.id}`;
+    const text = `اكتشف هذا المنتج الرائع في berrima.store: ${product.name}`;
+    
+    switch (platform) {
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(url);
+        alert('تم نسخ رابط المنتج بنجاح!');
+        break;
     }
   };
 
@@ -51,32 +75,45 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ products }) => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredProducts.map(product => (
-            <Link key={product.id} to={`/product/${product.id}`} className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
-              </div>
-              <div className="p-5 flex-grow flex flex-col">
-                <h3 className="font-bold text-xl mb-1 group-hover:text-green-600 transition dark:text-white">{product.name}</h3>
-                
-                <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                  ))}
-                  <span className="text-[10px] text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
+            <div key={product.id} className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <Link to={`/product/${product.id}`} className="block flex-grow">
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
                 </div>
-
-                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">{product.description}</p>
-                <div className="mt-auto flex justify-between items-end">
-                  <div>
-                    <span className="block text-2xl font-extrabold text-green-700 dark:text-green-400">{product.price.toLocaleString()}</span>
-                    <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">درهم مغربي</span>
+                <div className="p-5 flex-grow flex flex-col">
+                  <h3 className="font-bold text-xl mb-1 group-hover:text-green-600 transition dark:text-white">{product.name}</h3>
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                    ))}
+                    <span className="text-[10px] text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
                   </div>
-                  <button className="bg-green-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-100">
-                    اشتري الآن
-                  </button>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">{product.description}</p>
+                  <div className="mt-auto flex justify-between items-end">
+                    <div>
+                      <span className="block text-2xl font-extrabold text-green-700 dark:text-green-400">{product.price.toLocaleString()}</span>
+                      <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">درهم مغربي</span>
+                    </div>
+                    <button className="bg-green-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-100">
+                      اشتري الآن
+                    </button>
+                  </div>
+                </div>
+              </Link>
+              
+              {/* Social Share Bar */}
+              <div className="px-5 pb-5 pt-4 mt-auto border-t dark:border-slate-800">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1"><Share2 size={12} /> مشاركة المنتج:</span>
+                  <div className="flex gap-2">
+                    <button onClick={(e) => handleShare(e, 'whatsapp', product)} className="p-1.5 bg-green-50 dark:bg-green-900/10 text-green-600 rounded-full hover:bg-green-100 transition"><MessageCircle size={14} /></button>
+                    <button onClick={(e) => handleShare(e, 'facebook', product)} className="p-1.5 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-full hover:bg-blue-100 transition"><Facebook size={14} /></button>
+                    <button onClick={(e) => handleShare(e, 'twitter', product)} className="p-1.5 bg-sky-50 dark:bg-sky-900/10 text-sky-500 rounded-full hover:bg-sky-100 transition"><Twitter size={14} /></button>
+                    <button onClick={(e) => handleShare(e, 'copy', product)} className="p-1.5 bg-gray-50 dark:bg-slate-800 text-gray-500 rounded-full hover:bg-gray-100 transition"><LinkIcon size={14} /></button>
+                  </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

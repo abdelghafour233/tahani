@@ -17,7 +17,11 @@ import {
   MessageSquare, 
   Minus, 
   Plus,
-  ArrowDown
+  ArrowDown,
+  Facebook,
+  Twitter,
+  MessageCircle,
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface ProductDetailPageProps {
@@ -44,6 +48,27 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const handleShare = (platform: string) => {
+    const url = window.location.href;
+    const text = `اكتشف هذا المنتج الرائع في berrima.store: ${product.name}`;
+    
+    switch (platform) {
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(url);
+        alert('تم نسخ رابط المنتج بنجاح!');
+        break;
+    }
+  };
+
   const total = product.price * quantity;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -55,7 +80,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
     
     setIsOrdering(true);
     
-    // Construct WhatsApp Message
     const message = `*طلب جديد من berrima.store*%0A%0A` +
       `*المنتج:* ${product.name}%0A` +
       `*الكمية:* ${quantity}%0A` +
@@ -98,7 +122,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mb-12">
         {/* Gallery */}
         <div className="space-y-4 md:space-y-6">
           <div className="rounded-[30px] md:rounded-[40px] overflow-hidden border-2 border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 shadow-xl flex items-center justify-center p-4">
@@ -146,9 +170,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
               <button className="p-2 md:p-3 bg-gray-100 dark:bg-slate-800 rounded-full hover:text-pink-600 transition shadow-sm">
                 <Heart size={20} />
               </button>
-              <button className="p-2 md:p-3 bg-gray-100 dark:bg-slate-800 rounded-full hover:text-blue-600 transition shadow-sm">
-                <Share2 size={20} />
-              </button>
             </div>
           </div>
 
@@ -163,12 +184,48 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
 
           <button 
             onClick={scrollToForm}
-            className="w-full h-16 md:h-20 rounded-2xl md:rounded-3xl bg-green-600 text-white text-xl md:text-2xl font-black shadow-xl hover:bg-green-700 transform active:scale-95 transition flex items-center justify-center gap-3 md:gap-4 group"
+            className="w-full h-16 md:h-20 rounded-2xl md:rounded-3xl bg-green-600 text-white text-xl md:text-2xl font-black shadow-xl hover:bg-green-700 transform active:scale-95 transition flex items-center justify-center gap-3 md:gap-4 group mb-6"
           >
             <Zap size={24} className="md:w-8 md:h-8 group-hover:animate-bounce" />
             أطلب الآن - الدفع عند الاستلام
             <ArrowDown size={24} className="mr-auto hidden md:block" />
           </button>
+          
+          {/* Social Media Sharing Section */}
+          <div className="p-6 bg-white dark:bg-slate-900 rounded-[25px] border border-gray-100 dark:border-slate-800 shadow-sm mb-6">
+            <div className="flex flex-col md:flex-row items-center gap-4 justify-between">
+              <span className="font-black text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                <Share2 className="text-green-600" size={20} /> شارك هذا المنتج مع أصدقائك:
+              </span>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => handleShare('whatsapp')} 
+                  className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-600 transition shadow-md active:scale-95"
+                >
+                  <MessageCircle size={18} /> واتساب
+                </button>
+                <button 
+                  onClick={() => handleShare('facebook')} 
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-blue-700 transition shadow-md active:scale-95"
+                >
+                  <Facebook size={18} /> فيسبوك
+                </button>
+                <button 
+                  onClick={() => handleShare('twitter')} 
+                  className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl font-bold hover:opacity-90 transition shadow-md active:scale-95"
+                >
+                  <Twitter size={18} /> X
+                </button>
+                <button 
+                  onClick={() => handleShare('copy')} 
+                  className="p-2 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 transition active:scale-95"
+                  title="نسخ الرابط"
+                >
+                  <LinkIcon size={22} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -207,7 +264,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
         <div className="p-8 md:p-12">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             <div className="space-y-6">
-              {/* Name */}
               <div className="space-y-2">
                 <label className="text-lg font-bold flex items-center gap-2">
                   <User size={20} className="text-green-600" /> الاسم
@@ -221,7 +277,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
                 />
               </div>
 
-              {/* City */}
               <div className="space-y-2">
                 <label className="text-lg font-bold flex items-center gap-2">
                   <MapPin size={20} className="text-green-600" /> المدينة
@@ -239,7 +294,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, placeOr
                 </select>
               </div>
 
-              {/* Phone */}
               <div className="space-y-2">
                 <label className="text-lg font-bold flex items-center gap-2">
                   <Phone size={20} className="text-green-600" /> رقم الهاتف
