@@ -5,9 +5,9 @@ export const STORE_WHATSAPP_NUMBER = "212649075664";
 export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'netflix-1',
-    name: 'اشتراك Netflix Premium - شهر كامل',
-    nameEn: 'Netflix Premium Subscription - 1 Month',
-    price: 45,
+    name: 'اشتراك Netflix Premium ULTRA HD - شهر كامل',
+    nameEn: 'Netflix Premium Subscription ULTRA HD - 1 Month',
+    price: 35,
     category: 'electronics',
     image: 'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?q=80&w=1000&auto=format&fit=crop',
     gallery: [
@@ -15,15 +15,15 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     rating: 5,
     reviewsCount: 1240,
-    description: `🍿 استمتع بأفضل الأفلام والمسلسلات بدقة 4K Ultra HD!
+    description: `🍿 استمتع بأفضل الأفلام والمسلسلات بأعلى دقة ممكنة 4K ULTRA HD!
 
 ✅ حساب بريميوم رسمي ومضمون 100%.
-✅ جودة عالية جداً 4K / HDR.
+✅ جودة فائقة ULTRA HD / HDR.
 ✅ يدعم جميع الأجهزة (تلفاز، هاتف، حاسوب).
 ✅ ضمان كامل طوال مدة الاشتراك.
 ✅ تسليم فوري للمعلومات عبر الواتساب بعد التأكيد.
 
-📦 العرض: اشتراك شهر كامل بسعر حصري.`
+📦 العرض: اشتراك شهر كامل بسعر حصري ومخفض.`
   },
   {
     id: 'canva-pro',
