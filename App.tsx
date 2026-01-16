@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, Key, MessageCircle, Zap, ShieldCheck, Crown } from 'lucide-react';
@@ -8,7 +9,6 @@ import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER } from './con
 import HomePage from './pages/Home';
 import CategoryPage from './pages/Category';
 import ProductDetailPage from './pages/ProductDetail';
-import CheckoutPage from './pages/Checkout';
 import DashboardPage from './pages/Dashboard';
 import PrivacyPolicyPage from './pages/PrivacyPolicy';
 
@@ -55,24 +55,6 @@ const App: React.FC = () => {
     }
   };
 
-  const placeOrder = (product: Product, quantity: number, customerData: { name: string, city: string, phone: string }) => {
-    const newOrder: Order = {
-      id: `ORD-${Date.now()}`,
-      customerName: customerData.name,
-      city: customerData.city,
-      phone: customerData.phone,
-      items: [{ productId: product.id, quantity, name: product.name, price: product.price }],
-      total: product.price * quantity,
-      date: new Date().toLocaleDateString('ar-MA'),
-      status: 'pending'
-    };
-    
-    const updatedOrders = [newOrder, ...orders];
-    setOrders(updatedOrders);
-    localStorage.setItem('site_orders', JSON.stringify(updatedOrders));
-    return newOrder.id;
-  };
-
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === (settings.adminPassword || INITIAL_SETTINGS.adminPassword)) {
@@ -94,7 +76,7 @@ const App: React.FC = () => {
           rel="noopener noreferrer"
           className="fixed bottom-8 left-8 z-[100] group"
         >
-          <div className="absolute -inset-2 bg-brand-500/20 rounded-full blur group-hover:bg-brand-500/40 transition duration-500"></div>
+          <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>
           <div className="relative bg-brand-600 text-white p-5 rounded-full shadow-2xl transition-all transform group-hover:scale-110 active:scale-95">
             <MessageCircle size={32} fill="white" />
           </div>
@@ -134,9 +116,9 @@ const App: React.FC = () => {
           {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden bg-white dark:bg-slate-900 p-6 flex flex-col font-black border-t dark:border-slate-800 text-right space-y-4 shadow-2xl">
-              <Link to="/" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl hover:bg-brand-50 dark:hover:bg-brand-900/10">الرئيسية</Link>
-              <Link to="/category/electronics" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl hover:bg-brand-50 dark:hover:bg-brand-900/10">الخدمات الرقمية</Link>
-              <Link to="/privacy-policy" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl hover:bg-brand-50 dark:hover:bg-brand-900/10">سياسة التفعيل</Link>
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الخدمات الرقمية</Link>
+              <Link to="/privacy-policy" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">سياسة التفعيل</Link>
               <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="p-4 bg-brand-600 text-white rounded-2xl text-center shadow-lg">لوحة الإدارة</Link>
             </div>
           )}
@@ -146,8 +128,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<HomePage products={products} />} />
             <Route path="/category/:type" element={<CategoryPage products={products} />} />
-            <Route path="/product/:id" element={<ProductDetailPage products={products} placeOrder={placeOrder} />} />
-            <Route path="/checkout/:productId" element={<CheckoutPage products={products} placeOrder={placeOrder} />} />
+            <Route path="/product/:id" element={<ProductDetailPage products={products} />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/dashboard/*" element={
               isAuthenticated ? (
@@ -219,11 +200,11 @@ const App: React.FC = () => {
                     جميع الخدمات مفعلة
                   </div>
                </div>
-               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v4.0 Elite Edition | 2024</p>
+               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.0 WhatsApp Edition | 2024</p>
             </div>
           </div>
           <div className="mt-20 pt-10 border-t border-slate-800 text-center text-slate-500 font-bold">
-            <p>© {new Date().getFullYear()} berrima.store. كل التحديثات مرسلة بنجاح إلى GitHub.</p>
+            <p>© {new Date().getFullYear()} berrima.store. جميع الطلبات تتم مباشرة عبر الواتساب.</p>
           </div>
         </footer>
       </div>
