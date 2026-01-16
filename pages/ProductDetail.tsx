@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Product } from '../types';
@@ -15,11 +14,10 @@ import {
   Twitter,
   MessageCircle,
   Link as LinkIcon,
-  Key,
-  CheckCircle2
+  Key
 } from 'lucide-react';
 
-// Custom Pinterest Icon for better UX
+// Custom Pinterest Icon
 const PinterestIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M12.289 2C6.617 2 2 6.617 2 12.289c0 4.332 2.674 8.013 6.457 9.531-.088-.81-.166-2.052.034-2.937.181-.794 1.166-4.943 1.166-4.943s-.297-.595-.297-1.474c0-1.383.801-2.415 1.8-2.415.849 0 1.258.637 1.258 1.402 0 .854-.544 2.131-.823 3.312-.235.988.494 1.794 1.467 1.794 1.76 0 3.117-1.857 3.117-4.539 0-2.373-1.706-4.033-4.143-4.033-2.826 0-4.484 2.119-4.484 4.31 0 .854.329 1.77.738 2.268.081.098.092.184.068.285-.074.312-.241.985-.274 1.121-.044.177-.145.214-.334.126-1.24-.577-2.015-2.389-2.015-3.845 0-3.13 2.275-6.005 6.558-6.005 3.444 0 6.12 2.455 6.12 5.734 0 3.42-2.157 6.174-5.152 6.174-1.006 0-1.95-.523-2.274-1.141l-.618 2.356c-.223.858-.826 1.933-1.229 2.589 1.056.326 2.174.502 3.334.502 5.672 0 10.289-4.617 10.289-10.289S17.961 2 12.289 2z"/>
@@ -69,7 +67,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
   const total = product.price * quantity;
 
   const handleDirectWhatsAppOrder = () => {
-    const message = `مرحباً berrima.store 👋%0A%0Aأود طلب الخدمة التالية:%0A📦 *${product.name}*%0A🔢 *الكمية:* ${quantity}%0A💰 *الإجمالي:* ${total} درهم%0A%0Aيرجى تزويدي بطرق الدفع وكيفية التفعيل.`;
+    const message = `مرحباً berrima.store 👋%0A%0Aأود طلب الخدمة التالية:%0A📦 *المنتج:* ${product.name}%0A🔢 *الكمية:* ${quantity}%0A💰 *الإجمالي:* ${total} درهم%0A%0Aيرجى تزويدي بطرق الدفع المتاحة لتفعيل اشتراكي فوراً.`;
     const whatsappUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -127,7 +125,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
               <div className="text-5xl font-black text-brand-600 dark:text-brand-400 leading-none mb-2">
                 {product.price.toLocaleString()} <span className="text-2xl">درهم</span>
               </div>
-              <p className="text-slate-400 font-bold">بدون رسوم إضافية مخفية</p>
+              <p className="text-slate-400 font-bold">السعر شامل للتفعيل والضمان</p>
             </div>
 
             <div className="flex items-center bg-white dark:bg-slate-800 rounded-2xl p-2 border dark:border-slate-700 shadow-sm">
@@ -141,7 +139,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
             {product.description}
           </p>
 
-          {/* Action Area */}
+          {/* Action Area - COMPLETELY STREAMLINED */}
           <div className="space-y-8 bg-white dark:bg-slate-900 p-2 rounded-[35px]">
             <div className="space-y-4">
               <button 
@@ -152,52 +150,22 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
                 أطلب عبر الواتساب الآن
               </button>
               <p className="text-center text-slate-400 font-bold flex items-center justify-center gap-2">
-                <ShieldCheck size={18} className="text-brand-500" /> دفع آمن وضمان كامل على الخدمة
+                <ShieldCheck size={18} className="text-brand-500" /> يتم الطلب مباشرة دون الحاجة لملء أي استمارات
               </p>
             </div>
 
-            {/* INTEGRATED SOCIAL SHARE UNDER BUTTON */}
+            {/* Social Share Bar */}
             <div className="pt-6 border-t-2 border-slate-50 dark:border-slate-800/50">
               <div className="flex flex-col items-center gap-5">
                 <span className="font-black text-slate-400 text-sm uppercase tracking-widest flex items-center gap-2">
-                  <Share2 size={16} /> شارك العرض واكسب الأجر
+                  <Share2 size={16} /> شارك هذا العرض
                 </span>
                 <div className="flex flex-wrap justify-center gap-4">
-                  <button 
-                    onClick={() => handleShare('whatsapp')} 
-                    className="w-14 h-14 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl hover:bg-green-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-green-500/5"
-                    title="واتساب"
-                  >
-                    <MessageCircle size={24} />
-                  </button>
-                  <button 
-                    onClick={() => handleShare('facebook')} 
-                    className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-blue-500/5"
-                    title="فيسبوك"
-                  >
-                    <Facebook size={24} />
-                  </button>
-                  <button 
-                    onClick={() => handleShare('twitter')} 
-                    className="w-14 h-14 bg-sky-50 dark:bg-sky-900/20 text-sky-500 rounded-2xl hover:bg-sky-500 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-sky-500/5"
-                    title="تويتر"
-                  >
-                    <Twitter size={24} />
-                  </button>
-                  <button 
-                    onClick={() => handleShare('pinterest')} 
-                    className="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-red-500/5"
-                    title="بنتريست"
-                  >
-                    <PinterestIcon size={24} />
-                  </button>
-                  <button 
-                    onClick={() => handleShare('copy')} 
-                    className="w-14 h-14 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-slate-600 dark:hover:bg-slate-700 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-black/5"
-                    title="نسخ الرابط"
-                  >
-                    <LinkIcon size={24} />
-                  </button>
+                  <button onClick={() => handleShare('whatsapp')} className="w-14 h-14 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl hover:bg-green-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><MessageCircle size={24} /></button>
+                  <button onClick={() => handleShare('facebook')} className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><Facebook size={24} /></button>
+                  <button onClick={() => handleShare('twitter')} className="w-14 h-14 bg-sky-50 dark:bg-sky-900/20 text-sky-500 rounded-2xl hover:bg-sky-500 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><Twitter size={24} /></button>
+                  <button onClick={() => handleShare('pinterest')} className="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><PinterestIcon size={24} /></button>
+                  <button onClick={() => handleShare('copy')} className="w-14 h-14 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-slate-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><LinkIcon size={24} /></button>
                 </div>
               </div>
             </div>
@@ -205,36 +173,21 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
         </div>
       </div>
 
-      {/* Modern Trust Features Grid */}
+      {/* Trust Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
         {[
-          { icon: Zap, title: "تسليم فوري", desc: "استلم معلومات حسابك فوراً", color: "text-amber-500", bg: "bg-amber-500/10" },
+          { icon: Zap, title: "تفعيل فوري", desc: "استلم معلومات حسابك فوراً", color: "text-amber-500", bg: "bg-amber-500/10" },
           { icon: ShieldCheck, title: "ضمان رسمي", desc: "اشتراكات أصلية 100% ومستقرة", color: "text-brand-500", bg: "bg-brand-500/10" },
           { icon: Key, title: "دعم فني", desc: "نحن معك طوال مدة اشتراكك", color: "text-blue-500", bg: "bg-blue-500/10" }
         ].map((f, i) => (
-          <div key={i} className="flex items-center gap-6 p-8 bg-white dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all">
-            <div className={`${f.bg} ${f.color} p-5 rounded-3xl`}>
-              <f.icon size={32} />
-            </div>
+          <div key={i} className="flex items-center gap-6 p-8 bg-white dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm transition-all">
+            <div className={`${f.bg} ${f.color} p-5 rounded-3xl`}><f.icon size={32} /></div>
             <div>
               <h4 className="text-xl font-black">{f.title}</h4>
               <p className="text-slate-400 font-bold">{f.desc}</p>
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Quick Help Card */}
-      <div className="max-w-4xl mx-auto bg-slate-900 dark:bg-brand-600 text-white p-12 rounded-[50px] text-center shadow-2xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
-        <h2 className="text-3xl md:text-4xl font-black mb-6">هل لديك أي استفسار قبل الطلب؟</h2>
-        <p className="text-slate-300 dark:text-brand-100 text-xl font-bold mb-10 max-w-2xl mx-auto">فريق الدعم متاح الآن للإجابة على جميع تساؤلاتك وتوجيهك لاختيار الباقة الأنسب لك.</p>
-        <button 
-          onClick={() => window.open(`https://wa.me/${STORE_WHATSAPP_NUMBER}?text=مرحباً، لدي استفسار بخصوص منتج ${product.name}`, '_blank')}
-          className="bg-white text-slate-900 px-10 py-5 rounded-2xl font-black text-xl hover:scale-105 transition active:scale-95 flex items-center justify-center gap-3 mx-auto"
-        >
-          <MessageSquare size={24} /> تحدث مع الدعم الفني
-        </button>
       </div>
     </div>
   );
