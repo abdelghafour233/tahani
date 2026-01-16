@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>berrima.store | متجر الاشتراكات والخدمات الرقمية</title>
+    <title>berrima.store | متجر الخدمات والاشتراكات الرقمية v4.0</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -21,7 +21,8 @@
                             500: '#10b981',
                             600: '#059669',
                             700: '#047857',
-                        }
+                        },
+                        darkest: '#020617'
                     }
                 },
             },
@@ -42,11 +43,11 @@
             -webkit-backdrop-filter: blur(12px);
         }
         .dark .glass-nav {
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(2, 6, 23, 0.8);
+            border-bottom-color: rgba(30, 41, 59, 1);
         }
-        .hero-gradient {
-            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent),
-                        radial-gradient(circle at bottom left, rgba(79, 70, 229, 0.1), transparent);
+        .hero-glow {
+            background: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.15), transparent 70%);
         }
     </style>
     <script>
@@ -71,8 +72,9 @@
 }
 </script>
 </head>
-<body class="bg-gray-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
+<body class="bg-slate-50 text-slate-900 dark:bg-darkest dark:text-slate-100 transition-colors duration-300">
     <div id="app"></div>
-    <script src="/index.tsx" type="module"></script>
+    <!-- Entry point for Vite/Vercel -->
+    <script src="./index.tsx" type="module"></script>
 </body>
 </html>
