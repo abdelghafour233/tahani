@@ -19,6 +19,13 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+// Custom Pinterest Icon for better UX
+const PinterestIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12.289 2C6.617 2 2 6.617 2 12.289c0 4.332 2.674 8.013 6.457 9.531-.088-.81-.166-2.052.034-2.937.181-.794 1.166-4.943 1.166-4.943s-.297-.595-.297-1.474c0-1.383.801-2.415 1.8-2.415.849 0 1.258.637 1.258 1.402 0 .854-.544 2.131-.823 3.312-.235.988.494 1.794 1.467 1.794 1.76 0 3.117-1.857 3.117-4.539 0-2.373-1.706-4.033-4.143-4.033-2.826 0-4.484 2.119-4.484 4.31 0 .854.329 1.77.738 2.268.081.098.092.184.068.285-.074.312-.241.985-.274 1.121-.044.177-.145.214-.334.126-1.24-.577-2.015-2.389-2.015-3.845 0-3.13 2.275-6.005 6.558-6.005 3.444 0 6.12 2.455 6.12 5.734 0 3.42-2.157 6.174-5.152 6.174-1.006 0-1.95-.523-2.274-1.141l-.618 2.356c-.223.858-.826 1.933-1.229 2.589 1.056.326 2.174.502 3.334.502 5.672 0 10.289-4.617 10.289-10.289S17.961 2 12.289 2z"/>
+  </svg>
+);
+
 interface ProductDetailPageProps {
   products: Product[];
 }
@@ -37,6 +44,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
   const handleShare = (platform: string) => {
     const url = window.location.href;
     const text = `اكتشف هذا المنتج الرائع في berrima.store: ${product.name}`;
+    const image = product.image;
     
     switch (platform) {
       case 'whatsapp':
@@ -47,6 +55,9 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
         break;
       case 'twitter':
         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'pinterest':
+        window.open(`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(image)}&description=${encodeURIComponent(text)}`, '_blank');
         break;
       case 'copy':
         navigator.clipboard.writeText(url);
@@ -146,39 +157,46 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
             </div>
 
             {/* INTEGRATED SOCIAL SHARE UNDER BUTTON */}
-            <div className="pt-4 border-t-2 border-slate-50 dark:border-slate-800/50">
+            <div className="pt-6 border-t-2 border-slate-50 dark:border-slate-800/50">
               <div className="flex flex-col items-center gap-5">
                 <span className="font-black text-slate-400 text-sm uppercase tracking-widest flex items-center gap-2">
-                  <Share2 size={16} /> شارك هذا العرض مع أصدقائك
+                  <Share2 size={16} /> شارك العرض واكسب الأجر
                 </span>
-                <div className="flex justify-center gap-4">
+                <div className="flex flex-wrap justify-center gap-4">
                   <button 
                     onClick={() => handleShare('whatsapp')} 
-                    className="w-16 h-16 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl hover:bg-green-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-green-500/5"
+                    className="w-14 h-14 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl hover:bg-green-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-green-500/5"
                     title="واتساب"
                   >
-                    <MessageCircle size={28} />
+                    <MessageCircle size={24} />
                   </button>
                   <button 
                     onClick={() => handleShare('facebook')} 
-                    className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-blue-500/5"
+                    className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-blue-500/5"
                     title="فيسبوك"
                   >
-                    <Facebook size={28} />
+                    <Facebook size={24} />
                   </button>
                   <button 
                     onClick={() => handleShare('twitter')} 
-                    className="w-16 h-16 bg-sky-50 dark:bg-sky-900/20 text-sky-500 rounded-2xl hover:bg-sky-500 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-sky-500/5"
+                    className="w-14 h-14 bg-sky-50 dark:bg-sky-900/20 text-sky-500 rounded-2xl hover:bg-sky-500 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-sky-500/5"
                     title="تويتر"
                   >
-                    <Twitter size={28} />
+                    <Twitter size={24} />
+                  </button>
+                  <button 
+                    onClick={() => handleShare('pinterest')} 
+                    className="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-red-500/5"
+                    title="بنتريست"
+                  >
+                    <PinterestIcon size={24} />
                   </button>
                   <button 
                     onClick={() => handleShare('copy')} 
-                    className="w-16 h-16 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-slate-600 dark:hover:bg-slate-700 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-black/5"
+                    className="w-14 h-14 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-slate-600 dark:hover:bg-slate-700 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-black/5"
                     title="نسخ الرابط"
                   >
-                    <LinkIcon size={28} />
+                    <LinkIcon size={24} />
                   </button>
                 </div>
               </div>
