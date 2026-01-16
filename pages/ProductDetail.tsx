@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { Product } from '../types';
 import { STORE_WHATSAPP_NUMBER } from '../constants';
 import { 
-  Heart, 
   Share2, 
   ShieldCheck, 
   Zap, 
@@ -13,6 +12,7 @@ import {
   Minus, 
   Plus,
   Facebook,
+  Twitter,
   MessageCircle,
   Link as LinkIcon,
   Key,
@@ -45,9 +45,12 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
       case 'facebook':
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
         break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
       case 'copy':
         navigator.clipboard.writeText(url);
-        alert('تم نسخ رابط المنتج بنجاح!');
+        alert('✅ تم نسخ رابط المنتج بنجاح!');
         break;
     }
   };
@@ -127,29 +130,57 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
             {product.description}
           </p>
 
-          <div className="space-y-4">
-            <button 
-              onClick={handleDirectWhatsAppOrder}
-              className="w-full group bg-green-500 text-white h-24 rounded-[30px] font-black text-3xl shadow-2xl shadow-green-500/30 hover:bg-green-600 transition-all transform active:scale-95 flex items-center justify-center gap-4"
-            >
-              <MessageCircle size={36} fill="white" className="group-hover:animate-bounce" />
-              أطلب عبر الواتساب الآن
-            </button>
-            <p className="text-center text-slate-400 font-bold flex items-center justify-center gap-2">
-              <ShieldCheck size={18} className="text-brand-500" /> دفع آمن وضمان كامل على الخدمة
-            </p>
-          </div>
-          
-          {/* Social Media Sharing */}
-          <div className="mt-12 pt-10 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
-              <span className="font-black text-slate-500 flex items-center gap-2">
-                <Share2 size={20} className="text-brand-600" /> مشاركة هذا العرض:
-              </span>
-              <div className="flex gap-4">
-                <button onClick={() => handleShare('whatsapp')} className="bg-green-100 text-green-600 p-4 rounded-2xl hover:bg-green-600 hover:text-white transition-all"><MessageCircle size={24} /></button>
-                <button onClick={() => handleShare('facebook')} className="bg-blue-100 text-blue-600 p-4 rounded-2xl hover:bg-blue-600 hover:text-white transition-all"><Facebook size={24} /></button>
-                <button onClick={() => handleShare('copy')} className="bg-slate-100 text-slate-600 p-4 rounded-2xl hover:bg-slate-600 hover:text-white transition-all"><LinkIcon size={24} /></button>
+          {/* Action Area */}
+          <div className="space-y-8 bg-white dark:bg-slate-900 p-2 rounded-[35px]">
+            <div className="space-y-4">
+              <button 
+                onClick={handleDirectWhatsAppOrder}
+                className="w-full group bg-green-500 text-white h-24 rounded-[30px] font-black text-3xl shadow-2xl shadow-green-500/30 hover:bg-green-600 transition-all transform active:scale-95 flex items-center justify-center gap-4"
+              >
+                <MessageCircle size={36} fill="white" className="group-hover:animate-bounce" />
+                أطلب عبر الواتساب الآن
+              </button>
+              <p className="text-center text-slate-400 font-bold flex items-center justify-center gap-2">
+                <ShieldCheck size={18} className="text-brand-500" /> دفع آمن وضمان كامل على الخدمة
+              </p>
+            </div>
+
+            {/* INTEGRATED SOCIAL SHARE UNDER BUTTON */}
+            <div className="pt-4 border-t-2 border-slate-50 dark:border-slate-800/50">
+              <div className="flex flex-col items-center gap-5">
+                <span className="font-black text-slate-400 text-sm uppercase tracking-widest flex items-center gap-2">
+                  <Share2 size={16} /> شارك هذا العرض مع أصدقائك
+                </span>
+                <div className="flex justify-center gap-4">
+                  <button 
+                    onClick={() => handleShare('whatsapp')} 
+                    className="w-16 h-16 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl hover:bg-green-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-green-500/5"
+                    title="واتساب"
+                  >
+                    <MessageCircle size={28} />
+                  </button>
+                  <button 
+                    onClick={() => handleShare('facebook')} 
+                    className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-blue-500/5"
+                    title="فيسبوك"
+                  >
+                    <Facebook size={28} />
+                  </button>
+                  <button 
+                    onClick={() => handleShare('twitter')} 
+                    className="w-16 h-16 bg-sky-50 dark:bg-sky-900/20 text-sky-500 rounded-2xl hover:bg-sky-500 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-sky-500/5"
+                    title="تويتر"
+                  >
+                    <Twitter size={28} />
+                  </button>
+                  <button 
+                    onClick={() => handleShare('copy')} 
+                    className="w-16 h-16 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-slate-600 dark:hover:bg-slate-700 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg shadow-black/5"
+                    title="نسخ الرابط"
+                  >
+                    <LinkIcon size={28} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
