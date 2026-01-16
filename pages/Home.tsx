@@ -1,143 +1,121 @@
-
-// Add missing React import
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { Laptop, Car, Watch, Glasses, Star, ChevronLeft, Facebook, Twitter, MessageCircle, Link as LinkIcon, Share2 } from 'lucide-react';
+import { Zap, ShieldCheck, Headphones, Star, ChevronLeft, MessageCircle, Share2, Crown, Globe, CheckCircle2 } from 'lucide-react';
 
 interface HomeProps {
   products: Product[];
 }
 
 const Home: React.FC<HomeProps> = ({ products }) => {
-  const handleShare = (e: React.MouseEvent, platform: string, product: Product) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const url = `${window.location.origin}/#/product/${product.id}`;
-    const text = `اكتشف هذا المنتج الرائع في berrima.store: ${product.name}`;
-    
-    switch (platform) {
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-        break;
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'copy':
-        navigator.clipboard.writeText(url);
-        alert('تم نسخ رابط المنتج بنجاح!');
-        break;
-    }
-  };
-
   return (
-    <div className="space-y-10 md:space-y-16 pb-16">
-      {/* Hero Section */}
-      <section className="relative h-[400px] md:h-[550px] bg-gradient-to-r from-green-700 via-green-600 to-emerald-800 text-white flex items-center overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path d="M0 0 L100 0 L100 100 L0 100 Z" fill="url(#grid)" />
-            <defs>
-              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-          </svg>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
-          <h1 className="text-3xl md:text-7xl font-black mb-4 md:mb-6 drop-shadow-2xl leading-tight">أفضل العروض في المغرب</h1>
-          <p className="text-lg md:text-3xl mb-8 md:mb-10 opacity-90 font-bold max-w-3xl mx-auto leading-relaxed">جودة عالية، أفضل الأسعار، وتوصيل مجاني لجميع المدن والدفع عند الاستلام</p>
-          <div className="flex justify-center gap-4">
-            <Link to="/category/electronics" className="bg-white text-green-700 px-8 md:px-12 py-3 md:py-4 rounded-full font-black text-lg md:text-xl hover:bg-gray-100 transition shadow-2xl transform hover:scale-105 active:scale-95">
-              تسوق الآن
+    <div className="pb-16 hero-gradient">
+      {/* Premium Hero Section */}
+      <section className="relative pt-20 pb-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 bg-brand-500/10 text-brand-600 dark:text-brand-400 px-4 py-2 rounded-full font-black text-sm mb-8 border border-brand-500/20">
+            <Crown size={16} /> المنصة رقم #1 للاشتراكات الرقمية بالمغرب
+          </div>
+          <h1 className="text-5xl md:text-8xl font-black mb-6 tracking-tight leading-[1.1]">
+            عالم من <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-emerald-400">الترفيه الرقمي</span> <br/> بين يديك
+          </h1>
+          <p className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 mb-12 max-w-3xl mx-auto font-bold leading-relaxed">
+            احصل على اشتراكاتك المفضلة (Netflix, Canva, IPTV) بأسعار حصرية وتفعيل فوري مع ضمان استرجاع الأموال.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link to="/category/electronics" className="bg-brand-600 text-white px-10 py-5 rounded-2xl font-black text-xl hover:bg-brand-700 transition shadow-2xl shadow-brand-500/20 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+              <Zap size={24} /> استكشف العروض الآن
             </Link>
+            <a href="#features" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-10 py-5 rounded-2xl font-black text-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 transition flex items-center justify-center gap-2">
+              لماذا نحن؟
+            </a>
           </div>
+        </div>
+
+        {/* Decorative Background Elements */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-500/5 rounded-full blur-3xl -z-10"></div>
+      </section>
+
+      {/* Trust & Features Section */}
+      <section id="features" className="max-w-7xl mx-auto px-4 -mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { icon: Zap, title: "تفعيل فوري", desc: "استلم بيانات حسابك فوراً عبر الواتساب", color: "text-amber-500", bg: "bg-amber-500/10" },
+            { icon: ShieldCheck, title: "ضمان ذهبي", desc: "نضمن لك استمرار الخدمة طوال المدة", color: "text-brand-500", bg: "bg-brand-500/10" },
+            { icon: Headphones, title: "دعم مخصص", desc: "فريقنا معك في كل خطوة للتفعيل", color: "text-blue-500", bg: "bg-blue-500/10" }
+          ].map((feature, idx) => (
+            <div key={idx} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 rounded-[35px] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all group">
+              <div className={`${feature.bg} ${feature.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition`}>
+                <feature.icon size={32} />
+              </div>
+              <h3 className="text-2xl font-black mb-2">{feature.title}</h3>
+              <p className="text-slate-500 dark:text-slate-400 font-bold">{feature.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl md:text-4xl font-black mb-8 md:12 text-center text-gray-800 dark:text-gray-100">تصفح أقسامنا</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          <Link to="/category/electronics" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
-            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
-              <Laptop className="w-8 h-8 md:w-12 md:h-12" />
-            </div>
-            <h3 className="text-base md:text-xl font-black">إلكترونيات</h3>
-          </Link>
-          <Link to="/category/accessories" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
-            <div className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
-              <Glasses className="w-8 h-8 md:w-12 md:h-12" />
-            </div>
-            <h3 className="text-base md:text-xl font-black">نظارات</h3>
-          </Link>
-          <Link to="/category/cars" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
-            <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
-              <Car className="w-8 h-8 md:w-12 md:h-12" />
-            </div>
-            <h3 className="text-base md:text-xl font-black">إكسسوارات السيارات</h3>
-          </Link>
-          <Link to="/category/watches" className="group bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center hover:shadow-xl transition transform active:scale-95 border border-gray-100 dark:border-slate-800 text-center">
-            <div className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 p-4 md:p-5 rounded-2xl md:rounded-3xl mb-3 md:mb-5 group-hover:scale-110 transition">
-              <Watch className="w-8 h-8 md:w-12 md:h-12" />
-            </div>
-            <h3 className="text-base md:text-xl font-black">ساعات</h3>
-          </Link>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8 md:mb-12">
-          <div>
-            <h2 className="text-2xl md:text-4xl font-black dark:text-white">أحدث المنتجات</h2>
-            <div className="w-12 md:w-20 h-1.5 md:h-2 bg-green-500 mt-2 md:mt-4 rounded-full"></div>
+      {/* Services Grid */}
+      <section className="max-w-7xl mx-auto px-4 mt-32">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div className="text-right">
+            <h2 className="text-4xl md:text-5xl font-black mb-4">باقات بريميوم مختارة</h2>
+            <p className="text-xl text-slate-500 dark:text-slate-400 font-bold">اشترك اليوم ووفر أكثر من 60% من السعر الرسمي</p>
           </div>
-          <Link to="/category/electronics" className="text-green-600 dark:text-green-400 font-black flex items-center gap-1 hover:underline text-sm md:text-lg">
-            عرض الكل <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+          <Link to="/category/electronics" className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white px-6 py-3 rounded-xl font-black flex items-center gap-2 hover:bg-brand-600 hover:text-white transition">
+            عرض كل الخدمات <ChevronLeft size={20} />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map(product => (
-            <div key={product.id} className="group bg-white dark:bg-slate-900 rounded-[25px] md:rounded-[35px] overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <Link to={`/product/${product.id}`} className="block flex-grow">
-                <div className="relative aspect-square bg-gray-50 dark:bg-slate-800 flex items-center justify-center p-4">
-                  <img src={product.image} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition duration-700" />
-                  <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-0.5 rounded-full text-xs font-black shadow-lg">
-                    جديد
-                  </div>
+            <div key={product.id} className="group relative bg-white dark:bg-slate-900 rounded-[40px] border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-2xl transition-all duration-500">
+              {/* Product Badge */}
+              <div className="absolute top-6 right-6 z-10 bg-brand-600 text-white px-4 py-1.5 rounded-full text-xs font-black shadow-lg flex items-center gap-1">
+                <CheckCircle2 size={14} /> تفعيل رسمي
+              </div>
+
+              {/* Image Section */}
+              <div className="aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
+                <img src={product.image} alt={product.name} className="w-full h-full object-cover transition duration-700 group-hover:scale-110 group-hover:rotate-1" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-slate-900 to-transparent"></div>
+              </div>
+
+              {/* Content Section */}
+              <div className="p-8 relative -mt-12">
+                <div className="flex justify-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={16} className={`${i < (product.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'}`} />
+                  ))}
                 </div>
-                <div className="p-5 md:p-6 text-center">
-                  <h3 className="font-black text-xl md:text-2xl mb-1 text-gray-800 dark:text-gray-100 group-hover:text-green-600 transition line-clamp-1">{product.name}</h3>
-                  <div className="flex justify-center gap-0.5 md:gap-1 mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                    ))}
-                    <span className="text-[10px] md:text-xs text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
-                  </div>
-                  <span className="text-2xl md:text-3xl font-black text-green-700 dark:text-green-400 block mb-4 md:mb-6">{product.price.toLocaleString()} درهم</span>
-                  <button className="w-full bg-gray-900 dark:bg-slate-800 text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-black hover:bg-black transition active:scale-95">اشتري الآن</button>
+                <h3 className="text-2xl md:text-3xl font-black text-center mb-4 group-hover:text-brand-600 transition min-h-[72px]">{product.name}</h3>
+                
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 text-center mb-8 border border-slate-100 dark:border-slate-800">
+                  <span className="text-4xl font-black text-brand-600 dark:text-brand-400">{product.price}</span>
+                  <span className="text-lg font-bold text-slate-400 mr-2">درهم</span>
                 </div>
-              </Link>
-              
-              {/* Social Share Bar */}
-              <div className="px-5 pb-5 pt-0 mt-auto border-t dark:border-slate-800">
-                <div className="flex items-center justify-between pt-4">
-                  <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1"><Share2 size={12} /> مشاركة:</span>
-                  <div className="flex gap-2">
-                    <button onClick={(e) => handleShare(e, 'whatsapp', product)} className="p-2 bg-green-50 dark:bg-green-900/10 text-green-600 rounded-full hover:bg-green-100 transition"><MessageCircle size={16} /></button>
-                    <button onClick={(e) => handleShare(e, 'facebook', product)} className="p-2 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-full hover:bg-blue-100 transition"><Facebook size={16} /></button>
-                    <button onClick={(e) => handleShare(e, 'twitter', product)} className="p-2 bg-sky-50 dark:bg-sky-900/10 text-sky-500 rounded-full hover:bg-sky-100 transition"><Twitter size={16} /></button>
-                    <button onClick={(e) => handleShare(e, 'copy', product)} className="p-2 bg-gray-50 dark:bg-slate-800 text-gray-500 rounded-full hover:bg-gray-100 transition"><LinkIcon size={16} /></button>
-                  </div>
-                </div>
+
+                <Link to={`/product/${product.id}`} className="block w-full bg-slate-900 dark:bg-brand-600 text-white text-center py-5 rounded-2xl font-black text-xl hover:bg-brand-700 transition shadow-xl active:scale-95">
+                  تفعيل الاشتراك
+                </Link>
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Global Trust Footer Feature */}
+      <section className="max-w-7xl mx-auto px-4 mt-32">
+        <div className="bg-slate-900 dark:bg-brand-600/10 rounded-[50px] p-12 text-center border border-slate-800 dark:border-brand-500/20">
+          <Globe className="text-brand-500 mx-auto mb-6" size={64} />
+          <h2 className="text-4xl font-black text-white mb-6">انضم إلى أكثر من 5,000+ عميل سعيد</h2>
+          <p className="text-xl text-slate-400 dark:text-brand-200 max-w-2xl mx-auto font-bold mb-10">نحن نفتخر بتقديم أفضل خدمة مبيعات ما بعد الاشتراك لضمان رضاكم التام.</p>
+          <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition duration-500">
+            <span className="text-2xl font-black text-white">NETFLIX</span>
+            <span className="text-2xl font-black text-white">CANVA</span>
+            <span className="text-2xl font-black text-white">IPTV</span>
+            <span className="text-2xl font-black text-white">WINDOWS</span>
+          </div>
         </div>
       </section>
     </div>
