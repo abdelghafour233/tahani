@@ -1,6 +1,6 @@
 import { Product, SiteSettings } from './types';
 
-export const STORE_WHATSAPP_NUMBER = "212688775968";
+export const STORE_WHATSAPP_NUMBER = "212649075664";
 
 export const INITIAL_PRODUCTS: Product[] = [
   {

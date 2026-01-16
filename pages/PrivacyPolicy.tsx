@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ShieldCheck, Lock, Eye, FileText, Zap, MessageSquare } from 'lucide-react';
 
@@ -53,9 +52,9 @@ const PrivacyPolicy: React.FC = () => {
             </p>
           </section>
 
-          <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-3xl border border-gray-100 dark:border-slate-700 mt-10">
+          <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-3xl border border-gray-100 dark:border-slate-700 mt-10 text-right">
             <h3 className="font-black mb-2 text-gray-900 dark:text-white text-xl">للاستفسارات التقنية:</h3>
-            <p className="font-bold">واتساب الدعم الفني: 0688775968</p>
+            <p className="font-bold">واتساب الدعم الفني: 0649075664</p>
             <p className="font-bold">الموقع: berrima.store</p>
           </div>
         </div>
