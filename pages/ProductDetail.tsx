@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Product } from '../types';
@@ -14,7 +15,9 @@ import {
   Twitter,
   MessageCircle,
   Link as LinkIcon,
-  Key
+  Key,
+  User,
+  Phone
 } from 'lucide-react';
 
 // Custom Pinterest Icon
@@ -34,6 +37,8 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
   
   const [selectedImage, setSelectedImage] = useState(product?.image || '');
   const [quantity, setQuantity] = useState(1);
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
 
   if (!product) {
     return <div className="text-center py-20 dark:text-gray-400">المنتج غير موجود</div>;
@@ -66,8 +71,21 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
 
   const total = product.price * quantity;
 
-  const handleDirectWhatsAppOrder = () => {
-    const message = `مرحباً berrima.store 👋%0A%0Aأود طلب الخدمة التالية:%0A📦 *المنتج:* ${product.name}%0A🔢 *الكمية:* ${quantity}%0A💰 *الإجمالي:* ${total} درهم%0A%0Aيرجى تزويدي بطرق الدفع المتاحة لتفعيل اشتراكي فوراً.`;
+  const handleDirectWhatsAppOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customerName.trim() || !customerPhone.trim()) {
+      alert('يرجى إدخال الاسم ورقم الواتساب لإتمام الطلب');
+      return;
+    }
+
+    const message = `*طلب جديد من berrima.store*%0A%0A` +
+      `📦 *المنتج:* ${product.name}%0A` +
+      `🔢 *الكمية:* ${quantity}%0A` +
+      `💰 *الإجمالي:* ${total} درهم%0A%0A` +
+      `👤 *اسم الزبون:* ${customerName}%0A` +
+      `📱 *رقم الواتساب:* ${customerPhone}%0A%0A` +
+      `يرجى تزويدي بطرق الدفع المتاحة لتفعيل اشتراكي فوراً.`;
+    
     const whatsappUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -125,7 +143,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
               <div className="text-5xl font-black text-brand-600 dark:text-brand-400 leading-none mb-2">
                 {product.price.toLocaleString()} <span className="text-2xl">درهم</span>
               </div>
-              <p className="text-slate-400 font-bold">السعر شامل للتفعيل والضمان</p>
+              <p className="text-slate-400 font-bold">السعر يشمل التفعيل والضمان</p>
             </div>
 
             <div className="flex items-center bg-white dark:bg-slate-800 rounded-2xl p-2 border dark:border-slate-700 shadow-sm">
@@ -135,37 +153,67 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products }) => {
             </div>
           </div>
 
-          <p className="text-slate-600 dark:text-slate-400 text-xl leading-relaxed mb-12 font-bold opacity-90">
+          <p className="text-slate-600 dark:text-slate-400 text-xl leading-relaxed mb-10 font-bold opacity-90">
             {product.description}
           </p>
 
-          {/* Action Area - COMPLETELY STREAMLINED */}
-          <div className="space-y-8 bg-white dark:bg-slate-900 p-2 rounded-[35px]">
-            <div className="space-y-4">
+          {/* New Simplified Order Form */}
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-[40px] border-2 border-slate-100 dark:border-slate-800 shadow-xl space-y-6">
+            <h3 className="text-2xl font-black flex items-center gap-3 mb-2">
+              <MessageSquare className="text-brand-600" /> أكمل معلومات الطلب
+            </h3>
+            
+            <form onSubmit={handleDirectWhatsAppOrder} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <User className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="الاسم الكامل" 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-500 pr-12 pl-4 py-4 rounded-2xl outline-none transition font-bold"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                  />
+                </div>
+                <div className="relative">
+                  <Phone className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                  <input 
+                    type="tel" 
+                    required
+                    placeholder="رقم الواتساب" 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-brand-500 pr-12 pl-4 py-4 rounded-2xl outline-none transition font-bold text-left ltr"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <button 
-                onClick={handleDirectWhatsAppOrder}
-                className="w-full group bg-green-500 text-white h-24 rounded-[30px] font-black text-3xl shadow-2xl shadow-green-500/30 hover:bg-green-600 transition-all transform active:scale-95 flex items-center justify-center gap-4"
+                type="submit"
+                className="w-full group bg-green-500 text-white h-20 rounded-[25px] font-black text-2xl shadow-2xl shadow-green-500/30 hover:bg-green-600 transition-all transform active:scale-95 flex items-center justify-center gap-4"
               >
-                <MessageCircle size={36} fill="white" className="group-hover:animate-bounce" />
-                أطلب عبر الواتساب الآن
+                <MessageCircle size={32} fill="white" className="group-hover:animate-bounce" />
+                تأكيد الطلب عبر الواتساب
               </button>
-              <p className="text-center text-slate-400 font-bold flex items-center justify-center gap-2">
-                <ShieldCheck size={18} className="text-brand-500" /> يتم الطلب مباشرة دون الحاجة لملء أي استمارات
-              </p>
-            </div>
+            </form>
+
+            <p className="text-center text-slate-400 font-bold flex items-center justify-center gap-2 text-sm">
+              <ShieldCheck size={16} className="text-brand-500" /> دفع آمن وضمان كامل على الخدمة
+            </p>
 
             {/* Social Share Bar */}
-            <div className="pt-6 border-t-2 border-slate-50 dark:border-slate-800/50">
-              <div className="flex flex-col items-center gap-5">
-                <span className="font-black text-slate-400 text-sm uppercase tracking-widest flex items-center gap-2">
-                  <Share2 size={16} /> شارك هذا العرض
+            <div className="pt-6 border-t border-slate-50 dark:border-slate-800/50">
+              <div className="flex flex-col items-center gap-4">
+                <span className="font-black text-slate-400 text-xs uppercase tracking-widest flex items-center gap-2">
+                  <Share2 size={14} /> شارك هذا العرض
                 </span>
-                <div className="flex flex-wrap justify-center gap-4">
-                  <button onClick={() => handleShare('whatsapp')} className="w-14 h-14 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl hover:bg-green-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><MessageCircle size={24} /></button>
-                  <button onClick={() => handleShare('facebook')} className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><Facebook size={24} /></button>
-                  <button onClick={() => handleShare('twitter')} className="w-14 h-14 bg-sky-50 dark:bg-sky-900/20 text-sky-500 rounded-2xl hover:bg-sky-500 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><Twitter size={24} /></button>
-                  <button onClick={() => handleShare('pinterest')} className="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><PinterestIcon size={24} /></button>
-                  <button onClick={() => handleShare('copy')} className="w-14 h-14 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-slate-600 hover:text-white transition-all transform hover:-translate-y-1 flex items-center justify-center shadow-lg"><LinkIcon size={24} /></button>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <button onClick={() => handleShare('whatsapp')} className="w-12 h-12 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all flex items-center justify-center"><MessageCircle size={20} /></button>
+                  <button onClick={() => handleShare('facebook')} className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center"><Facebook size={20} /></button>
+                  <button onClick={() => handleShare('twitter')} className="w-12 h-12 bg-sky-50 dark:bg-sky-900/20 text-sky-500 rounded-xl hover:bg-sky-500 hover:text-white transition-all flex items-center justify-center"><Twitter size={20} /></button>
+                  <button onClick={() => handleShare('pinterest')} className="w-12 h-12 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center"><PinterestIcon size={20} /></button>
+                  <button onClick={() => handleShare('copy')} className="w-12 h-12 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-600 hover:text-white transition-all flex items-center justify-center"><LinkIcon size={20} /></button>
                 </div>
               </div>
             </div>
