@@ -42,26 +42,36 @@ const App: React.FC = () => {
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
 
-    // Inject Adsterra Scripts
-    if (settings.adsterra) {
-      const { popunderScript, socialBarScript, nativeAdsScript } = settings.adsterra;
-      [popunderScript, socialBarScript, nativeAdsScript].forEach(scriptStr => {
+    // Inject Ads Scripts (Adsterra & Monetag)
+    const injectScripts = (scripts: string[]) => {
+      scripts.forEach(scriptStr => {
         if (scriptStr && scriptStr.trim() !== '') {
-          // Extract content between <script> tags or just execute if it's raw JS
-          const script = document.createElement('script');
-          // Simple way to handle the scripts: we just append them as-is to a temporary div or try to parse
-          // For safety and compatibility with common ad scripts, we'll use a range to create fragments
           try {
             const range = document.createRange();
             const fragment = range.createContextualFragment(scriptStr);
             document.body.appendChild(fragment);
           } catch (e) {
-            console.error("Adsterra script injection failed", e);
+            console.error("Script injection failed", e);
           }
         }
       });
+    };
+
+    if (settings.adsterra) {
+      injectScripts([
+        settings.adsterra.popunderScript,
+        settings.adsterra.socialBarScript,
+        settings.adsterra.nativeAdsScript
+      ]);
     }
-  }, [settings.adsterra]);
+
+    if (settings.monetag) {
+      injectScripts([
+        settings.monetag.mainScript,
+        settings.monetag.vignetteScript
+      ]);
+    }
+  }, [settings.adsterra, settings.monetag]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;

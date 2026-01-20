@@ -39,12 +39,19 @@ export interface AdsterraSettings {
   smartLinkUrl: string;
 }
 
+export interface MonetagSettings {
+  mainScript: string;
+  vignetteScript: string;
+  directLinkUrl: string;
+}
+
 export interface SiteSettings {
   domain: string;
   nameServer: string;
   googleSheetsUrl: string;
   pixels: PixelSettings;
   adsterra?: AdsterraSettings;
+  monetag?: MonetagSettings;
   adminPassword?: string;
 }
 

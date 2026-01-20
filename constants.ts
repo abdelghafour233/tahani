@@ -96,5 +96,10 @@ export const INITIAL_SETTINGS: SiteSettings = {
     socialBarScript: '',
     nativeAdsScript: '',
     smartLinkUrl: 'https://bouncingbuzz.com/m9x9bfr9c?key=3ec907280f33c9f26699609cb53571d2'
+  },
+  monetag: {
+    mainScript: '',
+    vignetteScript: '',
+    directLinkUrl: ''
   }
 };
