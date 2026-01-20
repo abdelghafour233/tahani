@@ -17,7 +17,8 @@ import {
   Hash,
   MessageSquare,
   Lock,
-  ShieldCheck
+  ShieldCheck,
+  Megaphone
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -30,7 +31,6 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setSettings, products, setProducts }) => {
-  // تم حذف التبويب 'settings' ودمجه في 'pixels' الذي أصبح يسمى 'technical'
   const [activeTab, setActiveTab] = useState<'stats' | 'orders' | 'products' | 'technical'>('stats');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -189,7 +189,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
           )}
 
           {activeTab === 'technical' && (
-            <div className="space-y-8 animate-in fade-in">
+            <div className="space-y-8 animate-in fade-in pb-20">
               <div className="flex items-center gap-4 mb-4">
                 <div className="bg-blue-600 p-3 rounded-2xl text-white"><Activity size={32} /></div>
                 <div>
@@ -228,7 +228,48 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 2. Security & Domain Section */}
+                {/* 2. Adsterra Settings Section */}
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+                  <h3 className="text-lg font-black flex items-center gap-2 text-amber-600">
+                    <Megaphone size={24} /> إعدادات Adsterra الإعلانية
+                  </h3>
+                  <p className="text-sm text-gray-400 font-bold -mt-4">قم بلصق أكواد الإعلانات التي حصلت عليها من لوحة تحكم Adsterra.</p>
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500">كود Popunder</label>
+                      <textarea 
+                        rows={3}
+                        placeholder="لصق الكود هنا (يظهر كإعلان منبثق)"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
+                        value={settings?.adsterra?.popunderScript || ''}
+                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), popunderScript: e.target.value}} as any)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500">كود Social Bar</label>
+                      <textarea 
+                        rows={3}
+                        placeholder="لصق الكود هنا (يظهر كشريط إشعارات اجتماعي)"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
+                        value={settings?.adsterra?.socialBarScript || ''}
+                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), socialBarScript: e.target.value}} as any)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500">كود Native Ads / Banner</label>
+                      <textarea 
+                        rows={3}
+                        placeholder="لصق الكود هنا للإعلانات الأصلية"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
+                        value={settings?.adsterra?.nativeAdsScript || ''}
+                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), nativeAdsScript: e.target.value}} as any)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Security & Domain Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-red-600">
                     <Lock size={24} /> الأمان والدومين
@@ -255,7 +296,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 3. Integrations Section */}
+                {/* 4. Integrations Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-green-600">
                     <ExternalLink size={24} /> الربط البرمجي
@@ -272,8 +313,8 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                <button type="submit" className="w-full bg-black dark:bg-white dark:text-black text-white py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:opacity-90 transition shadow-2xl">
-                  <Save size={24} /> حفظ كافة الإعدادات التقنية
+                <button type="submit" className="w-full bg-black dark:bg-white dark:text-black text-white py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:opacity-90 transition shadow-2xl sticky bottom-4 z-10">
+                  <Save size={24} /> حفظ كافة الإعدادات والرموز
                 </button>
                 {saveSuccess && <div className="text-center font-bold text-green-600 animate-bounce">تم الحفظ بنجاح!</div>}
               </form>

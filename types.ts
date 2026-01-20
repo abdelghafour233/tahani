@@ -32,11 +32,18 @@ export interface PixelSettings {
   textEvent: string;
 }
 
+export interface AdsterraSettings {
+  popunderScript: string;
+  socialBarScript: string;
+  nativeAdsScript: string;
+}
+
 export interface SiteSettings {
   domain: string;
   nameServer: string;
   googleSheetsUrl: string;
   pixels: PixelSettings;
+  adsterra?: AdsterraSettings;
   adminPassword?: string;
 }
 
