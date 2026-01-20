@@ -36,6 +36,7 @@ export interface AdsterraSettings {
   popunderScript: string;
   socialBarScript: string;
   nativeAdsScript: string;
+  smartLinkUrl: string;
 }
 
 export interface SiteSettings {

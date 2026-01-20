@@ -18,7 +18,8 @@ import {
   MessageSquare,
   Lock,
   ShieldCheck,
-  Megaphone
+  Megaphone,
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -233,38 +234,50 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   <h3 className="text-lg font-black flex items-center gap-2 text-amber-600">
                     <Megaphone size={24} /> إعدادات Adsterra الإعلانية
                   </h3>
-                  <p className="text-sm text-gray-400 font-bold -mt-4">قم بلصق أكواد الإعلانات التي حصلت عليها من لوحة تحكم Adsterra.</p>
+                  <p className="text-sm text-gray-400 font-bold -mt-4">قم بلصق أكواد الإعلانات أو الروابط المباشرة من Adsterra.</p>
                   
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-gray-500">كود Popunder</label>
                       <textarea 
                         rows={3}
-                        placeholder="لصق الكود هنا (يظهر كإعلان منبثق)"
+                        placeholder="لصق الكود هنا"
                         className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
                         value={settings?.adsterra?.popunderScript || ''}
                         onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), popunderScript: e.target.value}} as any)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-500">كود Social Bar</label>
-                      <textarea 
-                        rows={3}
-                        placeholder="لصق الكود هنا (يظهر كشريط إشعارات اجتماعي)"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
-                        value={settings?.adsterra?.socialBarScript || ''}
-                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), socialBarScript: e.target.value}} as any)}
+                      <label className="text-sm font-bold text-gray-500">رابط Smartlink (Direct URL)</label>
+                      <input 
+                        type="text" 
+                        placeholder="https://..."
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-sm"
+                        value={settings?.adsterra?.smartLinkUrl || ''}
+                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), smartLinkUrl: e.target.value}} as any)}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-500">كود Native Ads / Banner</label>
-                      <textarea 
-                        rows={3}
-                        placeholder="لصق الكود هنا للإعلانات الأصلية"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
-                        value={settings?.adsterra?.nativeAdsScript || ''}
-                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), nativeAdsScript: e.target.value}} as any)}
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-500">كود Social Bar</label>
+                        <textarea 
+                          rows={2}
+                          placeholder="لصق الكود هنا"
+                          className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
+                          value={settings?.adsterra?.socialBarScript || ''}
+                          onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), socialBarScript: e.target.value}} as any)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-500">كود Native Ads</label>
+                        <textarea 
+                          rows={2}
+                          placeholder="لصق الكود هنا"
+                          className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
+                          value={settings?.adsterra?.nativeAdsScript || ''}
+                          onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), nativeAdsScript: e.target.value}} as any)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
