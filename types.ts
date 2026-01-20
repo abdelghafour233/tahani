@@ -53,6 +53,8 @@ export interface SiteSettings {
   adsterra?: AdsterraSettings;
   monetag?: MonetagSettings;
   adminPassword?: string;
+  customHeadCode?: string;
+  customBodyCode?: string;
 }
 
 export interface CartItem extends Product {

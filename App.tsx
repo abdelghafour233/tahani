@@ -42,14 +42,14 @@ const App: React.FC = () => {
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
 
-    // Inject Ads Scripts (Adsterra & Monetag)
-    const injectScripts = (scripts: string[]) => {
+    // Inject Scripts
+    const injectScripts = (scripts: string[], container: HTMLElement = document.body) => {
       scripts.forEach(scriptStr => {
         if (scriptStr && scriptStr.trim() !== '') {
           try {
             const range = document.createRange();
             const fragment = range.createContextualFragment(scriptStr);
-            document.body.appendChild(fragment);
+            container.appendChild(fragment);
           } catch (e) {
             console.error("Script injection failed", e);
           }
@@ -57,6 +57,7 @@ const App: React.FC = () => {
       });
     };
 
+    // 1. Adsterra
     if (settings.adsterra) {
       injectScripts([
         settings.adsterra.popunderScript,
@@ -65,13 +66,23 @@ const App: React.FC = () => {
       ]);
     }
 
+    // 2. Monetag
     if (settings.monetag) {
       injectScripts([
         settings.monetag.mainScript,
         settings.monetag.vignetteScript
       ]);
     }
-  }, [settings.adsterra, settings.monetag]);
+
+    // 3. Custom Codes
+    if (settings.customHeadCode) {
+      injectScripts([settings.customHeadCode], document.head);
+    }
+    if (settings.customBodyCode) {
+      injectScripts([settings.customBodyCode], document.body);
+    }
+
+  }, [settings]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
@@ -176,7 +187,7 @@ const App: React.FC = () => {
                       <div className="relative">
                         <input 
                           type={showPassword ? "text" : "password"}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent rounded-2xl px-6 py-5 pl-14 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-right font-bold text-lg"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent rounded-2xl px-6 py-5 ltr focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-center font-bold text-lg"
                           placeholder="كلمة المرور"
                           value={passwordInput}
                           onChange={(e) => setPasswordInput(e.target.value)}

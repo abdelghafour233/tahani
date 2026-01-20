@@ -20,7 +20,8 @@ import {
   ShieldCheck,
   Megaphone,
   Link as LinkIcon,
-  Sparkles
+  Sparkles,
+  Code
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -304,7 +305,38 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 4. Security & Domain Section */}
+                {/* 4. Advanced: Custom Code Section */}
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+                  <h3 className="text-lg font-black flex items-center gap-2 text-indigo-600">
+                    <Code size={24} /> أكواد برمجية مخصصة (Advanced)
+                  </h3>
+                  <p className="text-sm text-gray-400 font-bold -mt-4">لإضافة أي أكواد Meta أو Script مخصصة في رأس أو جسم الموقع.</p>
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500">كود مخصص في الرأس (Head Code)</label>
+                      <textarea 
+                        rows={3}
+                        placeholder="<meta ...> أو <script ...>"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-indigo-500 focus:outline-none font-mono text-xs"
+                        value={settings?.customHeadCode || ''}
+                        onChange={e => setSettings({...settings, customHeadCode: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-gray-500">كود مخصص في الجسم (Body Code)</label>
+                      <textarea 
+                        rows={3}
+                        placeholder="لصق الكود هنا"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-indigo-500 focus:outline-none font-mono text-xs"
+                        value={settings?.customBodyCode || ''}
+                        onChange={e => setSettings({...settings, customBodyCode: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. Security & Domain Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-red-600">
                     <Lock size={24} /> الأمان والدومين
@@ -314,7 +346,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                       <label className="text-sm font-bold text-gray-500">كلمة سر اللوحة</label>
                       <input 
                         type="text" 
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-red-500 focus:outline-none font-mono"
+                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-red-500 focus:outline-none font-mono text-center"
                         value={settings?.adminPassword || ''}
                         onChange={e => setSettings({...settings, adminPassword: e.target.value})}
                       />
@@ -331,7 +363,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 5. Integrations Section */}
+                {/* 6. Integrations Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-green-600">
                     <ExternalLink size={24} /> الربط البرمجي
