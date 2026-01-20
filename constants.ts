@@ -1,4 +1,3 @@
-
 import { Product, SiteSettings } from './types';
 
 export const STORE_WHATSAPP_NUMBER = "212649075664";
@@ -92,7 +91,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
     textEvent: 'Purchase'
   },
   adsterra: {
-    popunderScript: '',
+    popunderScript: '<script src="https://bouncingbuzz.com/1b/bb/91/1bbb91b924fe9aa427cfa5a251caab9f.js"></script>',
     socialBarScript: '',
     nativeAdsScript: ''
   }
