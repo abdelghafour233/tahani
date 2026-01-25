@@ -1,3 +1,4 @@
+
 import { Product, SiteSettings } from './types';
 
 export const STORE_WHATSAPP_NUMBER = "212649075664";
@@ -41,7 +42,7 @@ export const INITIAL_PRODUCTS: Product[] = [
 
 ✅ دخول كامل لجميع القوالب المدفوعة.
 ✅ إزالة خلفية الصور بضغطة واحدة.
-✅ مساحة تخزين سحابية كبيرة.
+✅ مساحة تختاح سحابية كبيرة.
 ✅ تفعيل رسمي على إيميلك الشخصي.
 ✅ ضمان ذهبي مدى الحياة.
 

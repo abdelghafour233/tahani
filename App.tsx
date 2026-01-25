@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, MessageCircle, Zap, ShieldCheck } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
@@ -12,13 +12,17 @@ import ProductDetailPage from './pages/ProductDetail';
 import DashboardPage from './pages/Dashboard';
 import PrivacyPolicyPage from './pages/PrivacyPolicy';
 
-// Inner component to handle route-based ad logic
-const AdManager: React.FC<{ settings: SiteSettings; triggerAd: () => void }> = ({ settings, triggerAd }) => {
+// Ad Manager Component to handle location changes
+const AdRouteManager: React.FC<{ triggerAd: () => void }> = ({ triggerAd }) => {
   const location = useLocation();
+  const lastPath = useRef(location.pathname);
 
   useEffect(() => {
-    // Attempt to trigger ad every time the user moves to a new page
-    triggerAd();
+    if (lastPath.current !== location.pathname) {
+      lastPath.current = location.pathname;
+      // When route changes, reset interaction listeners or try an immediate ad hit
+      triggerAd();
+    }
   }, [location.pathname, triggerAd]);
 
   return null;
@@ -42,7 +46,8 @@ const App: React.FC = () => {
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    return document.documentElement.classList.contains('dark');
+    const saved = localStorage.getItem('elite_theme');
+    return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,80 +55,88 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // REUSABLE AD TRIGGER LOGIC
+  // DYNAMIC AD TRIGGER LOGIC
   const triggerMonetagAd = useCallback(() => {
     const adUrl = settings.monetag?.directLinkUrl || INITIAL_SETTINGS.monetag?.directLinkUrl;
-    const lastShown = sessionStorage.getItem('monetag_last_hit');
+    const lastHit = sessionStorage.getItem('monetag_last_hit_timestamp');
     const now = Date.now();
     
-    // Cooldown reduced to 3 minutes (180000ms) for better performance/revenue
-    if (adUrl && (!lastShown || (now - parseInt(lastShown)) > 180000)) {
+    // Revenue Optimization: Cooldown reduced to 60 seconds (1 minute) 
+    // This ensures ads appear frequently but not on every single click to avoid UX destruction.
+    if (adUrl && (!lastHit || (now - parseInt(lastHit)) > 60000)) {
       try {
-        const win = window.open(adUrl, '_blank');
-        if (win) {
-          sessionStorage.setItem('monetag_last_hit', now.toString());
-          // Optional: Return focus to main window to keep user on site
-          setTimeout(() => window.focus(), 500);
+        const adWindow = window.open(adUrl, '_blank');
+        if (adWindow) {
+          sessionStorage.setItem('monetag_last_hit_timestamp', now.toString());
+          // Move focus back to the store immediately
+          setTimeout(() => {
+            window.focus();
+          }, 150);
         }
-      } catch (e) {
-        console.warn("Pop-up blocked or failed. Waiting for next interaction.");
+      } catch (err) {
+        // If blocked, we don't set the timestamp, so the next click will try again.
+        console.debug("Ad hit prevented by browser. Retrying on next interaction.");
       }
     }
   }, [settings.monetag?.directLinkUrl]);
 
-  // Persistent Click Listener
+  // Global Interaction Listener - Persistent
   useEffect(() => {
-    const handlePersistentInteraction = () => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Trigger ad on any click anywhere in the document
       triggerMonetagAd();
     };
 
-    // We don't use {once: true} here to ensure we keep trying if the first one was blocked
-    window.addEventListener('click', handlePersistentInteraction, { capture: true });
+    document.addEventListener('click', handleGlobalClick, { capture: true });
     
     return () => {
-      window.removeEventListener('click', handlePersistentInteraction, { capture: true });
+      document.removeEventListener('click', handleGlobalClick, { capture: true });
     };
   }, [triggerMonetagAd]);
 
-  // Optimized Script Injection Engine
+  // Enhanced Script Injection Logic
   useEffect(() => {
-    const injectMonetagScripts = (html: string | undefined, target: 'head' | 'body', idPrefix: string) => {
+    const injectScripts = (html: string | undefined, target: 'head' | 'body', systemId: string) => {
       if (!html || html.trim() === '') return;
       
       const container = target === 'head' ? document.head : document.body;
       
-      // Clean up previous scripts with same prefix to prevent duplicates
-      const oldScripts = container.querySelectorAll(`script[data-ad-system="${idPrefix}"]`);
-      oldScripts.forEach(s => s.remove());
+      // Clean up previous instances to prevent memory leaks and duplicate logic
+      const existing = container.querySelectorAll(`script[data-system-ad="${systemId}"]`);
+      existing.forEach(el => el.remove());
 
-      const temp = document.createElement('div');
-      temp.innerHTML = html.trim();
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html.trim();
       
-      const scripts = temp.querySelectorAll('script');
-      scripts.forEach((s, idx) => {
+      const scripts = tempDiv.querySelectorAll('script');
+      scripts.forEach(s => {
         const newScript = document.createElement('script');
-        newScript.setAttribute('data-ad-system', idPrefix);
+        newScript.setAttribute('data-system-ad', systemId);
         
-        // Copy attributes
-        Array.from(s.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        // Copy all attributes (src, async, defer, etc.)
+        Array.from(s.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
         
-        // Copy inline content
-        if (s.innerHTML) newScript.innerHTML = s.innerHTML;
+        // Copy inner code if it's an inline script
+        if (s.innerHTML) {
+          newScript.innerHTML = s.innerHTML;
+        }
         
         container.appendChild(newScript);
       });
     };
 
-    // Inject Scripts
+    // Initial Injection
     if (settings.monetag) {
-      injectMonetagScripts(settings.monetag.mainScript, 'head', 'monetag-main');
-      injectMonetagScripts(settings.monetag.vignetteScript, 'body', 'monetag-vignette');
+      injectScripts(settings.monetag.mainScript, 'head', 'monetag-main-v2');
+      injectScripts(settings.monetag.vignetteScript, 'body', 'monetag-vignette-v2');
     }
     
-    if (settings.customHeadCode) injectMonetagScripts(settings.customHeadCode, 'head', 'custom-head');
-    if (settings.customBodyCode) injectMonetagScripts(settings.customBodyCode, 'body', 'custom-body');
+    if (settings.customHeadCode) injectScripts(settings.customHeadCode, 'head', 'custom-h-v2');
+    if (settings.customBodyCode) injectScripts(settings.customBodyCode, 'body', 'custom-b-v2');
 
-    // Load orders
+    // Persistence Check
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
   }, [settings]);
@@ -152,7 +165,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <AdManager settings={settings} triggerAd={triggerMonetagAd} />
+      <AdRouteManager triggerAd={triggerMonetagAd} />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
         {/* WhatsApp Button Floating */}
@@ -222,7 +235,7 @@ const App: React.FC = () => {
                 <DashboardPage orders={orders} settings={settings} setSettings={setSettings} products={products} setProducts={setProducts} setOrders={setOrders} />
               ) : (
                 <div className="min-h-[70vh] flex items-center justify-center p-6">
-                  <div className="bg-white dark:bg-slate-900 p-12 rounded-[45px] shadow-2xl border border-slate-100 dark:border-slate-800 w-full max-w-md text-center">
+                  <div className="bg-white dark:bg-slate-900 p-12 rounded-[45px] shadow-2xl border border-slate-100 dark:border-slate-800 w-full max-md text-center">
                     <div className="bg-brand-600 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-brand-500/30">
                       <Lock className="text-white" size={48} />
                     </div>
@@ -287,7 +300,7 @@ const App: React.FC = () => {
                     جميع الخدمات مفعلة
                   </div>
                </div>
-               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.2 Max Revenue Edition | 2024</p>
+               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.3 Persistent Ad Engine | 2024</p>
             </div>
           </div>
           <div className="mt-20 pt-10 border-t border-slate-800 text-center text-slate-500 font-bold">
