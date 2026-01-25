@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, MessageCircle, Zap, ShieldCheck } from 'lucide-react';
@@ -38,95 +37,78 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // High-Priority Ad Trigger Logic
-  const triggerPopUnder = useCallback((event?: any) => {
+  // FORCE AD TRIGGER (Bypasses most blockers when tied to a direct user click)
+  const triggerMonetagAd = useCallback(() => {
     const adUrl = settings.monetag?.directLinkUrl || INITIAL_SETTINGS.monetag?.directLinkUrl;
-    const hasAdBeenShown = sessionStorage.getItem('monetag_ad_shown_v2');
-
-    if (adUrl && !hasAdBeenShown) {
-      // Direct opening on user click is the only way to bypass modern browsers
+    // We use a timestamp to allow one ad every hour per session for better revenue
+    const lastShown = sessionStorage.getItem('monetag_last_hit');
+    const now = Date.now();
+    
+    if (adUrl && (!lastShown || (now - parseInt(lastShown)) > 3600000)) {
       try {
-        const adWindow = window.open(adUrl, '_blank');
-        if (adWindow) {
-          sessionStorage.setItem('monetag_ad_shown_v2', 'true');
-          // For true pop-under effect (often restricted but we try)
-          setTimeout(() => {
-            window.focus();
-          }, 100);
+        const win = window.open(adUrl, '_blank');
+        if (win) {
+          sessionStorage.setItem('monetag_last_hit', now.toString());
+          // Optional: Return focus to main window to keep user on site
+          setTimeout(() => window.focus(), 200);
         }
-      } catch (err) {
-        console.error("Ad block detected or pop-up failed", err);
+      } catch (e) {
+        console.warn("Pop-up was blocked by browser. User must click a link to trigger.");
       }
     }
   }, [settings.monetag?.directLinkUrl]);
 
-  // Global Interaction Listener for Ads
+  // Global Interaction Handler
   useEffect(() => {
-    const handleGlobalInteraction = (e: MouseEvent | TouchEvent) => {
-      // Only fire once per session to not annoy but ensure one solid hit
-      if (!sessionStorage.getItem('monetag_ad_shown_v2')) {
-        triggerPopUnder(e);
-      }
+    const handleInteraction = () => {
+      triggerMonetagAd();
+      // Remove listeners after first successful attempt or first interaction
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
     };
 
-    window.addEventListener('click', handleGlobalInteraction, { capture: true });
-    window.addEventListener('touchstart', handleGlobalInteraction, { capture: true });
+    window.addEventListener('click', handleInteraction, { once: true });
+    window.addEventListener('touchstart', handleInteraction, { once: true });
     
     return () => {
-      window.removeEventListener('click', handleGlobalInteraction, { capture: true });
-      window.removeEventListener('touchstart', handleGlobalInteraction, { capture: true });
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
     };
-  }, [triggerPopUnder]);
+  }, [triggerMonetagAd]);
 
-  // Enhanced Script Injection Engine (Ensures scripts with 'src' or inline code run correctly)
+  // Robust Script Injection Engine
   useEffect(() => {
-    const injectSmartScript = (htmlString: string | undefined, target: 'head' | 'body' = 'body') => {
-      if (!htmlString || htmlString.trim() === '') return;
-
+    const injectMonetagScripts = (html: string | undefined, target: 'head' | 'body') => {
+      if (!html || html.trim() === '') return;
+      
       const container = target === 'head' ? document.head : document.body;
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlString, 'text/html');
-      const scripts = doc.querySelectorAll('script');
-
-      scripts.forEach(oldScript => {
+      const temp = document.createElement('div');
+      temp.innerHTML = html.trim();
+      
+      const scripts = temp.querySelectorAll('script');
+      scripts.forEach(s => {
         const newScript = document.createElement('script');
-        
-        // Copy all attributes (src, async, defer, etc.)
-        Array.from(oldScript.attributes).forEach(attr => {
-          newScript.setAttribute(attr.name, attr.value);
-        });
-        
+        // Copy attributes
+        Array.from(s.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
         // Copy inline content
-        if (oldScript.innerHTML) {
-          newScript.innerHTML = oldScript.innerHTML;
-        }
-        
-        // Append to trigger execution
+        if (s.innerHTML) newScript.innerHTML = s.innerHTML;
+        // Append
         container.appendChild(newScript);
       });
-
-      // Handle non-script elements (like style tags or noscripts)
-      doc.body.childNodes.forEach(node => {
-        if (node.nodeName !== 'SCRIPT') {
-          container.appendChild(node.cloneNode(true));
-        }
-      });
     };
 
-    // 1. Inject Monetag Scripts from Settings
+    // Inject everything in order
     if (settings.monetag) {
-      injectSmartScript(settings.monetag.mainScript, 'head');
-      injectSmartScript(settings.monetag.vignetteScript, 'body');
+      injectMonetagScripts(settings.monetag.mainScript, 'head');
+      injectMonetagScripts(settings.monetag.vignetteScript, 'body');
     }
-
-    // 2. Inject Custom Head/Body Codes
-    if (settings.customHeadCode) injectSmartScript(settings.customHeadCode, 'head');
-    if (settings.customBodyCode) injectSmartScript(settings.customBodyCode, 'body');
+    
+    if (settings.customHeadCode) injectMonetagScripts(settings.customHeadCode, 'head');
+    if (settings.customBodyCode) injectMonetagScripts(settings.customBodyCode, 'body');
 
     // Load orders
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
-
   }, [settings]);
 
   const toggleDarkMode = () => {
@@ -160,7 +142,7 @@ const App: React.FC = () => {
           href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => triggerPopUnder()}
+          onClick={triggerMonetagAd}
           className="fixed bottom-8 left-8 z-[100] group"
         >
           <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>
@@ -176,7 +158,7 @@ const App: React.FC = () => {
               <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-xl transition-colors">
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <Link to="/" onClick={() => triggerPopUnder()} className="flex items-center gap-3 group">
+              <Link to="/" onClick={triggerMonetagAd} className="flex items-center gap-3 group">
                 <div className="bg-brand-600 p-2.5 rounded-2xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-brand-500/20">
                   <Zap className="text-white w-6 h-6 md:w-8 md:h-8" />
                 </div>
@@ -185,9 +167,9 @@ const App: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center space-x-reverse space-x-12">
-              <Link to="/" onClick={() => triggerPopUnder()} className="text-lg font-black hover:text-brand-600 transition">الرئيسية</Link>
-              <Link to="/category/electronics" onClick={() => triggerPopUnder()} className="text-lg font-black hover:text-brand-600 transition">الاشتراكات</Link>
-              <Link to="/privacy-policy" onClick={() => triggerPopUnder()} className="text-lg font-black hover:text-brand-600 transition">سياسة التفعيل</Link>
+              <Link to="/" onClick={triggerMonetagAd} className="text-lg font-black hover:text-brand-600 transition">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={triggerMonetagAd} className="text-lg font-black hover:text-brand-600 transition">الاشتراكات</Link>
+              <Link to="/privacy-policy" onClick={triggerMonetagAd} className="text-lg font-black hover:text-brand-600 transition">سياسة التفعيل</Link>
             </div>
 
             <div className="flex items-center gap-3">
@@ -203,10 +185,10 @@ const App: React.FC = () => {
           {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden bg-white dark:bg-slate-900 p-6 flex flex-col font-black border-t dark:border-slate-800 text-right space-y-4 shadow-2xl">
-              <Link to="/" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الرئيسية</Link>
-              <Link to="/category/electronics" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الخدمات الرقمية</Link>
-              <Link to="/privacy-policy" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">سياسة التفعيل</Link>
-              <Link to="/dashboard" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-brand-600 text-white rounded-2xl text-center shadow-lg">لوحة الإدارة</Link>
+              <Link to="/" onClick={() => {setIsMenuOpen(false); triggerMonetagAd();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={() => {setIsMenuOpen(false); triggerMonetagAd();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الخدمات الرقمية</Link>
+              <Link to="/privacy-policy" onClick={() => {setIsMenuOpen(false); triggerMonetagAd();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">سياسة التفعيل</Link>
+              <Link to="/dashboard" onClick={() => {setIsMenuOpen(false); triggerMonetagAd();}} className="p-4 bg-brand-600 text-white rounded-2xl text-center shadow-lg">لوحة الإدارة</Link>
             </div>
           )}
         </nav>
@@ -254,7 +236,7 @@ const App: React.FC = () => {
         <footer className="bg-slate-900 text-white py-20 border-t-8 border-brand-600">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-16 text-center md:text-right">
             <div className="col-span-1 md:col-span-1">
-              <Link to="/" onClick={() => triggerPopUnder()} className="flex items-center justify-center md:justify-start gap-3 mb-8">
+              <Link to="/" onClick={triggerMonetagAd} className="flex items-center justify-center md:justify-start gap-3 mb-8">
                 <Zap className="text-brand-500 w-10 h-10" />
                 <span className="text-4xl font-black tracking-tighter">berrima<span className="text-brand-500">.store</span></span>
               </Link>
@@ -263,15 +245,15 @@ const App: React.FC = () => {
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">تصفح المتجر</h3>
               <ul className="text-slate-300 space-y-4 font-bold text-lg">
-                <li><Link to="/" onClick={() => triggerPopUnder()} className="hover:text-brand-500 transition">الرئيسية</Link></li>
-                <li><Link to="/category/electronics" onClick={() => triggerPopUnder()} className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
-                <li><Link to="/privacy-policy" onClick={() => triggerPopUnder()} className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
+                <li><Link to="/" onClick={triggerMonetagAd} className="hover:text-brand-500 transition">الرئيسية</Link></li>
+                <li><Link to="/category/electronics" onClick={triggerMonetagAd} className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
+                <li><Link to="/privacy-policy" onClick={triggerMonetagAd} className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">خدمة العملاء</h3>
               <div className="space-y-6">
-                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} onClick={() => triggerPopUnder()} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
+                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} onClick={triggerMonetagAd} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
                   <MessageCircle size={24} className="text-brand-500" /> واتساب: {STORE_WHATSAPP_NUMBER}
                 </a>
                 <div className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold text-lg">
@@ -287,7 +269,7 @@ const App: React.FC = () => {
                     جميع الخدمات مفعلة
                   </div>
                </div>
-               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.0 Ads Fixed Edition | 2024</p>
+               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.1 Monetag Shield Edition | 2024</p>
             </div>
           </div>
           <div className="mt-20 pt-10 border-t border-slate-800 text-center text-slate-500 font-bold">

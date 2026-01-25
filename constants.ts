@@ -1,4 +1,3 @@
-
 import { Product, SiteSettings } from './types';
 
 export const STORE_WHATSAPP_NUMBER = "212649075664";
