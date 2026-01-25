@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, MessageCircle, Zap, ShieldCheck } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER } from './constants';
@@ -10,6 +11,18 @@ import CategoryPage from './pages/Category';
 import ProductDetailPage from './pages/ProductDetail';
 import DashboardPage from './pages/Dashboard';
 import PrivacyPolicyPage from './pages/PrivacyPolicy';
+
+// Inner component to handle route-based ad logic
+const AdManager: React.FC<{ settings: SiteSettings; triggerAd: () => void }> = ({ settings, triggerAd }) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Attempt to trigger ad every time the user moves to a new page
+    triggerAd();
+  }, [location.pathname, triggerAd]);
+
+  return null;
+};
 
 const App: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -37,74 +50,78 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // FORCE AD TRIGGER (Bypasses most blockers when tied to a direct user click)
+  // REUSABLE AD TRIGGER LOGIC
   const triggerMonetagAd = useCallback(() => {
     const adUrl = settings.monetag?.directLinkUrl || INITIAL_SETTINGS.monetag?.directLinkUrl;
-    // We use a timestamp to allow one ad every hour per session for better revenue
     const lastShown = sessionStorage.getItem('monetag_last_hit');
     const now = Date.now();
     
-    if (adUrl && (!lastShown || (now - parseInt(lastShown)) > 3600000)) {
+    // Cooldown reduced to 3 minutes (180000ms) for better performance/revenue
+    if (adUrl && (!lastShown || (now - parseInt(lastShown)) > 180000)) {
       try {
         const win = window.open(adUrl, '_blank');
         if (win) {
           sessionStorage.setItem('monetag_last_hit', now.toString());
           // Optional: Return focus to main window to keep user on site
-          setTimeout(() => window.focus(), 200);
+          setTimeout(() => window.focus(), 500);
         }
       } catch (e) {
-        console.warn("Pop-up was blocked by browser. User must click a link to trigger.");
+        console.warn("Pop-up blocked or failed. Waiting for next interaction.");
       }
     }
   }, [settings.monetag?.directLinkUrl]);
 
-  // Global Interaction Handler
+  // Persistent Click Listener
   useEffect(() => {
-    const handleInteraction = () => {
+    const handlePersistentInteraction = () => {
       triggerMonetagAd();
-      // Remove listeners after first successful attempt or first interaction
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
     };
 
-    window.addEventListener('click', handleInteraction, { once: true });
-    window.addEventListener('touchstart', handleInteraction, { once: true });
+    // We don't use {once: true} here to ensure we keep trying if the first one was blocked
+    window.addEventListener('click', handlePersistentInteraction, { capture: true });
     
     return () => {
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handlePersistentInteraction, { capture: true });
     };
   }, [triggerMonetagAd]);
 
-  // Robust Script Injection Engine
+  // Optimized Script Injection Engine
   useEffect(() => {
-    const injectMonetagScripts = (html: string | undefined, target: 'head' | 'body') => {
+    const injectMonetagScripts = (html: string | undefined, target: 'head' | 'body', idPrefix: string) => {
       if (!html || html.trim() === '') return;
       
       const container = target === 'head' ? document.head : document.body;
+      
+      // Clean up previous scripts with same prefix to prevent duplicates
+      const oldScripts = container.querySelectorAll(`script[data-ad-system="${idPrefix}"]`);
+      oldScripts.forEach(s => s.remove());
+
       const temp = document.createElement('div');
       temp.innerHTML = html.trim();
       
       const scripts = temp.querySelectorAll('script');
-      scripts.forEach(s => {
+      scripts.forEach((s, idx) => {
         const newScript = document.createElement('script');
+        newScript.setAttribute('data-ad-system', idPrefix);
+        
         // Copy attributes
         Array.from(s.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        
         // Copy inline content
         if (s.innerHTML) newScript.innerHTML = s.innerHTML;
-        // Append
+        
         container.appendChild(newScript);
       });
     };
 
-    // Inject everything in order
+    // Inject Scripts
     if (settings.monetag) {
-      injectMonetagScripts(settings.monetag.mainScript, 'head');
-      injectMonetagScripts(settings.monetag.vignetteScript, 'body');
+      injectMonetagScripts(settings.monetag.mainScript, 'head', 'monetag-main');
+      injectMonetagScripts(settings.monetag.vignetteScript, 'body', 'monetag-vignette');
     }
     
-    if (settings.customHeadCode) injectMonetagScripts(settings.customHeadCode, 'head');
-    if (settings.customBodyCode) injectMonetagScripts(settings.customBodyCode, 'body');
+    if (settings.customHeadCode) injectMonetagScripts(settings.customHeadCode, 'head', 'custom-head');
+    if (settings.customBodyCode) injectMonetagScripts(settings.customBodyCode, 'body', 'custom-body');
 
     // Load orders
     const savedOrders = localStorage.getItem('site_orders');
@@ -135,6 +152,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <AdManager settings={settings} triggerAd={triggerMonetagAd} />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
         {/* WhatsApp Button Floating */}
@@ -142,7 +160,7 @@ const App: React.FC = () => {
           href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={triggerMonetagAd}
+          onClick={() => triggerMonetagAd()}
           className="fixed bottom-8 left-8 z-[100] group"
         >
           <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>
@@ -158,7 +176,7 @@ const App: React.FC = () => {
               <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-xl transition-colors">
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <Link to="/" onClick={triggerMonetagAd} className="flex items-center gap-3 group">
+              <Link to="/" onClick={() => triggerMonetagAd()} className="flex items-center gap-3 group">
                 <div className="bg-brand-600 p-2.5 rounded-2xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-brand-500/20">
                   <Zap className="text-white w-6 h-6 md:w-8 md:h-8" />
                 </div>
@@ -167,9 +185,9 @@ const App: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center space-x-reverse space-x-12">
-              <Link to="/" onClick={triggerMonetagAd} className="text-lg font-black hover:text-brand-600 transition">الرئيسية</Link>
-              <Link to="/category/electronics" onClick={triggerMonetagAd} className="text-lg font-black hover:text-brand-600 transition">الاشتراكات</Link>
-              <Link to="/privacy-policy" onClick={triggerMonetagAd} className="text-lg font-black hover:text-brand-600 transition">سياسة التفعيل</Link>
+              <Link to="/" onClick={() => triggerMonetagAd()} className="text-lg font-black hover:text-brand-600 transition">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={() => triggerMonetagAd()} className="text-lg font-black hover:text-brand-600 transition">الاشتراكات</Link>
+              <Link to="/privacy-policy" onClick={() => triggerMonetagAd()} className="text-lg font-black hover:text-brand-600 transition">سياسة التفعيل</Link>
             </div>
 
             <div className="flex items-center gap-3">
@@ -236,7 +254,7 @@ const App: React.FC = () => {
         <footer className="bg-slate-900 text-white py-20 border-t-8 border-brand-600">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-16 text-center md:text-right">
             <div className="col-span-1 md:col-span-1">
-              <Link to="/" onClick={triggerMonetagAd} className="flex items-center justify-center md:justify-start gap-3 mb-8">
+              <Link to="/" onClick={() => triggerMonetagAd()} className="flex items-center justify-center md:justify-start gap-3 mb-8">
                 <Zap className="text-brand-500 w-10 h-10" />
                 <span className="text-4xl font-black tracking-tighter">berrima<span className="text-brand-500">.store</span></span>
               </Link>
@@ -245,15 +263,15 @@ const App: React.FC = () => {
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">تصفح المتجر</h3>
               <ul className="text-slate-300 space-y-4 font-bold text-lg">
-                <li><Link to="/" onClick={triggerMonetagAd} className="hover:text-brand-500 transition">الرئيسية</Link></li>
-                <li><Link to="/category/electronics" onClick={triggerMonetagAd} className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
-                <li><Link to="/privacy-policy" onClick={triggerMonetagAd} className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
+                <li><Link to="/" onClick={() => triggerMonetagAd()} className="hover:text-brand-500 transition">الرئيسية</Link></li>
+                <li><Link to="/category/electronics" onClick={() => triggerMonetagAd()} className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
+                <li><Link to="/privacy-policy" onClick={() => triggerMonetagAd()} className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">خدمة العملاء</h3>
               <div className="space-y-6">
-                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} onClick={triggerMonetagAd} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
+                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} onClick={() => triggerMonetagAd()} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
                   <MessageCircle size={24} className="text-brand-500" /> واتساب: {STORE_WHATSAPP_NUMBER}
                 </a>
                 <div className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold text-lg">
@@ -269,7 +287,7 @@ const App: React.FC = () => {
                     جميع الخدمات مفعلة
                   </div>
                </div>
-               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.1 Monetag Shield Edition | 2024</p>
+               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.2 Max Revenue Edition | 2024</p>
             </div>
           </div>
           <div className="mt-20 pt-10 border-t border-slate-800 text-center text-slate-500 font-bold">
