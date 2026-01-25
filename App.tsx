@@ -38,6 +38,22 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
+  // Ad Activation Logic (Pop-under)
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      const adUrl = settings.monetag?.directLinkUrl || INITIAL_SETTINGS.monetag?.directLinkUrl;
+      const hasAdBeenShown = sessionStorage.getItem('ad_shown_session');
+
+      if (adUrl && !hasAdBeenShown) {
+        window.open(adUrl, '_blank');
+        sessionStorage.setItem('ad_shown_session', 'true');
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, [settings.monetag?.directLinkUrl]);
+
   useEffect(() => {
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
@@ -57,7 +73,7 @@ const App: React.FC = () => {
       });
     };
 
-    // 1. Monetag
+    // 1. Monetag Scripts Injection
     if (settings.monetag) {
       injectScripts([
         settings.monetag.mainScript,
@@ -65,7 +81,7 @@ const App: React.FC = () => {
       ]);
     }
 
-    // 2. Custom Codes (Including the monetag meta verification)
+    // 2. Custom Codes
     if (settings.customHeadCode) {
       injectScripts([settings.customHeadCode], document.head);
     }
