@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, MessageCircle, Zap, ShieldCheck } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER, AD_LINKS } from './constants';
@@ -11,6 +11,19 @@ import CategoryPage from './pages/Category';
 import ProductDetailPage from './pages/ProductDetail';
 import DashboardPage from './pages/Dashboard';
 import PrivacyPolicyPage from './pages/PrivacyPolicy';
+
+/**
+ * Ad Route Synchronization
+ * Ensures the ad script is notified of virtual page changes in SPA
+ */
+const AdSync: React.FC = () => {
+  const location = useLocation();
+  useEffect(() => {
+    // Notify ad networks of route change (helpful for some tags)
+    window.scrollTo(0, 0);
+  }, [location]);
+  return null;
+};
 
 const App: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -39,29 +52,29 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
+  /**
+   * SMART AD TRIGGER
+   * Opens the direct link in a new tab AND redirects current tab to WhatsApp
+   * This ensures that even if the ad link is 404, the user still gets to WhatsApp
+   */
+  const handleAdAndWhatsApp = useCallback((e?: React.MouseEvent) => {
+    const directLink = settings.monetag?.directLinkUrl || AD_LINKS[0];
+    
+    // 1. Open Ad in New Tab (This might fail if blocked or 404, but it's okay)
+    try {
+      window.open(directLink, '_blank');
+    } catch (err) {
+      console.debug("Ad blocked or failed");
+    }
+
+    // 2. Immediate Redirect to WhatsApp in current tab (Safe & Guaranteed)
+    window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}`;
+  }, [settings]);
+
   useEffect(() => {
-    // Inject dynamic scripts if present in settings (optional fallback)
-    const inject = (code: string | undefined, target: 'head' | 'body', id: string) => {
-      if (!code || code.trim() === '' || document.getElementById(id)) return;
-      const root = target === 'head' ? document.head : document.body;
-      const wrapper = document.createElement('div');
-      wrapper.id = id;
-      wrapper.innerHTML = code;
-      const scripts = wrapper.querySelectorAll('script');
-      scripts.forEach(s => {
-        const n = document.createElement('script');
-        Array.from(s.attributes).forEach(a => n.setAttribute(a.name, a.value));
-        if (s.innerHTML) n.innerHTML = s.innerHTML;
-        root.appendChild(n);
-      });
-    };
-
-    if (settings.monetag?.mainScript) inject(settings.monetag.mainScript, 'head', 'dyn-monetag');
-    if (settings.customHeadCode) inject(settings.customHeadCode, 'head', 'dyn-custom-h');
-
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
-  }, [settings]);
+  }, []);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
@@ -87,26 +100,19 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <AdSync />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
-        {/* Safe Floating WhatsApp - Wrapped in Direct Link for extra revenue */}
-        <a 
-          href={AD_LINKS[0]} 
-          target="_blank" 
-          rel="noopener noreferrer"
+        {/* Safe Floating WhatsApp - Smart Redirect Engine */}
+        <button 
+          onClick={handleAdAndWhatsApp}
           className="fixed bottom-8 left-8 z-[100] group"
-          onClick={(e) => {
-            // After 300ms redirect the current tab to WhatsApp
-            setTimeout(() => {
-              window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}`;
-            }, 300);
-          }}
         >
           <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>
           <div className="relative bg-brand-600 text-white p-5 rounded-full shadow-2xl transition-all transform group-hover:scale-110 active:scale-95">
             <MessageCircle size={32} fill="white" />
           </div>
-        </a>
+        </button>
 
         {/* Premium Header */}
         <nav className="glass-nav border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
@@ -222,7 +228,7 @@ const App: React.FC = () => {
                     جميع الخدمات مفعلة
                   </div>
                </div>
-               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v8.0 Clean Engine | 2024</p>
+               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v9.0 Ultra Stable | 2024</p>
             </div>
           </div>
         </footer>

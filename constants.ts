@@ -3,9 +3,9 @@ import { Product, SiteSettings } from './types';
 
 export const STORE_WHATSAPP_NUMBER = "212649075664";
 
-// روابط Monetag المباشرة للتناوب المستمر
+// روابط Monetag المباشرة (تأكد من تحديثها دورياً من لوحة التحكم)
 export const AD_LINKS = [
-  "https://otieu.com/4/10518800",
+  "https://otieu.com/4/8584347", // رابط مباشر افتراضي (يُفضل تحديثه من الداشبورد)
   "https://otieu.com/4/10518792"
 ];
 
@@ -100,7 +100,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
   monetag: {
     mainScript: '',
     vignetteScript: '',
-    directLinkUrl: 'https://otieu.com/4/10518800'
+    directLinkUrl: 'https://otieu.com/4/8584347'
   },
   customHeadCode: '',
   customBodyCode: ''
