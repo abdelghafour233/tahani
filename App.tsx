@@ -12,7 +12,7 @@ import ProductDetailPage from './pages/ProductDetail';
 import DashboardPage from './pages/Dashboard';
 import PrivacyPolicyPage from './pages/PrivacyPolicy';
 
-const AdSync: React.FC = () => {
+const ScrollToTop: React.FC = () => {
   const location = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [location]);
   return null;
@@ -40,7 +40,6 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // تم تعديله: تحويل مباشر للواتساب بدون إعلانات
   const handleWhatsAppRedirect = useCallback(() => {
     window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}`;
   }, []);
@@ -67,10 +66,10 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <AdSync />
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
-        {/* Floating WhatsApp - تحويل مباشر ومبسط */}
+        {/* Floating WhatsApp Button */}
         <button 
           onClick={handleWhatsAppRedirect}
           className="fixed bottom-8 left-8 z-[100] group"

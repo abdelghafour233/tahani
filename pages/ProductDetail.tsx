@@ -23,7 +23,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
     e.preventDefault();
     if (!customerName.trim() || !customerPhone.trim()) return alert('يرجى ملء الخانات');
 
-    // تم حذف منطق الإعلانات ليكون التحويل للواتساب فورياً ونظيفاً
     const message = `*طلب جديد من berrima.store*%0A%0A📦 *المنتج:* ${product.name}%0A💰 *الإجمالي:* ${product.price * quantity} درهم%0A👤 *الاسم:* ${customerName}%0A📱 *الهاتف:* ${customerPhone}`;
     window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
   };

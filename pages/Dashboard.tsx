@@ -196,7 +196,6 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
               </div>
 
               <form onSubmit={handleSettingsSave} className="space-y-8">
-                {/* 1. Facebook & Pixel Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-blue-600">
                     <Hash size={24} /> إعدادات التتبع (Pixels)
@@ -225,15 +224,10 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* تم إزالة قسم Monetag بالكامل من هنا */}
-
-                {/* 2. Advanced: Custom Code Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-indigo-600">
                     <Code size={24} /> أكواد برمجية مخصصة (Advanced)
                   </h3>
-                  <p className="text-sm text-gray-400 font-bold -mt-4">لإضافة أي أكواد Meta أو Script مخصصة.</p>
-                  
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-gray-500">كود مخصص في الرأس (Head Code)</label>
@@ -258,7 +252,6 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 3. Security & Domain Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-red-600">
                     <Lock size={24} /> الأمان والدومين
@@ -285,7 +278,6 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 4. Integrations Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-green-600">
                     <ExternalLink size={24} /> الربط البرمجي
@@ -303,7 +295,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                 </div>
 
                 <button type="submit" className="w-full bg-black dark:bg-white dark:text-black text-white py-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:opacity-90 transition shadow-2xl sticky bottom-4 z-10">
-                  <Save size={24} /> حفظ كافة الإعدادات والرموز
+                  <Save size={24} /> حفظ كافة الإعدادات
                 </button>
                 {saveSuccess && <div className="text-center font-bold text-green-600 animate-bounce">تم الحفظ بنجاح!</div>}
               </form>
