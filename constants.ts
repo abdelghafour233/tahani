@@ -3,12 +3,6 @@ import { Product, SiteSettings } from './types';
 
 export const STORE_WHATSAPP_NUMBER = "212649075664";
 
-// روابط Monetag المباشرة - تم تحديثها لتجنب 404
-export const AD_LINKS = [
-  "https://otieu.com/4/8584347", 
-  "https://otieu.com/4/10518792"
-];
-
 export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'netflix-1',
@@ -54,11 +48,6 @@ export const INITIAL_SETTINGS: SiteSettings = {
     googleAnalyticsId: '',
     tiktokPixelId: '',
     textEvent: 'Purchase'
-  },
-  monetag: {
-    mainScript: '',
-    vignetteScript: '',
-    directLinkUrl: 'https://otieu.com/4/8584347'
   },
   customHeadCode: '',
   customBodyCode: ''

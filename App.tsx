@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, MessageCircle, Zap } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
-import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER, AD_LINKS } from './constants';
+import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER } from './constants';
 
 // Pages
 import HomePage from './pages/Home';
@@ -40,12 +40,10 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // Smart Ad Engine: يفتح الإعلان في نافذة ويحول الحالي للواتساب
-  const handleAdAndWhatsApp = useCallback(() => {
-    const directLink = settings.monetag?.directLinkUrl || AD_LINKS[0];
-    try { window.open(directLink, '_blank'); } catch (err) { }
+  // تم تعديله: تحويل مباشر للواتساب بدون إعلانات
+  const handleWhatsAppRedirect = useCallback(() => {
     window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}`;
-  }, [settings]);
+  }, []);
 
   useEffect(() => {
     const savedOrders = localStorage.getItem('site_orders');
@@ -72,9 +70,9 @@ const App: React.FC = () => {
       <AdSync />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
-        {/* Floating WhatsApp with Smart Engine */}
+        {/* Floating WhatsApp - تحويل مباشر ومبسط */}
         <button 
-          onClick={handleAdAndWhatsApp}
+          onClick={handleWhatsAppRedirect}
           className="fixed bottom-8 left-8 z-[100] group"
         >
           <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>

@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
-import { Order, SiteSettings, Product, Category } from '../types';
+import { Order, SiteSettings, Product } from '../types';
 import { 
   BarChart3, 
   Package, 
-  Globe, 
   Database, 
   Activity, 
   Users, 
@@ -15,12 +14,7 @@ import {
   Save,
   Clock,
   Hash,
-  MessageSquare,
   Lock,
-  ShieldCheck,
-  Megaphone,
-  Link as LinkIcon,
-  Sparkles,
   Code
 } from 'lucide-react';
 
@@ -197,7 +191,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                 <div className="bg-blue-600 p-3 rounded-2xl text-white"><Activity size={32} /></div>
                 <div>
                   <h2 className="text-3xl font-black">الإعدادات التقنية</h2>
-                  <p className="text-gray-400 font-bold">إدارة البيكسل، الأمان، والربط</p>
+                  <p className="text-gray-400 font-bold">إدارة البيكسل والأمان</p>
                 </div>
               </div>
 
@@ -231,55 +225,14 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 2. Monetag Settings Section */}
-                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
-                  <h3 className="text-lg font-black flex items-center gap-2 text-purple-600">
-                    <Sparkles size={24} /> إعدادات Monetag الإعلانية
-                  </h3>
-                  <p className="text-sm text-gray-400 font-bold -mt-4">قم بلصق أكواد MultiTag، Vignette أو الروابط المباشرة من Monetag.</p>
-                  
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-500">كود MultiTag / Main Script</label>
-                      <textarea 
-                        rows={3}
-                        placeholder="لصق كود الـ MultiTag هنا"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-purple-500 focus:outline-none font-mono text-xs"
-                        value={settings?.monetag?.mainScript || ''}
-                        onChange={e => setSettings({...settings, monetag: {...(settings?.monetag || {}), mainScript: e.target.value}} as any)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-500">كود Vignette Banner</label>
-                        <textarea 
-                          rows={2}
-                          placeholder="لصق الكود هنا"
-                          className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-purple-500 focus:outline-none font-mono text-xs"
-                          value={settings?.monetag?.vignetteScript || ''}
-                          onChange={e => setSettings({...settings, monetag: {...(settings?.monetag || {}), vignetteScript: e.target.value}} as any)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-500">رابط Smartlink (Direct URL)</label>
-                        <input 
-                          type="text" 
-                          placeholder="https://..."
-                          className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-purple-500 focus:outline-none font-mono text-sm"
-                          value={settings?.monetag?.directLinkUrl || ''}
-                          onChange={e => setSettings({...settings, monetag: {...(settings?.monetag || {}), directLinkUrl: e.target.value}} as any)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* تم إزالة قسم Monetag بالكامل من هنا */}
 
-                {/* 3. Advanced: Custom Code Section */}
+                {/* 2. Advanced: Custom Code Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-indigo-600">
                     <Code size={24} /> أكواد برمجية مخصصة (Advanced)
                   </h3>
-                  <p className="text-sm text-gray-400 font-bold -mt-4">لإضافة أي أكواد Meta أو Script مخصصة في رأس أو جسم الموقع.</p>
+                  <p className="text-sm text-gray-400 font-bold -mt-4">لإضافة أي أكواد Meta أو Script مخصصة.</p>
                   
                   <div className="space-y-6">
                     <div className="space-y-2">
@@ -305,7 +258,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 4. Security & Domain Section */}
+                {/* 3. Security & Domain Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-red-600">
                     <Lock size={24} /> الأمان والدومين
@@ -332,7 +285,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 5. Integrations Section */}
+                {/* 4. Integrations Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-green-600">
                     <ExternalLink size={24} /> الربط البرمجي
