@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, Key, MessageCircle, Zap, ShieldCheck, Crown } from 'lucide-react';
+import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, MessageCircle, Zap, ShieldCheck } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER } from './constants';
 
@@ -38,56 +38,85 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // Ad Activation Logic (Pop-under)
-  useEffect(() => {
-    const handleGlobalClick = () => {
-      const adUrl = settings.monetag?.directLinkUrl || INITIAL_SETTINGS.monetag?.directLinkUrl;
-      const hasAdBeenShown = sessionStorage.getItem('ad_shown_session');
+  // Advanced Ad Trigger Logic
+  const triggerPopUnder = useCallback(() => {
+    const adUrl = settings.monetag?.directLinkUrl || INITIAL_SETTINGS.monetag?.directLinkUrl;
+    const hasAdBeenShown = sessionStorage.getItem('monetag_ad_shown');
 
-      if (adUrl && !hasAdBeenShown) {
-        window.open(adUrl, '_blank');
-        sessionStorage.setItem('ad_shown_session', 'true');
+    if (adUrl && !hasAdBeenShown) {
+      // Trying multiple ways to bypass blockers
+      const adWindow = window.open(adUrl, '_blank');
+      if (adWindow) {
+        adWindow.blur();
+        window.focus();
+        sessionStorage.setItem('monetag_ad_shown', 'true');
       }
-    };
-
-    document.addEventListener('click', handleGlobalClick);
-    return () => document.removeEventListener('click', handleGlobalClick);
+    }
   }, [settings.monetag?.directLinkUrl]);
 
   useEffect(() => {
-    const savedOrders = localStorage.getItem('site_orders');
-    if (savedOrders) setOrders(JSON.parse(savedOrders));
+    const handleInteraction = () => {
+      triggerPopUnder();
+      // Remove after first interaction to save resources, though the function itself checks session storage
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+    };
 
-    // Inject Scripts
-    const injectScripts = (scripts: string[], container: HTMLElement = document.body) => {
-      scripts.forEach(scriptStr => {
-        if (scriptStr && scriptStr.trim() !== '') {
-          try {
-            const range = document.createRange();
-            const fragment = range.createContextualFragment(scriptStr);
-            container.appendChild(fragment);
-          } catch (e) {
-            console.error("Script injection failed", e);
-          }
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
+    
+    return () => {
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+    };
+  }, [triggerPopUnder]);
+
+  // Robust Script Injection Engine
+  useEffect(() => {
+    const injectSmartScript = (htmlString: string, target: 'head' | 'body' = 'body') => {
+      if (!htmlString || htmlString.trim() === '') return;
+
+      const container = target === 'head' ? document.head : document.body;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, 'text/html');
+      const scripts = doc.querySelectorAll('script');
+
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+        
+        if (oldScript.innerHTML) {
+          newScript.innerHTML = oldScript.innerHTML;
+        }
+        
+        container.appendChild(newScript);
+      });
+
+      // Inject non-script elements if any (like meta tags or styles)
+      const others = doc.body.childNodes;
+      others.forEach(node => {
+        if (node.nodeName !== 'SCRIPT') {
+          container.appendChild(node.cloneNode(true));
         }
       });
     };
 
-    // 1. Monetag Scripts Injection
+    // 1. Clear previous dynamic scripts if needed (optional, depends on ad provider)
+    
+    // 2. Inject Monetag
     if (settings.monetag) {
-      injectScripts([
-        settings.monetag.mainScript,
-        settings.monetag.vignetteScript
-      ]);
+      injectSmartScript(settings.monetag.mainScript);
+      injectSmartScript(settings.monetag.vignetteScript);
     }
 
-    // 2. Custom Codes
-    if (settings.customHeadCode) {
-      injectScripts([settings.customHeadCode], document.head);
-    }
-    if (settings.customBodyCode) {
-      injectScripts([settings.customBodyCode], document.body);
-    }
+    // 3. Custom Codes
+    if (settings.customHeadCode) injectSmartScript(settings.customHeadCode, 'head');
+    if (settings.customBodyCode) injectSmartScript(settings.customBodyCode, 'body');
+
+    const savedOrders = localStorage.getItem('site_orders');
+    if (savedOrders) setOrders(JSON.parse(savedOrders));
 
   }, [settings]);
 
@@ -122,6 +151,7 @@ const App: React.FC = () => {
           href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={triggerPopUnder}
           className="fixed bottom-8 left-8 z-[100] group"
         >
           <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>
@@ -164,10 +194,10 @@ const App: React.FC = () => {
           {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden bg-white dark:bg-slate-900 p-6 flex flex-col font-black border-t dark:border-slate-800 text-right space-y-4 shadow-2xl">
-              <Link to="/" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الرئيسية</Link>
-              <Link to="/category/electronics" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الخدمات الرقمية</Link>
-              <Link to="/privacy-policy" onClick={() => setIsMenuOpen(false)} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">سياسة التفعيل</Link>
-              <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="p-4 bg-brand-600 text-white rounded-2xl text-center shadow-lg">لوحة الإدارة</Link>
+              <Link to="/" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">الخدمات الرقمية</Link>
+              <Link to="/privacy-policy" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">سياسة التفعيل</Link>
+              <Link to="/dashboard" onClick={() => {setIsMenuOpen(false); triggerPopUnder();}} className="p-4 bg-brand-600 text-white rounded-2xl text-center shadow-lg">لوحة الإدارة</Link>
             </div>
           )}
         </nav>
@@ -215,7 +245,7 @@ const App: React.FC = () => {
         <footer className="bg-slate-900 text-white py-20 border-t-8 border-brand-600">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-16 text-center md:text-right">
             <div className="col-span-1 md:col-span-1">
-              <Link to="/" className="flex items-center justify-center md:justify-start gap-3 mb-8">
+              <Link to="/" onClick={triggerPopUnder} className="flex items-center justify-center md:justify-start gap-3 mb-8">
                 <Zap className="text-brand-500 w-10 h-10" />
                 <span className="text-4xl font-black tracking-tighter">berrima<span className="text-brand-500">.store</span></span>
               </Link>
@@ -224,15 +254,15 @@ const App: React.FC = () => {
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">تصفح المتجر</h3>
               <ul className="text-slate-300 space-y-4 font-bold text-lg">
-                <li><Link to="/" className="hover:text-brand-500 transition">الرئيسية</Link></li>
-                <li><Link to="/category/electronics" className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
-                <li><Link to="/privacy-policy" className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
+                <li><Link to="/" onClick={triggerPopUnder} className="hover:text-brand-500 transition">الرئيسية</Link></li>
+                <li><Link to="/category/electronics" onClick={triggerPopUnder} className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
+                <li><Link to="/privacy-policy" onClick={triggerPopUnder} className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">خدمة العملاء</h3>
               <div className="space-y-6">
-                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
+                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} onClick={triggerPopUnder} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
                   <MessageCircle size={24} className="text-brand-500" /> واتساب: {STORE_WHATSAPP_NUMBER}
                 </a>
                 <div className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold text-lg">
