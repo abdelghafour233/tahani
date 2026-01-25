@@ -94,7 +94,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
   monetag: {
     mainScript: '',
     vignetteScript: '',
-    directLinkUrl: ''
+    directLinkUrl: 'https://otieu.com/4/10518800'
   },
   customHeadCode: '',
   customBodyCode: ''
