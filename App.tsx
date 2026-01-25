@@ -38,42 +38,49 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // Advanced Ad Trigger Logic
-  const triggerPopUnder = useCallback(() => {
+  // High-Priority Ad Trigger Logic
+  const triggerPopUnder = useCallback((event?: any) => {
     const adUrl = settings.monetag?.directLinkUrl || INITIAL_SETTINGS.monetag?.directLinkUrl;
-    const hasAdBeenShown = sessionStorage.getItem('monetag_ad_shown');
+    const hasAdBeenShown = sessionStorage.getItem('monetag_ad_shown_v2');
 
     if (adUrl && !hasAdBeenShown) {
-      // Trying multiple ways to bypass blockers
-      const adWindow = window.open(adUrl, '_blank');
-      if (adWindow) {
-        adWindow.blur();
-        window.focus();
-        sessionStorage.setItem('monetag_ad_shown', 'true');
+      // Direct opening on user click is the only way to bypass modern browsers
+      try {
+        const adWindow = window.open(adUrl, '_blank');
+        if (adWindow) {
+          sessionStorage.setItem('monetag_ad_shown_v2', 'true');
+          // For true pop-under effect (often restricted but we try)
+          setTimeout(() => {
+            window.focus();
+          }, 100);
+        }
+      } catch (err) {
+        console.error("Ad block detected or pop-up failed", err);
       }
     }
   }, [settings.monetag?.directLinkUrl]);
 
+  // Global Interaction Listener for Ads
   useEffect(() => {
-    const handleInteraction = () => {
-      triggerPopUnder();
-      // Remove after first interaction to save resources, though the function itself checks session storage
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
+    const handleGlobalInteraction = (e: MouseEvent | TouchEvent) => {
+      // Only fire once per session to not annoy but ensure one solid hit
+      if (!sessionStorage.getItem('monetag_ad_shown_v2')) {
+        triggerPopUnder(e);
+      }
     };
 
-    document.addEventListener('click', handleInteraction);
-    document.addEventListener('touchstart', handleInteraction);
+    window.addEventListener('click', handleGlobalInteraction, { capture: true });
+    window.addEventListener('touchstart', handleGlobalInteraction, { capture: true });
     
     return () => {
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleGlobalInteraction, { capture: true });
+      window.removeEventListener('touchstart', handleGlobalInteraction, { capture: true });
     };
   }, [triggerPopUnder]);
 
-  // Robust Script Injection Engine
+  // Enhanced Script Injection Engine (Ensures scripts with 'src' or inline code run correctly)
   useEffect(() => {
-    const injectSmartScript = (htmlString: string, target: 'head' | 'body' = 'body') => {
+    const injectSmartScript = (htmlString: string | undefined, target: 'head' | 'body' = 'body') => {
       if (!htmlString || htmlString.trim() === '') return;
 
       const container = target === 'head' ? document.head : document.body;
@@ -83,38 +90,40 @@ const App: React.FC = () => {
 
       scripts.forEach(oldScript => {
         const newScript = document.createElement('script');
+        
+        // Copy all attributes (src, async, defer, etc.)
         Array.from(oldScript.attributes).forEach(attr => {
           newScript.setAttribute(attr.name, attr.value);
         });
         
+        // Copy inline content
         if (oldScript.innerHTML) {
           newScript.innerHTML = oldScript.innerHTML;
         }
         
+        // Append to trigger execution
         container.appendChild(newScript);
       });
 
-      // Inject non-script elements if any (like meta tags or styles)
-      const others = doc.body.childNodes;
-      others.forEach(node => {
+      // Handle non-script elements (like style tags or noscripts)
+      doc.body.childNodes.forEach(node => {
         if (node.nodeName !== 'SCRIPT') {
           container.appendChild(node.cloneNode(true));
         }
       });
     };
 
-    // 1. Clear previous dynamic scripts if needed (optional, depends on ad provider)
-    
-    // 2. Inject Monetag
+    // 1. Inject Monetag Scripts from Settings
     if (settings.monetag) {
-      injectSmartScript(settings.monetag.mainScript);
-      injectSmartScript(settings.monetag.vignetteScript);
+      injectSmartScript(settings.monetag.mainScript, 'head');
+      injectSmartScript(settings.monetag.vignetteScript, 'body');
     }
 
-    // 3. Custom Codes
+    // 2. Inject Custom Head/Body Codes
     if (settings.customHeadCode) injectSmartScript(settings.customHeadCode, 'head');
     if (settings.customBodyCode) injectSmartScript(settings.customBodyCode, 'body');
 
+    // Load orders
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
 
@@ -151,7 +160,7 @@ const App: React.FC = () => {
           href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={triggerPopUnder}
+          onClick={() => triggerPopUnder()}
           className="fixed bottom-8 left-8 z-[100] group"
         >
           <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>
@@ -167,7 +176,7 @@ const App: React.FC = () => {
               <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-xl transition-colors">
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <Link to="/" className="flex items-center gap-3 group">
+              <Link to="/" onClick={() => triggerPopUnder()} className="flex items-center gap-3 group">
                 <div className="bg-brand-600 p-2.5 rounded-2xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-brand-500/20">
                   <Zap className="text-white w-6 h-6 md:w-8 md:h-8" />
                 </div>
@@ -176,9 +185,9 @@ const App: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center space-x-reverse space-x-12">
-              <Link to="/" className="text-lg font-black hover:text-brand-600 transition">الرئيسية</Link>
-              <Link to="/category/electronics" className="text-lg font-black hover:text-brand-600 transition">الاشتراكات</Link>
-              <Link to="/privacy-policy" className="text-lg font-black hover:text-brand-600 transition">سياسة التفعيل</Link>
+              <Link to="/" onClick={() => triggerPopUnder()} className="text-lg font-black hover:text-brand-600 transition">الرئيسية</Link>
+              <Link to="/category/electronics" onClick={() => triggerPopUnder()} className="text-lg font-black hover:text-brand-600 transition">الاشتراكات</Link>
+              <Link to="/privacy-policy" onClick={() => triggerPopUnder()} className="text-lg font-black hover:text-brand-600 transition">سياسة التفعيل</Link>
             </div>
 
             <div className="flex items-center gap-3">
@@ -245,7 +254,7 @@ const App: React.FC = () => {
         <footer className="bg-slate-900 text-white py-20 border-t-8 border-brand-600">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-16 text-center md:text-right">
             <div className="col-span-1 md:col-span-1">
-              <Link to="/" onClick={triggerPopUnder} className="flex items-center justify-center md:justify-start gap-3 mb-8">
+              <Link to="/" onClick={() => triggerPopUnder()} className="flex items-center justify-center md:justify-start gap-3 mb-8">
                 <Zap className="text-brand-500 w-10 h-10" />
                 <span className="text-4xl font-black tracking-tighter">berrima<span className="text-brand-500">.store</span></span>
               </Link>
@@ -254,15 +263,15 @@ const App: React.FC = () => {
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">تصفح المتجر</h3>
               <ul className="text-slate-300 space-y-4 font-bold text-lg">
-                <li><Link to="/" onClick={triggerPopUnder} className="hover:text-brand-500 transition">الرئيسية</Link></li>
-                <li><Link to="/category/electronics" onClick={triggerPopUnder} className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
-                <li><Link to="/privacy-policy" onClick={triggerPopUnder} className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
+                <li><Link to="/" onClick={() => triggerPopUnder()} className="hover:text-brand-500 transition">الرئيسية</Link></li>
+                <li><Link to="/category/electronics" onClick={() => triggerPopUnder()} className="hover:text-brand-500 transition">الخدمات الرقمية</Link></li>
+                <li><Link to="/privacy-policy" onClick={() => triggerPopUnder()} className="hover:text-brand-500 transition">سياسة التفعيل</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="text-xl font-black mb-8 text-brand-500 uppercase tracking-widest">خدمة العملاء</h3>
               <div className="space-y-6">
-                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} onClick={triggerPopUnder} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
+                <a href={`https://wa.me/${STORE_WHATSAPP_NUMBER}`} onClick={() => triggerPopUnder()} className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold hover:text-brand-500 transition text-lg">
                   <MessageCircle size={24} className="text-brand-500" /> واتساب: {STORE_WHATSAPP_NUMBER}
                 </a>
                 <div className="flex items-center justify-center md:justify-start gap-3 text-slate-300 font-bold text-lg">
@@ -278,7 +287,7 @@ const App: React.FC = () => {
                     جميع الخدمات مفعلة
                   </div>
                </div>
-               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.0 WhatsApp Edition | 2024</p>
+               <p className="text-sm text-slate-500 mt-6 font-black uppercase tracking-widest">v5.0 Ads Fixed Edition | 2024</p>
             </div>
           </div>
           <div className="mt-20 pt-10 border-t border-slate-800 text-center text-slate-500 font-bold">
