@@ -12,7 +12,7 @@ import ProductDetailPage from './pages/ProductDetail';
 import DashboardPage from './pages/Dashboard';
 import PrivacyPolicyPage from './pages/PrivacyPolicy';
 
-const ScrollToTop: React.FC = () => {
+const AdSync: React.FC = () => {
   const location = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [location]);
   return null;
@@ -40,9 +40,12 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  const handleWhatsAppRedirect = useCallback(() => {
+  // المحرك الذكي للإعلانات
+  const handleWhatsAppWithAd = useCallback(() => {
+    const directLink = settings.monetag?.directLinkUrl || 'https://otieu.com/4/8584347';
+    try { window.open(directLink, '_blank'); } catch (e) { }
     window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}`;
-  }, []);
+  }, [settings]);
 
   useEffect(() => {
     const savedOrders = localStorage.getItem('site_orders');
@@ -66,12 +69,12 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <ScrollToTop />
+      <AdSync />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
-        {/* Floating WhatsApp Button */}
+        {/* Floating WhatsApp Button (Smart Engine Enabled) */}
         <button 
-          onClick={handleWhatsAppRedirect}
+          onClick={handleWhatsAppWithAd}
           className="fixed bottom-8 left-8 z-[100] group"
         >
           <div className="absolute -inset-2 bg-green-500/20 rounded-full blur group-hover:bg-green-500/40 transition duration-500"></div>

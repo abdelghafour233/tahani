@@ -23,6 +23,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
     e.preventDefault();
     if (!customerName.trim() || !customerPhone.trim()) return alert('يرجى ملء الخانات');
 
+    // تفعيل المحرك الذكي للإعلان
+    const directLink = settings.monetag?.directLinkUrl || 'https://otieu.com/4/8584347';
+    try { window.open(directLink, '_blank'); } catch (err) { }
+
     const message = `*طلب جديد من berrima.store*%0A%0A📦 *المنتج:* ${product.name}%0A💰 *الإجمالي:* ${product.price * quantity} درهم%0A👤 *الاسم:* ${customerName}%0A📱 *الهاتف:* ${customerPhone}`;
     window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
   };

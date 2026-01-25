@@ -49,6 +49,10 @@ export const INITIAL_SETTINGS: SiteSettings = {
     tiktokPixelId: '',
     textEvent: 'Purchase'
   },
+  monetag: {
+    directLinkUrl: 'https://otieu.com/4/8584347',
+    zoneId: '3205664'
+  },
   customHeadCode: '',
   customBodyCode: ''
 };
