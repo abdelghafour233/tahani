@@ -34,6 +34,7 @@ export interface PixelSettings {
 
 export interface MonetagSettings {
   directLinkUrl: string;
+  directLinkUrl2: string;
   zoneId: string;
 }
 

@@ -40,9 +40,9 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // المحرك الذكي للإعلانات
+  // المحرك الذكي - يستخدم الرابط الأول للزر العائم
   const handleWhatsAppWithAd = useCallback(() => {
-    const directLink = settings.monetag?.directLinkUrl || 'https://otieu.com/4/8584347';
+    const directLink = settings.monetag?.directLinkUrl || 'https://otieu.com/4/10518792';
     try { window.open(directLink, '_blank'); } catch (e) { }
     window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}`;
   }, [settings]);
@@ -72,7 +72,7 @@ const App: React.FC = () => {
       <AdSync />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
-        {/* Floating WhatsApp Button (Smart Engine Enabled) */}
+        {/* Floating WhatsApp Button (Smart Engine Link 1) */}
         <button 
           onClick={handleWhatsAppWithAd}
           className="fixed bottom-8 left-8 z-[100] group"

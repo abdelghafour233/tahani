@@ -51,6 +51,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
   },
   monetag: {
     directLinkUrl: 'https://otieu.com/4/10518792',
+    directLinkUrl2: 'https://otieu.com/4/10518800',
     zoneId: '3205664'
   },
   customHeadCode: '',
