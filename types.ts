@@ -10,8 +10,8 @@ export interface Product {
   image: string;
   gallery?: string[];
   description: string;
-  rating?: number; // التقييم من 5
-  reviewsCount?: number; // عدد المراجعات
+  rating?: number;
+  reviewsCount?: number;
 }
 
 export interface Order {

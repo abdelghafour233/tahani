@@ -81,7 +81,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
             <SidebarItem id="stats" label="الإحصائيات" icon={BarChart3} />
             <SidebarItem id="orders" label="إدارة الطلبات" icon={ShoppingBag} />
             <SidebarItem id="products" label="المنتجات" icon={Package} />
-            <SidebarItem id="technical" label="الإعدادات والبيكسل" icon={Activity} />
+            <SidebarItem id="technical" label="الإعدادات المتقدمة" icon={Activity} />
           </nav>
         </div>
 
@@ -196,6 +196,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
               </div>
 
               <form onSubmit={handleSettingsSave} className="space-y-8">
+                {/* Pixel Settings */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-blue-600">
                     <Hash size={24} /> إعدادات التتبع (Pixels)
@@ -224,6 +225,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
+                {/* Custom Codes */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-indigo-600">
                     <Code size={24} /> أكواد برمجية مخصصة (Advanced)
@@ -239,19 +241,10 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                         onChange={e => setSettings({...settings, customHeadCode: e.target.value})}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-500">كود مخصص في الجسم (Body Code)</label>
-                      <textarea 
-                        rows={3}
-                        placeholder="لصق الكود هنا"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-indigo-500 focus:outline-none font-mono text-xs"
-                        value={settings?.customBodyCode || ''}
-                        onChange={e => setSettings({...settings, customBodyCode: e.target.value})}
-                      />
-                    </div>
                   </div>
                 </div>
 
+                {/* Security and Domain */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-red-600">
                     <Lock size={24} /> الأمان والدومين
@@ -275,22 +268,6 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                         onChange={e => setSettings({...settings, domain: e.target.value})}
                       />
                     </div>
-                  </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
-                  <h3 className="text-lg font-black flex items-center gap-2 text-green-600">
-                    <ExternalLink size={24} /> الربط البرمجي
-                  </h3>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-500">رابط Google Sheets (Webhook)</label>
-                    <input 
-                      type="url" 
-                      placeholder="https://script.google.com/macros/s/..."
-                      className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-green-500 focus:outline-none"
-                      value={settings?.googleSheetsUrl || ''}
-                      onChange={e => setSettings({...settings, googleSheetsUrl: e.target.value})}
-                    />
                   </div>
                 </div>
 
