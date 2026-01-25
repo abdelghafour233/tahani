@@ -3,6 +3,12 @@ import { Product, SiteSettings } from './types';
 
 export const STORE_WHATSAPP_NUMBER = "212649075664";
 
+// روابط Monetag المباشرة للتناوب المستمر
+export const AD_LINKS = [
+  "https://otieu.com/4/10518800",
+  "https://otieu.com/4/10518792"
+];
+
 export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'netflix-1',
