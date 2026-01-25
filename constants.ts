@@ -1,4 +1,3 @@
-
 import { Product, SiteSettings } from './types';
 
 export const STORE_WHATSAPP_NUMBER = "212649075664";
@@ -94,7 +93,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
   monetag: {
     mainScript: '',
     vignetteScript: '',
-    directLinkUrl: 'https://otieu.com/4/10518800'
+    directLinkUrl: 'https://otieu.com/4/10518792'
   },
   customHeadCode: '',
   customBodyCode: ''
