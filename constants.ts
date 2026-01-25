@@ -91,16 +91,10 @@ export const INITIAL_SETTINGS: SiteSettings = {
     tiktokPixelId: '',
     textEvent: 'Purchase'
   },
-  adsterra: {
-    popunderScript: '<script src="https://bouncingbuzz.com/1b/bb/91/1bbb91b924fe9aa427cfa5a251caab9f.js"></script>',
-    socialBarScript: '',
-    nativeAdsScript: '',
-    smartLinkUrl: 'https://bouncingbuzz.com/m9x9bfr9c?key=3ec907280f33c9f26699609cb53571d2'
-  },
   monetag: {
     mainScript: '',
     vignetteScript: '',
-    directLinkUrl: 'https://otieu.com/4/10494046'
+    directLinkUrl: ''
   },
   customHeadCode: '',
   customBodyCode: ''

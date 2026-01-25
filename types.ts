@@ -32,13 +32,6 @@ export interface PixelSettings {
   textEvent: string;
 }
 
-export interface AdsterraSettings {
-  popunderScript: string;
-  socialBarScript: string;
-  nativeAdsScript: string;
-  smartLinkUrl: string;
-}
-
 export interface MonetagSettings {
   mainScript: string;
   vignetteScript: string;
@@ -50,7 +43,6 @@ export interface SiteSettings {
   nameServer: string;
   googleSheetsUrl: string;
   pixels: PixelSettings;
-  adsterra?: AdsterraSettings;
   monetag?: MonetagSettings;
   adminPassword?: string;
   customHeadCode?: string;

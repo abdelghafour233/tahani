@@ -57,16 +57,7 @@ const App: React.FC = () => {
       });
     };
 
-    // 1. Adsterra
-    if (settings.adsterra) {
-      injectScripts([
-        settings.adsterra.popunderScript,
-        settings.adsterra.socialBarScript,
-        settings.adsterra.nativeAdsScript
-      ]);
-    }
-
-    // 2. Monetag
+    // 1. Monetag
     if (settings.monetag) {
       injectScripts([
         settings.monetag.mainScript,
@@ -74,7 +65,7 @@ const App: React.FC = () => {
       ]);
     }
 
-    // 3. Custom Codes
+    // 2. Custom Codes (Including the monetag meta verification)
     if (settings.customHeadCode) {
       injectScripts([settings.customHeadCode], document.head);
     }

@@ -231,38 +231,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 2. Adsterra Settings Section */}
-                <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
-                  <h3 className="text-lg font-black flex items-center gap-2 text-amber-600">
-                    <Megaphone size={24} /> إعدادات Adsterra الإعلانية
-                  </h3>
-                  <p className="text-sm text-gray-400 font-bold -mt-4">قم بلصق أكواد الإعلانات أو الروابط المباشرة من Adsterra.</p>
-                  
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-500">كود Popunder</label>
-                      <textarea 
-                        rows={3}
-                        placeholder="لصق الكود هنا"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-xs"
-                        value={settings?.adsterra?.popunderScript || ''}
-                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), popunderScript: e.target.value}} as any)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-500">رابط Smartlink (Direct URL)</label>
-                      <input 
-                        type="text" 
-                        placeholder="https://..."
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800 focus:border-amber-500 focus:outline-none font-mono text-sm"
-                        value={settings?.adsterra?.smartLinkUrl || ''}
-                        onChange={e => setSettings({...settings, adsterra: {...(settings?.adsterra || {}), smartLinkUrl: e.target.value}} as any)}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3. Monetag Settings Section */}
+                {/* 2. Monetag Settings Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-purple-600">
                     <Sparkles size={24} /> إعدادات Monetag الإعلانية
@@ -305,7 +274,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 4. Advanced: Custom Code Section */}
+                {/* 3. Advanced: Custom Code Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-indigo-600">
                     <Code size={24} /> أكواد برمجية مخصصة (Advanced)
@@ -336,7 +305,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 5. Security & Domain Section */}
+                {/* 4. Security & Domain Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-red-600">
                     <Lock size={24} /> الأمان والدومين
@@ -363,7 +332,7 @@ const Dashboard: React.FC<DashboardProps> = ({ orders, setOrders, settings, setS
                   </div>
                 </div>
 
-                {/* 6. Integrations Section */}
+                {/* 5. Integrations Section */}
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-[35px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
                   <h3 className="text-lg font-black flex items-center gap-2 text-green-600">
                     <ExternalLink size={24} /> الربط البرمجي
