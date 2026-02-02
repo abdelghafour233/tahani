@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Menu, X, Moon, Sun, Lock, Eye, EyeOff, MessageCircle, Sparkles, Wand2 } from 'lucide-react';
+import { Menu, X, Moon, Sun, Lock, Wand2 } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
-import { INITIAL_PRODUCTS, INITIAL_SETTINGS, STORE_WHATSAPP_NUMBER } from './constants';
+import { INITIAL_PRODUCTS, INITIAL_SETTINGS } from './constants';
 
 // Pages
 import HomePage from './pages/Home';
@@ -12,7 +12,7 @@ import ProductDetailPage from './pages/ProductDetail';
 import DashboardPage from './pages/Dashboard';
 import PrivacyPolicyPage from './pages/PrivacyPolicy';
 
-const AdSync: React.FC = () => {
+const ScrollToTop: React.FC = () => {
   const location = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [location]);
   return null;
@@ -40,11 +40,6 @@ const App: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
 
-  // الزر العائم للواتساب بدون إعلانات
-  const handleWhatsApp = useCallback(() => {
-    window.location.href = `https://wa.me/${STORE_WHATSAPP_NUMBER}`;
-  }, []);
-
   useEffect(() => {
     const savedOrders = localStorage.getItem('site_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
@@ -67,20 +62,9 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <AdSync />
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
         
-        {/* Floating WhatsApp Button */}
-        <button 
-          onClick={handleWhatsApp}
-          className="fixed bottom-8 left-8 z-[100] group"
-        >
-          <div className="absolute -inset-2 bg-brand-500/20 rounded-full blur group-hover:bg-brand-500/40 transition duration-500"></div>
-          <div className="relative bg-brand-600 text-white p-5 rounded-full shadow-2xl transition-all transform group-hover:scale-110 active:scale-95">
-            <MessageCircle size={32} fill="white" />
-          </div>
-        </button>
-
         <nav className="glass-nav border-b border-slate-200 dark:border-brand-900/30 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 h-20 md:h-24 flex justify-between items-center">
             <div className="flex items-center gap-4">

@@ -19,7 +19,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Scroll to top on mount to ensure fresh view
+  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
@@ -57,17 +57,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   const handleGenerate = async () => {
     if (!selectedImage) return setError('يرجى رفع صورة أولاً');
     
-    // Explicitly prevent any WhatsApp redirection
-    console.log("Starting AI Generation...");
-    
     setIsGenerating(true);
     setError(null);
     setGeneratedImage(null);
 
     try {
-      // Ensure API key is present
       if (!process.env.API_KEY) {
-        throw new Error("API Key is missing. Please configure process.env.API_KEY.");
+        throw new Error("مفتاح API غير موجود. يرجى إعداده.");
       }
 
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -103,25 +99,14 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
       }
 
       if (!imageFound) {
-        throw new Error("لم يتم إرجاع صورة من النموذج. حاول مرة أخرى.");
+        throw new Error("لم يقم النموذج بإرجاع صورة.");
       }
 
     } catch (err: any) {
-      console.error("Error generating image:", err);
-      setError(err.message || "عذراً، حدث خطأ أثناء معالجة الصورة. حاول مرة أخرى.");
+      console.error("AI Error:", err);
+      setError("حدث خطأ أثناء المعالجة. تأكد من جودة الإنترنت وحاول مرة أخرى.");
     } finally {
       setIsGenerating(false);
-    }
-  };
-
-  const handleDownload = () => {
-    if (generatedImage) {
-      const link = document.createElement('a');
-      link.href = generatedImage;
-      link.download = `berrima-ai-${product.id}-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   };
 
@@ -135,12 +120,12 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
             {isGenerating && (
                <div className="absolute inset-0 bg-slate-900/90 z-50 flex flex-col items-center justify-center backdrop-blur-md rounded-[30px]">
                  <Loader2 className="w-16 h-16 text-brand-500 animate-spin mb-4" />
-                 <p className="text-white font-black text-xl animate-pulse">جاري الرسم بالذكاء الاصطناعي...</p>
-                 <p className="text-brand-200 text-sm mt-2 font-mono">جارٍ الاتصال بـ Gemini API...</p>
+                 <p className="text-white font-black text-xl animate-pulse">يتم الآن الرسم بواسطة الذكاء الاصطناعي...</p>
+                 <p className="text-brand-200 text-sm mt-2 font-mono">يرجى الانتظار قليلاً</p>
                </div>
             )}
 
-            <div className={`aspect-[3/4] bg-slate-100 dark:bg-slate-950 rounded-[30px] border-2 border-dashed border-gray-300 dark:border-slate-800 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 ${generatedImage ? 'border-brand-500 dark:border-brand-500' : ''}`}>
+            <div className={`aspect-[3/4] bg-slate-100 dark:bg-slate-950 rounded-[30px] border-2 border-dashed border-gray-300 dark:border-slate-800 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 ${generatedImage ? 'border-brand-500 dark:border-brand-500 shadow-brand-500/20 shadow-lg' : ''}`}>
               {generatedImage ? (
                 <img src={generatedImage} alt="Generated Art" className="w-full h-full object-cover animate-in fade-in duration-700" />
               ) : selectedImage ? (
@@ -151,7 +136,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
                     <Upload size={40} />
                   </div>
                   <h3 className="text-2xl font-black text-gray-700 dark:text-gray-300 mb-2">ارفع صورتك هنا</h3>
-                  <p className="text-gray-400 font-bold mb-8">يفضل صورة واضحة للوجه</p>
+                  <p className="text-gray-400 font-bold mb-8">يقبل صور JPG و PNG</p>
                   <button onClick={triggerFileInput} className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-4 rounded-xl font-black hover:scale-105 transition-transform shadow-lg">
                     اختر صورة من الجهاز
                   </button>
@@ -174,12 +159,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
 
             <div className="mt-6 space-y-4">
               {generatedImage ? (
-                 <button 
-                 onClick={handleDownload}
-                 className="w-full bg-emerald-500 text-white py-6 rounded-2xl font-black text-2xl flex items-center justify-center gap-3 hover:bg-emerald-600 transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-in zoom-in-50"
+                <a 
+                 href={generatedImage}
+                 download={`berrima-generated-${product.id}.png`}
+                 className="w-full bg-emerald-500 text-white py-6 rounded-2xl font-black text-2xl flex items-center justify-center gap-3 hover:bg-emerald-600 transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-in zoom-in-50 cursor-pointer"
                >
-                 <Download size={28} /> حفظ الصورة في الجهاز
-               </button>
+                 <Download size={28} /> تحميل الصورة (رابط مباشر)
+               </a>
               ) : (
                 <button 
                   onClick={handleGenerate}
@@ -187,7 +173,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
                   className={`w-full py-6 rounded-2xl font-black text-2xl flex items-center justify-center gap-3 transition-all shadow-xl ${
                     !selectedImage 
                       ? 'bg-gray-200 dark:bg-slate-800 text-gray-400 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-brand-600 to-purple-600 text-white hover:scale-[1.02] active:scale-[0.98] shadow-brand-500/30'
+                      : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:scale-[1.02] active:scale-[0.98] shadow-brand-500/30'
                   }`}
                 >
                   <Wand2 size={28} /> {selectedImage ? 'توليد الصورة (AI)' : 'ابدأ برفع صورة'}
@@ -197,7 +183,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
               {!generatedImage && (
                 <div className="flex justify-center items-center gap-2 text-xs text-gray-400 font-bold">
                     <Sparkles size={12} className="text-brand-500" />
-                    <span>يتم المعالجة بواسطة Google Gemini 2.5</span>
+                    <span>Powered by Google Gemini</span>
                 </div>
               )}
             </div>
@@ -228,13 +214,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-2xl border border-green-100 dark:border-green-900/20">
                 <CheckCircle2 className="text-green-500 mb-2" />
-                <h4 className="font-bold dark:text-white">جودة عالية</h4>
-                <p className="text-xs text-green-600 dark:text-green-400">دقة عالية وتفاصيل دقيقة</p>
+                <h4 className="font-bold dark:text-white">جودة 4K</h4>
+                <p className="text-xs text-green-600 dark:text-green-400">تصدير بدقة عالية</p>
               </div>
               <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/20">
                 <ImageIcon className="text-blue-500 mb-2" />
-                <h4 className="font-bold dark:text-white">خصوصية تامة</h4>
-                <p className="text-xs text-blue-600 dark:text-blue-400">لا يتم تخزين صورك</p>
+                <h4 className="font-bold dark:text-white">خصوصية</h4>
+                <p className="text-xs text-blue-600 dark:text-blue-400">المعالجة فورية</p>
               </div>
             </div>
           </div>
