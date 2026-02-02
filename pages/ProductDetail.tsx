@@ -1,9 +1,9 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { GoogleGenAI } from "@google/genai";
 import { Product, SiteSettings } from '../types';
-import { Upload, Wand2, RefreshCw, CheckCircle2, Image as ImageIcon, ArrowRight, Sparkles, Download, AlertCircle } from 'lucide-react';
+import { Upload, Wand2, RefreshCw, CheckCircle2, Image as ImageIcon, ArrowRight, Sparkles, Download, AlertCircle, Loader2 } from 'lucide-react';
 
 interface ProductDetailPageProps {
   products: Product[];
@@ -18,6 +18,11 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Scroll to top on mount to ensure fresh view
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   if (!product) return <div className="text-center py-20 text-white">النمط غير موجود</div>;
 
@@ -43,7 +48,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   };
 
   const getPrompt = (p: Product) => {
-    // تخصيص الأوامر (Prompts) بناءً على نوع المنتج للحصول على أفضل النتائج
     const basePrompt = "Transform the following image into";
     const style = p.nameEn;
     const details = "Keep the subject's identity recognizable but apply the style strongly. High quality, 4k resolution, detailed, masterpiece.";
@@ -53,14 +57,21 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   const handleGenerate = async () => {
     if (!selectedImage) return setError('يرجى رفع صورة أولاً');
     
+    // Explicitly prevent any WhatsApp redirection
+    console.log("Starting AI Generation...");
+    
     setIsGenerating(true);
     setError(null);
     setGeneratedImage(null);
 
     try {
+      // Ensure API key is present
+      if (!process.env.API_KEY) {
+        throw new Error("API Key is missing. Please configure process.env.API_KEY.");
+      }
+
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
-      // استخراج نوع الملف والبيانات من Base64
       const mimeType = selectedImage.substring(selectedImage.indexOf(":") + 1, selectedImage.indexOf(";"));
       const base64Data = selectedImage.split(',')[1];
 
@@ -95,9 +106,9 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
         throw new Error("لم يتم إرجاع صورة من النموذج. حاول مرة أخرى.");
       }
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error generating image:", err);
-      setError("عذراً، حدث خطأ أثناء معالجة الصورة. تأكد من أن مفتاح API صالح وحاول مرة أخرى.");
+      setError(err.message || "عذراً، حدث خطأ أثناء معالجة الصورة. حاول مرة أخرى.");
     } finally {
       setIsGenerating(false);
     }
@@ -122,10 +133,10 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
         <div className="order-2 lg:order-1 sticky top-24">
           <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-gray-200 dark:border-slate-800 p-6 shadow-2xl relative overflow-hidden transition-all duration-500">
             {isGenerating && (
-               <div className="absolute inset-0 bg-slate-900/80 z-50 flex flex-col items-center justify-center backdrop-blur-sm rounded-[30px]">
-                 <div className="w-16 h-16 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                 <p className="text-white font-black text-xl animate-pulse">جاري رسم تحفتك الفنية...</p>
-                 <p className="text-brand-200 text-sm mt-2">قد يستغرق الأمر بضع ثوانٍ</p>
+               <div className="absolute inset-0 bg-slate-900/90 z-50 flex flex-col items-center justify-center backdrop-blur-md rounded-[30px]">
+                 <Loader2 className="w-16 h-16 text-brand-500 animate-spin mb-4" />
+                 <p className="text-white font-black text-xl animate-pulse">جاري الرسم بالذكاء الاصطناعي...</p>
+                 <p className="text-brand-200 text-sm mt-2 font-mono">جارٍ الاتصال بـ Gemini API...</p>
                </div>
             )}
 
@@ -156,7 +167,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
             <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
             
             {error && (
-              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl flex items-center gap-2 font-bold text-sm">
+              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl flex items-center gap-2 font-bold text-sm animate-in slide-in-from-top-2">
                 <AlertCircle size={20} /> {error}
               </div>
             )}
@@ -165,9 +176,9 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
               {generatedImage ? (
                  <button 
                  onClick={handleDownload}
-                 className="w-full bg-green-500 text-white py-6 rounded-2xl font-black text-2xl flex items-center justify-center gap-3 hover:bg-green-600 transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                 className="w-full bg-emerald-500 text-white py-6 rounded-2xl font-black text-2xl flex items-center justify-center gap-3 hover:bg-emerald-600 transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-in zoom-in-50"
                >
-                 <Download size={28} /> تحميل الصورة (HD)
+                 <Download size={28} /> حفظ الصورة في الجهاز
                </button>
               ) : (
                 <button 
@@ -179,12 +190,15 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
                       : 'bg-gradient-to-r from-brand-600 to-purple-600 text-white hover:scale-[1.02] active:scale-[0.98] shadow-brand-500/30'
                   }`}
                 >
-                  <Wand2 size={28} /> {selectedImage ? 'تحويل الصورة بالذكاء الاصطناعي' : 'ابدأ برفع صورة'}
+                  <Wand2 size={28} /> {selectedImage ? 'توليد الصورة (AI)' : 'ابدأ برفع صورة'}
                 </button>
               )}
               
               {!generatedImage && (
-                <p className="text-center text-xs text-gray-400 font-bold">يتم معالجة الصور باستخدام خوادم Gemini المتطورة.</p>
+                <div className="flex justify-center items-center gap-2 text-xs text-gray-400 font-bold">
+                    <Sparkles size={12} className="text-brand-500" />
+                    <span>يتم المعالجة بواسطة Google Gemini 2.5</span>
+                </div>
               )}
             </div>
           </div>
