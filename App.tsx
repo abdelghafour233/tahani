@@ -63,38 +63,50 @@ const App: React.FC = () => {
   return (
     <Router>
       <ScrollToTop />
-      <div className="min-h-screen flex flex-col font-cairo bg-slate-50 dark:bg-darkest text-slate-900 dark:text-slate-100 transition-colors duration-300">
+      <div className="min-h-screen flex flex-col font-cairo bg-white dark:bg-darkest text-slate-900 dark:text-slate-100">
         
-        <nav className="glass-nav border-b border-slate-200 dark:border-brand-900/30 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 h-20 md:h-24 flex justify-between items-center">
+        <nav className="glass-nav border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex justify-between items-center">
+            {/* Logo */}
             <div className="flex items-center gap-4">
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-              <Link to="/" className="flex items-center gap-3 group">
-                <div className="bg-brand-600 p-2.5 rounded-2xl group-hover:rotate-12 transition-all">
-                  <Wand2 className="text-white w-6 h-6 md:w-8 md:h-8" />
+              <Link to="/" className="flex items-center gap-2 group">
+                <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 p-1.5 rounded-lg">
+                  <Wand2 size={20} />
                 </div>
-                <span className="text-2xl md:text-3xl font-black tracking-tighter">berrima<span className="text-brand-500">.ai</span></span>
+                <span className="text-xl font-bold tracking-tight">berrima<span className="text-slate-400">.ai</span></span>
               </Link>
             </div>
 
-            <div className="hidden md:flex items-center space-x-reverse space-x-12 font-black">
-              <Link to="/" className="hover:text-brand-500 transition">الرئيسية</Link>
-              <Link to="/category/anime" className="hover:text-brand-500 transition">أنماط الذكاء الاصطناعي</Link>
-              <Link to="/privacy-policy" className="hover:text-brand-500 transition">كيف يعمل؟</Link>
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center space-x-reverse space-x-8 text-sm font-medium text-slate-600 dark:text-slate-300">
+              <Link to="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">الرئيسية</Link>
+              <Link to="/category/anime" className="hover:text-slate-900 dark:hover:text-white transition-colors">الأدوات</Link>
+              <Link to="/privacy-policy" className="hover:text-slate-900 dark:hover:text-white transition-colors">عن الخدمة</Link>
             </div>
 
+            {/* Actions */}
             <div className="flex items-center gap-3">
-              <button onClick={toggleDarkMode} className="p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-all">
-                {isDarkMode ? <Sun className="text-amber-400" /> : <Moon className="text-slate-600" />}
+              <button onClick={toggleDarkMode} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
-              <Link to="/dashboard" className="hidden sm:flex items-center gap-2 px-6 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-sm">
-                لوحة التحكم
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+              <Link to="/dashboard" className="hidden sm:flex items-center px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-bold text-xs hover:opacity-90 transition-opacity">
+                دخول المطورين
               </Link>
             </div>
           </div>
         </nav>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-darkest border-b border-slate-100 dark:border-slate-800 px-6 py-4 space-y-4">
+            <Link to="/" className="block py-2 font-medium" onClick={() => setIsMenuOpen(false)}>الرئيسية</Link>
+            <Link to="/category/anime" className="block py-2 font-medium" onClick={() => setIsMenuOpen(false)}>الأدوات</Link>
+            <Link to="/privacy-policy" className="block py-2 font-medium" onClick={() => setIsMenuOpen(false)}>الخصوصية</Link>
+          </div>
+        )}
 
         <main className="flex-grow">
           <Routes>
@@ -106,21 +118,23 @@ const App: React.FC = () => {
               isAuthenticated ? (
                 <DashboardPage orders={orders} settings={settings} setSettings={setSettings} products={products} setProducts={setProducts} setOrders={setOrders} />
               ) : (
-                <div className="min-h-[70vh] flex items-center justify-center p-6 text-center">
-                  <div className="bg-white dark:bg-slate-900 p-12 rounded-[45px] shadow-2xl w-full max-w-md border border-brand-500/20">
-                    <div className="bg-brand-600 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-brand-500/20">
-                      <Lock className="text-white" size={48} />
+                <div className="min-h-[70vh] flex items-center justify-center p-6">
+                  <div className="w-full max-w-sm">
+                    <div className="text-center mb-8">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 mb-4">
+                        <Lock size={20} className="text-slate-500" />
+                      </div>
+                      <h2 className="text-xl font-bold">تسجيل الدخول</h2>
                     </div>
-                    <h2 className="text-3xl font-black mb-8">منطقة المطورين</h2>
-                    <form onSubmit={handleLogin} className="space-y-6">
+                    <form onSubmit={handleLogin} className="space-y-4">
                       <input 
                         type={showPassword ? "text" : "password"}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border-2 border-transparent rounded-2xl px-6 py-5 focus:border-brand-500 outline-none transition text-center font-bold text-lg dark:text-white"
-                        placeholder="رمز الدخول"
+                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 outline-none transition text-center"
+                        placeholder="كلمة المرور"
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
                       />
-                      <button className="w-full bg-slate-900 dark:bg-brand-600 text-white py-5 rounded-2xl font-black text-xl active:scale-95 transition-all">دخول</button>
+                      <button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">دخول</button>
                     </form>
                   </div>
                 </div>
@@ -128,6 +142,12 @@ const App: React.FC = () => {
             } />
           </Routes>
         </main>
+
+        <footer className="border-t border-slate-100 dark:border-slate-800 py-12 mt-20">
+            <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-sm">
+                <p>&copy; {new Date().getFullYear()} berrima.ai. جميع الحقوق محفوظة.</p>
+            </div>
+        </footer>
       </div>
     </Router>
   );
