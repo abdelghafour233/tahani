@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
-import { Wand2, Zap, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Aperture, Layers } from 'lucide-react';
 
 interface HomeProps {
   products: Product[];
@@ -10,85 +10,89 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ products }) => {
   return (
-    <div>
-      {/* Hero Section - Minimalist */}
-      <section className="pt-20 pb-32 border-b border-slate-100 dark:border-slate-800">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 mb-8 bg-slate-50 dark:bg-slate-900/50">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            الذكاء الاصطناعي متاح الآن للجميع
+    <div className="bg-dark-900 text-white">
+      
+      {/* Hero Section */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden border-b border-dark-800">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-900/20 via-dark-900 to-dark-900 z-0"></div>
+        
+        <div className="max-w-5xl mx-auto px-6 text-center z-10 animate-fade-in">
+          <div className="inline-flex items-center gap-2 border border-brand-500/30 bg-brand-500/10 px-4 py-1.5 rounded-full text-brand-300 text-xs font-bold mb-8 uppercase tracking-widest">
+            <Sparkles size={12} /> الجيل القادم من الذكاء الاصطناعي
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter text-slate-900 dark:text-white leading-[1.1]">
-            حول خيالك إلى<br />
-            <span className="text-slate-400">واقع رقمي.</span>
+          <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight tracking-tighter">
+            تخيل.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-zinc-600">اصنع.</span>
+            <span className="text-brand-500"> ألهم.</span>
           </h1>
           
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-12 max-w-2xl mx-auto font-medium leading-relaxed">
-            منصة berrima.ai تمكنك من توليد صور احترافية، تحويل صورك الشخصية، وصناعة فن رقمي باستخدام أحدث نماذج Gemini و Stable Diffusion.
+          <p className="text-xl md:text-2xl text-zinc-400 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
+            استوديو berrima.ai يمنحك القوة لتحويل أفكارك إلى فن بصري مذهل في ثوانٍ.
           </p>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/category/anime" className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-              <Wand2 size={20} /> ابدأ التصميم مجاناً
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
+            <Link to="/category/anime" className="bg-white text-black px-10 py-4 rounded-full font-bold text-lg hover:bg-zinc-200 transition-transform hover:scale-105 flex items-center justify-center gap-2">
+              ابدأ الآن <ArrowRight size={20} />
             </Link>
-            <a href="#styles" className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-              اكتشف الأنماط
-            </a>
           </div>
         </div>
       </section>
 
+      {/* Marquee / Brands (Visual Filler) */}
+      <div className="border-b border-dark-800 py-8 bg-dark-900/50 backdrop-blur">
+         <div className="flex justify-center gap-12 text-zinc-600 font-black text-xl md:text-2xl opacity-50 select-none overflow-hidden whitespace-nowrap">
+            <span>GEMINI 2.5</span>
+            <span>STABLE DIFFUSION</span>
+            <span>FLUX</span>
+            <span>MIDJOURNEY STYLE</span>
+            <span>4K UPSCALING</span>
+         </div>
+      </div>
+
       {/* Grid Showcase */}
-      <section id="styles" className="max-w-7xl mx-auto px-6 py-24">
-        <div className="flex justify-between items-end mb-12">
+      <section className="max-w-[1400px] mx-auto px-6 py-32">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-dark-800 pb-8">
             <div>
-                <h2 className="text-3xl font-bold mb-2 text-slate-900 dark:text-white">أنماط شائعة</h2>
-                <p className="text-slate-500">اختر النمط المناسب لمشروعك القادم</p>
+                <h2 className="text-4xl font-bold mb-4">اختر نموذجك</h2>
+                <p className="text-zinc-400 text-lg">مجموعة مختارة من أفضل نماذج التوليد الفني.</p>
             </div>
-            <Link to="/category/anime" className="hidden md:flex items-center gap-2 text-sm font-bold hover:underline">
-                عرض الكل <ArrowLeft size={16} />
+            <Link to="/category/anime" className="hidden md:flex text-white border-b border-white pb-1 hover:text-brand-400 hover:border-brand-400 transition-colors">
+                استعراض المكتبة الكاملة
             </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map(product => (
-            <Link to={`/product/${product.id}`} key={product.id} className="group block">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800 mb-4">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                />
-                <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                    <Zap size={12} className="text-amber-500" /> AI
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {products.map((product, index) => (
+            <Link to={`/product/${product.id}`} key={product.id} className={`group relative block overflow-hidden rounded-2xl bg-dark-800 border border-dark-700 aspect-[3/4] hover:border-brand-500/50 transition-all duration-500 ${index === 1 ? 'lg:col-span-2 lg:aspect-auto' : ''}`}>
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <span className="text-brand-400 text-xs font-bold uppercase tracking-wider mb-2">{product.category}</span>
+                <h3 className="text-2xl font-bold text-white leading-none">{product.name}</h3>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-brand-600 transition-colors">{product.name}</h3>
-              <p className="text-sm text-slate-500 mt-1 line-clamp-1">{product.description}</p>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Features Simple */}
-      <section className="bg-slate-50 dark:bg-slate-900/50 py-24 border-y border-slate-100 dark:border-slate-800">
-          <div className="max-w-7xl mx-auto px-6">
-              <div className="grid md:grid-cols-3 gap-12">
-                  {[
-                      { title: "سريع جداً", desc: "معالجة فورية للصور باستخدام سيرفرات سحابية قوية." },
-                      { title: "جودة 4K", desc: "تصدير عالي الدقة يصلح للطباعة والاستخدام المهني." },
-                      { title: "خصوصية تامة", desc: "يتم حذف الصور من خوادمنا تلقائياً بعد المعالجة." }
-                  ].map((f, i) => (
-                      <div key={i}>
-                          <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-6 shadow-sm">
-                              <ArrowUpRight size={20} />
-                          </div>
-                          <h3 className="text-xl font-bold mb-3">{f.title}</h3>
-                          <p className="text-slate-500 leading-relaxed">{f.desc}</p>
-                      </div>
-                  ))}
-              </div>
+      {/* Minimal Features */}
+      <section className="bg-dark-800 py-32 border-t border-dark-700">
+          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-16">
+              {[
+                  { icon: Aperture, title: "دقة فائقة", desc: "محرك المعالجة لدينا يدعم تصدير الصور بدقة تصل إلى 4K مع تفاصيل دقيقة." },
+                  { icon: Layers, title: "أنماط متعددة", desc: "تنقل بين الواقعية، الأنمي، والرسم الزيتي بضغطة زر واحدة." },
+                  { icon: Sparkles, title: "سحر Gemini", desc: "مدعوم بأحدث تقنيات Google Vision لفهم الصور وإعادة تخيلها." }
+              ].map((f, i) => (
+                  <div key={i} className="group">
+                      <f.icon className="w-12 h-12 text-zinc-500 group-hover:text-brand-500 transition-colors mb-6" />
+                      <h3 className="text-2xl font-bold mb-4 text-white">{f.title}</h3>
+                      <p className="text-zinc-400 leading-relaxed text-lg">{f.desc}</p>
+                  </div>
+              ))}
           </div>
       </section>
     </div>

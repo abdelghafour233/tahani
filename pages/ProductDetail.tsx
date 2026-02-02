@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { GoogleGenAI } from "@google/genai";
 import { Product, SiteSettings } from '../types';
-import { Upload, Wand2, RefreshCw, Download, AlertCircle, Loader2, ImageIcon, Sparkles, MoveRight } from 'lucide-react';
+import { Upload, Wand2, Download, AlertCircle, Loader2, Maximize2, X, ImagePlus, Sliders } from 'lucide-react';
 
 interface ProductDetailPageProps {
   products: Product[];
@@ -21,7 +21,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
 
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
 
-  if (!product) return <div className="text-center py-20">المنتج غير موجود</div>;
+  if (!product) return <div className="text-center py-20 text-white">404 - Model Not Found</div>;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
@@ -29,7 +29,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 5 * 1024 * 1024) {
-        setError("الصورة كبيرة جداً (أقصى حد 5MB)");
+        setError("MAX FILE SIZE 5MB");
         return;
       }
       const reader = new FileReader();
@@ -43,13 +43,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   };
 
   const handleGenerate = async () => {
-    if (!selectedImage) return setError('يرجى رفع صورة أولاً');
+    if (!selectedImage) return setError('UPLOAD IMAGE FIRST');
     setIsGenerating(true);
     setError(null);
     setGeneratedImage(null);
 
     try {
-      if (!process.env.API_KEY) throw new Error("مفتاح API غير متوفر");
+      if (!process.env.API_KEY) throw new Error("API KEY MISSING");
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const mimeType = selectedImage.substring(selectedImage.indexOf(":") + 1, selectedImage.indexOf(";"));
       const base64Data = selectedImage.split(',')[1];
@@ -67,115 +67,128 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
       if (response.candidates?.[0]?.content?.parts?.[0]?.inlineData) {
          setGeneratedImage(`data:image/png;base64,${response.candidates[0].content.parts[0].inlineData.data}`);
       } else {
-        throw new Error("فشل التوليد");
+        throw new Error("GENERATION FAILED");
       }
     } catch (err: any) {
       console.error(err);
-      setError("حدث خطأ غير متوقع. حاول مرة أخرى.");
+      setError("PROCESSING ERROR");
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
-      {/* Header */}
-      <div className="mb-10 max-w-3xl">
-        <div className="flex items-center gap-2 text-sm text-slate-500 mb-4 font-medium">
-            <span>الأدوات</span>
-            <span className="text-slate-300">/</span>
-            <span className="text-slate-900 dark:text-white">{product.category}</span>
+    <div className="bg-dark-900 text-white min-h-[calc(100vh-80px)] flex flex-col md:flex-row">
+      
+      {/* Left Sidebar: Controls */}
+      <div className="w-full md:w-[400px] border-l border-dark-800 bg-dark-900 p-6 md:h-[calc(100vh-80px)] md:overflow-y-auto flex flex-col gap-6 shrink-0 z-20 shadow-2xl">
+        <div>
+            <h1 className="text-2xl font-black mb-2 tracking-tight">{product.name}</h1>
+            <p className="text-zinc-500 text-sm leading-relaxed">{product.description}</p>
         </div>
-        <h1 className="text-4xl font-black mb-4 text-slate-900 dark:text-white tracking-tight">{product.name}</h1>
-        <p className="text-lg text-slate-500 leading-relaxed">{product.description}</p>
-      </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Sidebar / Controls */}
-        <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                <h3 className="font-bold mb-4 text-sm uppercase tracking-wider text-slate-500">الإعدادات</h3>
-                
-                <div className="space-y-4">
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                        <span className="text-xs font-bold text-slate-400 block mb-1">النمط المختار</span>
-                        <div className="font-bold">{product.name}</div>
-                    </div>
-
-                    <button 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full py-4 px-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 hover:border-slate-900 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 transition-colors flex items-center justify-center gap-2 text-sm font-bold"
-                    >
-                        <Upload size={18} /> {selectedImage ? 'تغيير الصورة' : 'رفع صورة'}
-                    </button>
-                    <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
-
-                    <button 
-                        onClick={handleGenerate}
-                        disabled={!selectedImage || isGenerating}
-                        className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all shadow-sm ${
-                            !selectedImage || isGenerating
-                            ? 'bg-slate-300 dark:bg-slate-800 cursor-not-allowed' 
-                            : 'bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800'
-                        }`}
-                    >
-                        {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Wand2 size={20} />}
-                        {isGenerating ? 'جاري المعالجة...' : 'توليد الصورة'}
-                    </button>
-
-                    {error && (
-                        <div className="text-red-500 text-sm bg-red-50 dark:bg-red-900/10 p-3 rounded-lg flex items-center gap-2">
-                            <AlertCircle size={16} /> {error}
+        <div className="border-t border-dark-800 pt-6 space-y-6 flex-grow">
+            <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+                    <ImagePlus size={14} /> Source Image
+                </label>
+                <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border border-dashed border-dark-700 bg-dark-800 rounded-xl p-8 text-center cursor-pointer hover:bg-dark-700 hover:border-zinc-500 transition-all ${selectedImage ? 'border-brand-500/50' : ''}`}
+                >
+                    {selectedImage ? (
+                        <div className="relative">
+                            <img src={selectedImage} alt="Source" className="h-32 mx-auto rounded-lg object-contain" />
+                            <div className="mt-2 text-xs text-brand-400 font-bold">Click to change</div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center gap-2 text-zinc-500">
+                            <Upload size={24} />
+                            <span className="text-sm font-bold">Upload / Drop</span>
                         </div>
                     )}
                 </div>
+                <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
             </div>
 
-            {/* Hint */}
-            <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/20 text-sm text-blue-700 dark:text-blue-300">
-                <p className="font-bold flex items-center gap-2 mb-1"><Sparkles size={14} /> نصيحة احترافية</p>
-                استخدم صوراً ذات إضاءة جيدة وتفاصيل واضحة للوجه للحصول على أفضل النتائج.
+            <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+                    <Sliders size={14} /> Parameters
+                </label>
+                <div className="bg-dark-800 p-4 rounded-xl border border-dark-700 space-y-3">
+                    <div className="flex justify-between text-xs">
+                        <span className="text-zinc-400">Model</span>
+                        <span className="font-mono text-white">Gemini 2.5 Flash</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                        <span className="text-zinc-400">Quality</span>
+                        <span className="font-mono text-white">High (4K)</span>
+                    </div>
+                </div>
             </div>
+
+            {error && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl text-sm font-bold flex items-center gap-2">
+                    <AlertCircle size={16} /> {error}
+                </div>
+            )}
         </div>
 
-        {/* Workspace / Preview */}
-        <div className="lg:col-span-2">
-            <div className="bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 h-[600px] flex items-center justify-center relative overflow-hidden group">
-                
-                {/* Before/After Split or Single Image */}
-                {generatedImage ? (
-                     <div className="relative w-full h-full">
-                        <img src={generatedImage} alt="Result" className="w-full h-full object-contain" />
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
-                             <a href={generatedImage} download="berrima-art.png" className="bg-white/90 backdrop-blur text-slate-900 px-6 py-3 rounded-full font-bold shadow-lg hover:bg-white transition flex items-center gap-2">
-                                <Download size={18} /> تحميل HD
-                             </a>
-                             <button onClick={() => setGeneratedImage(null)} className="bg-black/50 backdrop-blur text-white px-6 py-3 rounded-full font-bold hover:bg-black/70 transition">
-                                صورة جديدة
-                             </button>
-                        </div>
-                     </div>
-                ) : selectedImage ? (
-                    <div className="relative w-full h-full">
-                        <img src={selectedImage} alt="Original" className="w-full h-full object-contain opacity-80 blur-[2px] scale-95 transition-all duration-700" />
-                        {isGenerating && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-slate-900/20 backdrop-blur-sm">
-                                <div className="w-16 h-1 bg-slate-200 rounded-full overflow-hidden">
-                                    <div className="h-full bg-white animate-pulse w-2/3"></div>
-                                </div>
-                                <p className="text-white font-bold mt-4 shadow-black drop-shadow-md">جاري الرسم...</p>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div className="text-center text-slate-400">
-                        <ImageIcon size={64} className="mx-auto mb-4 opacity-50" />
-                        <p className="font-medium">مساحة العمل فارغة</p>
-                        <p className="text-sm">قم برفع صورة للبدء</p>
-                    </div>
-                )}
-            </div>
+        <div className="pt-6 border-t border-dark-800">
+             <button 
+                onClick={handleGenerate}
+                disabled={!selectedImage || isGenerating}
+                className={`w-full py-4 rounded-lg font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                    !selectedImage || isGenerating
+                    ? 'bg-dark-800 text-zinc-600 cursor-not-allowed' 
+                    : 'bg-white text-black hover:bg-zinc-200 shadow-lg shadow-white/10'
+                }`}
+            >
+                {isGenerating ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
+                {isGenerating ? 'Processing...' : 'Generate Art'}
+            </button>
         </div>
+      </div>
+
+      {/* Right Area: Canvas */}
+      <div className="flex-grow bg-[#050505] relative flex items-center justify-center p-8 overflow-hidden">
+         {/* Grid Background Pattern */}
+         <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#333 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+         
+         <div className="relative z-10 w-full h-full max-w-4xl flex items-center justify-center">
+            {generatedImage ? (
+                <div className="relative group animate-fade-in shadow-2xl shadow-black/50">
+                    <img src={generatedImage} alt="Result" className="max-h-[80vh] max-w-full rounded-lg border border-dark-700" />
+                    
+                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <a href={generatedImage} download={`berrima-${id}.png`} className="bg-white text-black p-3 rounded-lg hover:bg-zinc-200 shadow-xl" title="Download">
+                            <Download size={20} />
+                         </a>
+                         <button onClick={() => setGeneratedImage(null)} className="bg-dark-900 text-white p-3 rounded-lg hover:bg-dark-800 border border-dark-700 shadow-xl" title="Close">
+                            <X size={20} />
+                         </button>
+                    </div>
+                </div>
+            ) : selectedImage ? (
+                <div className="relative animate-fade-in">
+                     <img src={selectedImage} alt="Preview" className={`max-h-[60vh] max-w-full rounded-lg border border-dark-700 opacity-50 grayscale transition-all duration-1000 ${isGenerating ? 'scale-95 blur-sm' : ''}`} />
+                     {isGenerating && (
+                         <div className="absolute inset-0 flex flex-col items-center justify-center">
+                             <div className="w-64 h-1 bg-dark-800 rounded-full overflow-hidden">
+                                 <div className="h-full bg-brand-500 animate-slide-up w-full origin-left"></div>
+                             </div>
+                             <p className="mt-4 font-mono text-xs text-brand-400 animate-pulse">GENERATING...</p>
+                         </div>
+                     )}
+                </div>
+            ) : (
+                <div className="text-center text-dark-700 select-none">
+                    <Maximize2 size={64} className="mx-auto mb-6 opacity-20" />
+                    <h3 className="text-2xl font-black text-dark-600 mb-2">WORKSPACE EMPTY</h3>
+                    <p className="font-mono text-xs">SELECT AN IMAGE TO START EDITING</p>
+                </div>
+            )}
+         </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Menu, X, Moon, Sun, Lock, Wand2 } from 'lucide-react';
+import { Menu, X, Command, ArrowRight } from 'lucide-react';
 import { Product, Order, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, INITIAL_SETTINGS } from './constants';
 
@@ -30,85 +30,67 @@ const App: React.FC = () => {
   });
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem('elite_theme');
-    return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  });
-  
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState(false);
 
   useEffect(() => {
-    const savedOrders = localStorage.getItem('site_orders');
-    if (savedOrders) setOrders(JSON.parse(savedOrders));
+    // Force dark mode logic for this design
+    document.documentElement.classList.add('dark');
   }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    document.documentElement.classList.toggle('dark', newMode);
-    localStorage.setItem('elite_theme', newMode ? 'dark' : 'light');
-  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === (settings.adminPassword || INITIAL_SETTINGS.adminPassword)) {
       setIsAuthenticated(true);
-      setLoginError(false);
-    } else { setLoginError(true); }
+    }
   };
 
   return (
     <Router>
       <ScrollToTop />
-      <div className="min-h-screen flex flex-col font-cairo bg-white dark:bg-darkest text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen flex flex-col bg-dark-900 text-white font-cairo">
         
-        <nav className="glass-nav border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 h-16 md:h-20 flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center gap-4">
-              <Link to="/" className="flex items-center gap-2 group">
-                <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 p-1.5 rounded-lg">
-                  <Wand2 size={20} />
-                </div>
-                <span className="text-xl font-bold tracking-tight">berrima<span className="text-slate-400">.ai</span></span>
+        {/* Modern Glass Navbar */}
+        <nav className="fixed w-full z-50 glass h-16 md:h-20 flex items-center">
+          <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-between items-center">
+            
+            <Link to="/" className="flex items-center gap-2 z-50">
+              <div className="w-8 h-8 bg-white text-black flex items-center justify-center rounded-lg font-bold">
+                B
+              </div>
+              <span className="text-xl font-bold tracking-tight">berrima<span className="text-brand-500">.ai</span></span>
+            </Link>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-reverse space-x-8 text-sm font-medium text-zinc-400">
+              <Link to="/" className="hover:text-white transition-colors">الاستوديو</Link>
+              <Link to="/category/anime" className="hover:text-white transition-colors">النماذج</Link>
+              <Link to="/dashboard" className="hover:text-white transition-colors">المطورين</Link>
+            </div>
+
+            <div className="hidden md:flex items-center gap-4">
+              <Link to="/category/anime" className="bg-white text-black hover:bg-zinc-200 px-5 py-2 rounded-full text-xs font-bold transition-colors">
+                جرب الآن
               </Link>
             </div>
 
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center space-x-reverse space-x-8 text-sm font-medium text-slate-600 dark:text-slate-300">
-              <Link to="/" className="hover:text-slate-900 dark:hover:text-white transition-colors">الرئيسية</Link>
-              <Link to="/category/anime" className="hover:text-slate-900 dark:hover:text-white transition-colors">الأدوات</Link>
-              <Link to="/privacy-policy" className="hover:text-slate-900 dark:hover:text-white transition-colors">عن الخدمة</Link>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <button onClick={toggleDarkMode} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
-                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
-              <Link to="/dashboard" className="hidden sm:flex items-center px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-bold text-xs hover:opacity-90 transition-opacity">
-                دخول المطورين
-              </Link>
-            </div>
+            {/* Mobile Toggle */}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 text-white">
+              {isMenuOpen ? <X /> : <Menu />}
+            </button>
           </div>
         </nav>
 
-        {/* Mobile Menu */}
+        {/* Full Screen Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-darkest border-b border-slate-100 dark:border-slate-800 px-6 py-4 space-y-4">
-            <Link to="/" className="block py-2 font-medium" onClick={() => setIsMenuOpen(false)}>الرئيسية</Link>
-            <Link to="/category/anime" className="block py-2 font-medium" onClick={() => setIsMenuOpen(false)}>الأدوات</Link>
-            <Link to="/privacy-policy" className="block py-2 font-medium" onClick={() => setIsMenuOpen(false)}>الخصوصية</Link>
+          <div className="fixed inset-0 bg-dark-900 z-40 flex flex-col items-center justify-center space-y-8 animate-fade-in md:hidden">
+            <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-3xl font-bold">الرئيسية</Link>
+            <Link to="/category/anime" onClick={() => setIsMenuOpen(false)} className="text-3xl font-bold">النماذج</Link>
+            <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="text-zinc-500">لوحة التحكم</Link>
           </div>
         )}
 
-        <main className="flex-grow">
+        <main className="flex-grow pt-20">
           <Routes>
             <Route path="/" element={<HomePage products={products} />} />
             <Route path="/category/:type" element={<CategoryPage products={products} />} />
@@ -118,23 +100,23 @@ const App: React.FC = () => {
               isAuthenticated ? (
                 <DashboardPage orders={orders} settings={settings} setSettings={setSettings} products={products} setProducts={setProducts} setOrders={setOrders} />
               ) : (
-                <div className="min-h-[70vh] flex items-center justify-center p-6">
-                  <div className="w-full max-w-sm">
-                    <div className="text-center mb-8">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 mb-4">
-                        <Lock size={20} className="text-slate-500" />
-                      </div>
-                      <h2 className="text-xl font-bold">تسجيل الدخول</h2>
+                <div className="min-h-[80vh] flex items-center justify-center px-4">
+                  <div className="w-full max-w-md bg-dark-800 p-8 rounded-2xl border border-dark-700">
+                    <div className="flex justify-center mb-6">
+                      <Command size={40} className="text-brand-500" />
                     </div>
+                    <h2 className="text-2xl font-bold text-center mb-8">Access Terminal</h2>
                     <form onSubmit={handleLogin} className="space-y-4">
                       <input 
-                        type={showPassword ? "text" : "password"}
-                        className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-100 outline-none transition text-center"
-                        placeholder="كلمة المرور"
+                        type="password"
+                        className="w-full bg-dark-900 border border-dark-700 rounded-lg px-4 py-3 text-center focus:border-brand-500 outline-none transition font-mono text-sm"
+                        placeholder="ACCESS CODE"
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
                       />
-                      <button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">دخول</button>
+                      <button className="w-full bg-brand-600 hover:bg-brand-500 text-white py-3 rounded-lg font-bold text-sm transition-all">
+                        AUTHENTICATE
+                      </button>
                     </form>
                   </div>
                 </div>
@@ -143,9 +125,14 @@ const App: React.FC = () => {
           </Routes>
         </main>
 
-        <footer className="border-t border-slate-100 dark:border-slate-800 py-12 mt-20">
-            <div className="max-w-7xl mx-auto px-6 text-center text-slate-500 text-sm">
-                <p>&copy; {new Date().getFullYear()} berrima.ai. جميع الحقوق محفوظة.</p>
+        <footer className="border-t border-dark-800 py-12 mt-20 bg-dark-900">
+            <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-zinc-500 text-sm">
+                <p>&copy; 2025 berrima.ai Inc.</p>
+                <div className="flex gap-6 mt-4 md:mt-0">
+                  <Link to="/privacy-policy" className="hover:text-white">الخصوصية</Link>
+                  <a href="#" className="hover:text-white">تويتر</a>
+                  <a href="#" className="hover:text-white">انستغرام</a>
+                </div>
             </div>
         </footer>
       </div>
