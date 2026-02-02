@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Product, Category } from '../types';
-import { Star, Facebook, Twitter, MessageCircle, Link as LinkIcon, Share2 } from 'lucide-react';
+import { Star, Wand2, Share2, Layers } from 'lucide-react';
 
 interface CategoryPageProps {
   products: Product[];
@@ -11,112 +11,62 @@ interface CategoryPageProps {
 const CategoryPage: React.FC<CategoryPageProps> = ({ products }) => {
   const { type } = useParams<{ type: string }>();
   
-  const filteredProducts = products.filter(p => p.category === type);
+  const filteredProducts = products.filter(p => p.category === type || type === 'anime'); // Show all for demo if needed or filter strictly
   
   const getCategoryTitle = (cat: string) => {
     switch(cat) {
-      case 'electronics': return 'إلكترونيات';
-      case 'home': return 'منزلية';
-      case 'cars': return 'اكسسوارات السيارات';
-      case 'watches': return 'ساعات';
-      case 'accessories': return 'نظارات واكسسوارات';
-      default: return 'المنتجات';
-    }
-  };
-
-  const handleShare = (e: React.MouseEvent, platform: string, product: Product) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const url = `${window.location.origin}/#/product/${product.id}`;
-    const text = `اكتشف هذا المنتج الرائع في berrima.store: ${product.name}`;
-    
-    switch (platform) {
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-        break;
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'copy':
-        navigator.clipboard.writeText(url);
-        alert('تم نسخ رابط المنتج بنجاح!');
-        break;
+      case 'anime': return 'أنمي ياباني';
+      case 'realistic': return 'واقعي';
+      case 'art': return 'فن رقمي';
+      case '3d': return 'ثلاثي الأبعاد';
+      case 'professional': return 'احترافي';
+      default: return 'كل الأنماط';
     }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <nav className="mb-8 text-sm flex items-center gap-2 text-gray-500">
-        <Link to="/" className="hover:text-green-600">الرئيسية</Link>
+        <Link to="/" className="hover:text-brand-600">الرئيسية</Link>
         <span>/</span>
         <span className="text-gray-900 font-bold dark:text-gray-100">{getCategoryTitle(type || '')}</span>
       </nav>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-        <h1 className="text-4xl font-bold dark:text-white">{getCategoryTitle(type || '')}</h1>
-        <div className="flex gap-4 items-center bg-white dark:bg-slate-900 p-2 rounded-lg border dark:border-slate-800 shadow-sm">
-          <span className="text-sm text-gray-500 dark:text-gray-400">ترتيب حسب:</span>
-          <select className="bg-transparent font-medium focus:outline-none dark:text-white">
-            <option className="dark:bg-slate-900">الأحدث</option>
-            <option className="dark:bg-slate-900">السعر من الأقل للأعلى</option>
-            <option className="dark:bg-slate-900">السعر من الأعلى للأقل</option>
-          </select>
-        </div>
+        <h1 className="text-4xl font-black dark:text-white flex items-center gap-3">
+          <Layers className="text-brand-500" /> {getCategoryTitle(type || '')}
+        </h1>
       </div>
 
-      {filteredProducts.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-800">
-          <p className="text-gray-400 dark:text-gray-500 text-xl">لا توجد منتجات في هذه الفئة حالياً.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map(product => (
-            <div key={product.id} className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <Link to={`/product/${product.id}`} className="block flex-grow">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
-                </div>
-                <div className="p-5 flex-grow flex flex-col">
-                  <h3 className="font-bold text-xl mb-1 group-hover:text-green-600 transition dark:text-white">{product.name}</h3>
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                    ))}
-                    <span className="text-[10px] text-gray-400 font-bold mr-1">({product.reviewsCount || 0})</span>
-                  </div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">{product.description}</p>
-                  <div className="mt-auto flex justify-between items-end">
-                    <div>
-                      <span className="block text-2xl font-extrabold text-green-700 dark:text-green-400">{product.price.toLocaleString()}</span>
-                      <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">درهم مغربي</span>
-                    </div>
-                    <button className="bg-green-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-100">
-                      اشتري الآن
-                    </button>
-                  </div>
-                </div>
-              </Link>
-              
-              {/* Social Share Bar */}
-              <div className="px-5 pb-5 pt-4 mt-auto border-t dark:border-slate-800">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1"><Share2 size={12} /> مشاركة المنتج:</span>
-                  <div className="flex gap-2">
-                    <button onClick={(e) => handleShare(e, 'whatsapp', product)} className="p-1.5 bg-green-50 dark:bg-green-900/10 text-green-600 rounded-full hover:bg-green-100 transition"><MessageCircle size={14} /></button>
-                    <button onClick={(e) => handleShare(e, 'facebook', product)} className="p-1.5 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-full hover:bg-blue-100 transition"><Facebook size={14} /></button>
-                    <button onClick={(e) => handleShare(e, 'twitter', product)} className="p-1.5 bg-sky-50 dark:bg-sky-900/10 text-sky-500 rounded-full hover:bg-sky-100 transition"><Twitter size={14} /></button>
-                    <button onClick={(e) => handleShare(e, 'copy', product)} className="p-1.5 bg-gray-50 dark:bg-slate-800 text-gray-500 rounded-full hover:bg-gray-100 transition"><LinkIcon size={14} /></button>
-                  </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {filteredProducts.length > 0 ? filteredProducts.map(product => (
+          <div key={product.id} className="group bg-white dark:bg-slate-900 rounded-[30px] overflow-hidden border border-gray-100 dark:border-slate-800 hover:shadow-2xl transition-all duration-300 flex flex-col hover:border-brand-500/30">
+            <Link to={`/product/${product.id}`} className="block flex-grow">
+              <div className="relative aspect-[4/5] overflow-hidden">
+                <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
+                <div className="absolute top-4 right-4 bg-brand-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg">
+                  AI Generated
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+              <div className="p-6 flex-grow flex flex-col">
+                <h3 className="font-black text-xl mb-2 group-hover:text-brand-600 transition dark:text-white">{product.name}</h3>
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} className={`${i < (product.rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-gray-300 dark:text-slate-700'}`} />
+                  ))}
+                </div>
+                <div className="mt-auto">
+                  <button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-xl font-black hover:opacity-90 transition-colors shadow-lg flex items-center justify-center gap-2">
+                    <Wand2 size={18} /> جرب هذا النمط
+                  </button>
+                </div>
+              </div>
+            </Link>
+          </div>
+        )) : (
+          <div className="col-span-full text-center py-20 text-gray-500">لا توجد أنماط في هذه الفئة حالياً.</div>
+        )}
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>berrima.store | متجر الخدمات والاشتراكات الرقمية</title>
+    <title>berrima.ai | حول صورك بالذكاء الاصطناعي</title>
     
     <!-- Monetag Official Tag - Zone 3205664 -->
     <script src="https://quge5.com/88/tag.min.js" data-zone="3205664" async data-cfasync="false"></script>
@@ -21,14 +21,29 @@
                     },
                     colors: {
                         brand: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
                         },
-                        darkest: '#020617'
-                    }
+                        darkest: '#0f0720' // لون خلفية أغمق يميل للبنفسجي
+                    },
+                    animation: {
+                        'gradient-x': 'gradient-x 15s ease infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center',
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center',
+                            },
+                        },
+                    },
                 },
             },
         }
@@ -39,16 +54,16 @@
     <style>
         body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
         .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
         .dark .glass-nav {
-            background: rgba(2, 6, 23, 0.8);
-            border-bottom-color: rgba(30, 41, 59, 1);
+            background: rgba(15, 7, 32, 0.7);
+            border-bottom-color: rgba(139, 92, 246, 0.2);
         }
-        .hero-glow {
-            background: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.15), transparent 70%);
+        .ai-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.3), transparent 70%);
         }
     </style>
     <script>

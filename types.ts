@@ -1,5 +1,5 @@
 
-export type Category = 'electronics' | 'home' | 'cars' | 'watches' | 'accessories';
+export type Category = 'anime' | 'realistic' | 'art' | '3d' | 'professional';
 
 export interface Product {
   id: string;
@@ -7,11 +7,13 @@ export interface Product {
   nameEn: string;
   price: number;
   category: Category;
-  image: string;
+  image: string; // The "After" image example
+  beforeImage?: string; // The "Before" image example
   gallery?: string[];
   description: string;
   rating?: number;
   reviewsCount?: number;
+  processingTime?: string;
 }
 
 export interface Order {
@@ -47,8 +49,4 @@ export interface SiteSettings {
   adminPassword?: string;
   customHeadCode?: string;
   customBodyCode?: string;
-}
-
-export interface CartItem extends Product {
-  quantity: number;
 }
