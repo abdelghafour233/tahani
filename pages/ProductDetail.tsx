@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Product, SiteSettings } from '../types';
@@ -19,10 +20,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   if (!product) return <div className="text-center py-20 text-white">النمط غير موجود</div>;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Monetag Link 1 (Upload Click)
-    const directLink = settings.monetag?.directLinkUrl || 'https://otieu.com/4/10518792';
-    try { window.open(directLink, '_blank'); } catch (err) { }
-
+    // تم حذف منطق الإعلان من هنا
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const reader = new FileReader();
@@ -40,10 +38,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ products, setting
   const handleGenerate = () => {
     if (!selectedImage) return alert('يرجى رفع صورة أولاً');
 
-    // Monetag Link 2 (Generate Click)
-    const directLink2 = settings.monetag?.directLinkUrl2 || 'https://otieu.com/4/10518800';
-    try { window.open(directLink2, '_blank'); } catch (err) { }
-
+    // تم حذف منطق الإعلان من هنا
     setIsGenerating(true);
 
     // Simulate AI Processing time then redirect to WhatsApp

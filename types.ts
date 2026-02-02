@@ -34,18 +34,11 @@ export interface PixelSettings {
   textEvent: string;
 }
 
-export interface MonetagSettings {
-  directLinkUrl: string;
-  directLinkUrl2: string;
-  zoneId: string;
-}
-
 export interface SiteSettings {
   domain: string;
   nameServer: string;
   googleSheetsUrl: string;
   pixels: PixelSettings;
-  monetag?: MonetagSettings;
   adminPassword?: string;
   customHeadCode?: string;
   customBodyCode?: string;
